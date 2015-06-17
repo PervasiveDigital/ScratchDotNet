@@ -9,6 +9,7 @@ using System.Windows;
 using Ninject;
 using PervasiveDigital.Scratch.DeploymentHelper;
 using PervasiveDigital.Scratch.DeploymentHelper.Models;
+using PervasiveDigital.Scratch.DeploymentHelper.Server;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper
 {
@@ -28,10 +29,17 @@ namespace PervasiveDigital.Scratch.DeploymentHelper
 
         private void Application_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e)
         {
+            var host = App.Kernel.Get<DeviceServer>();
+            if (host != null)
+                host.Open();
         }
 
         private void Application_Exit(object sender, ExitEventArgs e)
         {
+            var host = App.Kernel.Get<DeviceServer>();
+            if (host != null)
+                host.Close();
+
             var dm = App.Kernel.Get<DeviceModel>();
             if (dm != null)
                 dm.Dispose();
