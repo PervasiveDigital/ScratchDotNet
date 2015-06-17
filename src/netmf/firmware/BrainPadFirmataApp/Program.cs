@@ -1,7 +1,7 @@
 using System;
 using Microsoft.SPOT;
 
-namespace ScratchTetheredRuntime
+namespace BrainPadFirmataApp
 {
     public class Program
     {

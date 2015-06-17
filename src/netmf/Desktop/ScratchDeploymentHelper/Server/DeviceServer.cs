@@ -16,9 +16,9 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Server
 
         public void Open()
         {
-            Uri upnpBaseAddress = new Uri("http://localhost:31076/");
-            _apiHost = new ServiceHost(typeof(DeviceService));
-            ServiceEndpoint se = _apiHost.AddServiceEndpoint(typeof(IDeviceService), new WebHttpBinding(), upnpBaseAddress);
+            Uri baseAddress = new Uri("http://localhost:31076/");
+            _apiHost = new ServiceHost(typeof(DeviceService), baseAddress);
+            ServiceEndpoint se = _apiHost.AddServiceEndpoint(typeof(IDeviceService), new WebHttpBinding(), baseAddress);
             se.Behaviors.Add(new WebHttpBehavior());
             _apiHost.Open();
 

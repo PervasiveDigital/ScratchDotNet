@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ScratchTetheredRuntime
+namespace BrainPadFirmataApp
 {
     internal class Resources
     {
@@ -19,7 +19,7 @@ namespace ScratchTetheredRuntime
             {
                 if ((Resources.manager == null))
                 {
-                    Resources.manager = new System.Resources.ResourceManager("ScratchTetheredRuntime.Resources", typeof(Resources).Assembly);
+                    Resources.manager = new System.Resources.ResourceManager("BrainPadFirmataApp.Resources", typeof(Resources).Assembly);
                 }
                 return Resources.manager;
             }

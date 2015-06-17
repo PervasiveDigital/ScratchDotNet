@@ -10,6 +10,8 @@ using Ninject;
 using PervasiveDigital.Scratch.DeploymentHelper;
 using PervasiveDigital.Scratch.DeploymentHelper.Models;
 using PervasiveDigital.Scratch.DeploymentHelper.Server;
+using System.Deployment.Application;
+using System.Reflection;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper
 {
@@ -29,9 +31,6 @@ namespace PervasiveDigital.Scratch.DeploymentHelper
 
         private void Application_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e)
         {
-            var host = App.Kernel.Get<DeviceServer>();
-            if (host != null)
-                host.Open();
         }
 
         private void Application_Exit(object sender, ExitEventArgs e)
@@ -44,5 +43,28 @@ namespace PervasiveDigital.Scratch.DeploymentHelper
             if (dm != null)
                 dm.Dispose();
         }
+
+        private void Application_Startup(object sender, StartupEventArgs e)
+        {
+            var host = App.Kernel.Get<DeviceServer>();
+            if (host != null)
+                host.Open();
+
+            new Views.MainWindow().Show();
+        }
+
+        public static string Version
+        {
+            get
+            {
+                if (ApplicationDeployment.IsNetworkDeployed)
+                    return "ND " + ApplicationDeployment.CurrentDeployment.CurrentVersion.ToString();
+                else
+                {
+                    return "LD " + typeof(App).Assembly.GetName().Version.ToString();
+                }
+            }
+        }
+
     }
 }

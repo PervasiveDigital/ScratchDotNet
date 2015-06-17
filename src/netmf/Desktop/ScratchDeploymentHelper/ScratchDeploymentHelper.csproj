@@ -15,6 +15,7 @@
     <WarningLevel>4</WarningLevel>
     <IsWebBootstrapper>true</IsWebBootstrapper>
     <WcfConfigValidationEnabled>True</WcfConfigValidationEnabled>
+    <UICulture>en-US</UICulture>
     <PublishUrl>X:\pd\ScratchDotNet\src\WebSite\ScratchDotNet\ScratchDotNet\DesktopApplication\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>
@@ -25,14 +26,14 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <InstallUrl>http://scratchdotnet.azurewebsites.net/DesktopApplication/</InstallUrl>
+    <InstallUrl>http://www.scratch4.net/DesktopApplication/</InstallUrl>
     <SupportUrl>http://www.scratch4.net/</SupportUrl>
-    <ProductName>Scratch for .Net Micro Framework Devices</ProductName>
+    <ProductName>Scratch Gateway for .Net Devices</ProductName>
     <PublisherName>Pervasive Digital, LLC</PublisherName>
     <SuiteName>Scratch for .Net</SuiteName>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.html</WebPage>
-    <ApplicationRevision>5</ApplicationRevision>
+    <ApplicationRevision>9</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -100,6 +101,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.ServiceModel.Web" />
@@ -190,10 +192,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Content Include="..\..\firmware\ScratchTetheredRuntime\bin\Debug\le\ScratchTetheredRuntime.pe">
-      <Link>Assets\Deployments\ScratchTetheredRuntime.pe</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Assets\Scratch\BrainPad\BrainPad.s2e">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -214,7 +212,9 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Assets\Deployments\" />
+  </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
       <Visible>False</Visible>

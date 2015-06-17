@@ -8,7 +8,11 @@
 	  Title="Devices">
 
     <DockPanel>
-        <Grid DockPanel.Dock="Bottom">
+        <Grid DockPanel.Dock="Bottom" Background="White">
+            <StackPanel Margin="10" HorizontalAlignment="Left" VerticalAlignment="Center" Orientation="Horizontal">
+                <TextBlock Margin="0,0,10,0">Version:</TextBlock>
+                <TextBlock Text="{Binding AppVersion}" />
+            </StackPanel>
             <Button HorizontalAlignment="Right" Padding="10,5,10,5" Margin="10" Command="{Binding ConnectCommand}">Connect</Button>
         </Grid>
 

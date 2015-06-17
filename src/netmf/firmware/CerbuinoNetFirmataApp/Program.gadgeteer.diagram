@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<gadgeteerDSLDiagram dslVersion="1.0.0.0" Id="6fe59b98-3244-42b9-a6db-79bca372e31c" absoluteBounds="0, 0, 11, 8.5" name="Program">
+  <gadgeteerModelMoniker Id="d5531ea9-6411-437e-9444-9d0122638317" />
+  <nestedChildShapes>
+    <mainboardShape Id="35e85e7f-a92a-4be7-bc04-3ec5d4a25db2" absoluteBounds="2.74, 3.12, 3.3464566929133861, 2.2440944881889764">
+      <mainboardMoniker Id="ae3a5bc6-dc01-44ba-bf5a-13bdee06b4c3" />
+      <nestedChildShapes>
+        <socketShape Id="952e3c98-fb86-4259-b72a-f35d5fa6d1c3" absoluteBounds="5.74, 3.54, 0.25, 0.25">
+          <socketMoniker Id="4811a330-a902-403c-a008-7ef0ce7578a2" />
+        </socketShape>
+        <socketShape Id="e5f4ae5a-1314-45b2-9f73-8530f1545b01" absoluteBounds="5.74, 4.1, 0.25, 0.25">
+          <socketMoniker Id="f9980e6a-992a-4bff-a43e-3d7a36696894" />
+        </socketShape>
+        <socketShape Id="66e2988f-a2a9-4e04-b655-e1139c9d4388" absoluteBounds="5.74, 4.6400000000000006, 0.25, 0.25">
+          <socketMoniker Id="65f53801-1b3e-43f1-9b92-a81064909180" />
+        </socketShape>
+      </nestedChildShapes>
+    </mainboardShape>
+    <commentBoxShape Id="02343bc2-a257-4230-9fdc-877b925fcd4d" absoluteBounds="0.5, 3.125, 1.75, 1.375">
+      <commentMoniker Id="8aeec903-b748-4a44-9a4b-cee2241ae46c" />
+    </commentBoxShape>
+    <moduleShape Id="fa6ec8b1-4940-4782-9da2-76b9c9a47de4" absoluteBounds="7.4, 3.96, 1.1811023622047245, 1.0385826771653544">
+      <moduleMoniker Id="84aff70b-c380-49fe-a4ff-31465a170938" />
+      <relativeChildShapes />
+      <nestedChildShapes>
+        <socketUseShape Id="be190466-106d-4949-b11e-a91535eb9623" absoluteBounds="7.8800000000000008, 4, 0.25, 0.25">
+          <socketUseMoniker Id="178fc1d6-0d00-44e4-8312-af0e4c29be9f" />
+        </socketUseShape>
+      </nestedChildShapes>
+    </moduleShape>
+    <socketConnector Id="8f149584-ddbd-477d-b135-31789060cafd" edgePoints="[(8.005 : 4.03641732150427); (8.005 : 3.665); (5.95358267849573 : 3.665)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+      <socketUseReferencesSocketMoniker Id="427e156c-c2a4-44bc-9bee-0c1c656d2174" />
+      <nodes>
+        <socketUseShapeMoniker Id="be190466-106d-4949-b11e-a91535eb9623" />
+        <socketShapeMoniker Id="952e3c98-fb86-4259-b72a-f35d5fa6d1c3" />
+      </nodes>
+    </socketConnector>
+  </nestedChildShapes>
+</gadgeteerDSLDiagram>

@@ -60,6 +60,9 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
             }
         }
 
+        public string AppVersion { get { return App.Version; } }
+
+
         private async void EnsureDevicesCollection()
         {
             await _devices.Attach(_dm.Devices);
