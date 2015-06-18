@@ -15,7 +15,7 @@ namespace CerbuinoNetFirmataApp {
     
     public partial class Program : Gadgeteer.Program {
         
-        /// <summary>The USB-Serial module using socket 1 of the mainboard.</summary>
+        /// <summary>The USB-Serial module using socket 2 of the mainboard.</summary>
         private Gadgeteer.Modules.GHIElectronics.USBSerial usbSerial;
         
         /// <summary>This property provides access to the Mainboard API. This is normally not necessary for an end user program.</summary>
@@ -40,7 +40,7 @@ namespace CerbuinoNetFirmataApp {
         }
         
         private void InitializeModules() {
-            this.usbSerial = new GTM.GHIElectronics.USBSerial(1);
+            this.usbSerial = new GTM.GHIElectronics.USBSerial(2);
         }
     }
 }

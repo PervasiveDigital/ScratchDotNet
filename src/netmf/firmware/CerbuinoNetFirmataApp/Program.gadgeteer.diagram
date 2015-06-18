@@ -19,20 +19,20 @@
     <commentBoxShape Id="02343bc2-a257-4230-9fdc-877b925fcd4d" absoluteBounds="0.5, 3.125, 1.75, 1.375">
       <commentMoniker Id="8aeec903-b748-4a44-9a4b-cee2241ae46c" />
     </commentBoxShape>
-    <moduleShape Id="fa6ec8b1-4940-4782-9da2-76b9c9a47de4" absoluteBounds="7.4, 3.96, 1.1811023622047245, 1.0385826771653544">
-      <moduleMoniker Id="84aff70b-c380-49fe-a4ff-31465a170938" />
+    <moduleShape Id="e418ee6b-402e-478b-afd2-398aac65a15d" absoluteBounds="8.14, 5.26, 1.1811023622047245, 1.0385826771653544">
+      <moduleMoniker Id="ff562f87-55ec-4940-ad7d-a097e34e1286" />
       <relativeChildShapes />
       <nestedChildShapes>
-        <socketUseShape Id="be190466-106d-4949-b11e-a91535eb9623" absoluteBounds="7.8800000000000008, 4, 0.25, 0.25">
-          <socketUseMoniker Id="178fc1d6-0d00-44e4-8312-af0e4c29be9f" />
+        <socketUseShape Id="1f7a6b77-abbc-4063-a9d0-9c1e2e3d48dc" absoluteBounds="8.620000000000001, 5.3, 0.25, 0.25">
+          <socketUseMoniker Id="ff38fcac-687a-487b-975f-841666f945fb" />
         </socketUseShape>
       </nestedChildShapes>
     </moduleShape>
-    <socketConnector Id="8f149584-ddbd-477d-b135-31789060cafd" edgePoints="[(8.005 : 4.03641732150427); (8.005 : 3.665); (5.95358267849573 : 3.665)]" fixedFrom="Algorithm" fixedTo="Algorithm">
-      <socketUseReferencesSocketMoniker Id="427e156c-c2a4-44bc-9bee-0c1c656d2174" />
+    <socketConnector Id="62b85b64-45b6-471d-8b9a-03b3b9b94cc6" edgePoints="[(8.745 : 5.33641732150427); (8.745 : 4.225); (5.95358267849573 : 4.225)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+      <socketUseReferencesSocketMoniker Id="9861cae4-caf4-4ee2-9d66-bd85394cb663" />
       <nodes>
-        <socketUseShapeMoniker Id="be190466-106d-4949-b11e-a91535eb9623" />
-        <socketShapeMoniker Id="952e3c98-fb86-4259-b72a-f35d5fa6d1c3" />
+        <socketUseShapeMoniker Id="1f7a6b77-abbc-4063-a9d0-9c1e2e3d48dc" />
+        <socketShapeMoniker Id="e5f4ae5a-1314-45b2-9f73-8530f1545b01" />
       </nodes>
     </socketConnector>
   </nestedChildShapes>
