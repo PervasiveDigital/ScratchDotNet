@@ -130,6 +130,8 @@
     <Compile Include="Common\Logger.cs" />
     <Compile Include="Common\ObservableViewCollection.cs" />
     <Compile Include="Common\RelayCommand.cs" />
+    <Compile Include="Firmata\CircularBuffer.cs" />
+    <Compile Include="Firmata\FirmataEngine.cs" />
     <Compile Include="Server\DeviceService.cs" />
     <Compile Include="Server\DeviceServer.cs" />
     <Compile Include="Server\IDeviceService.cs" />

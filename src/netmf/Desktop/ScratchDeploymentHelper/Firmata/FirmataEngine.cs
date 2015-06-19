@@ -1,4 +1,4 @@
-//
+﻿//
 // Copyright (c) 2015 Pervasive Digital LLC.  All rights reserved.
 // 
 // Protocol engine code based on the Arduino version found at https://github.com/firmata
@@ -11,16 +11,16 @@
 // 
 
 using System;
-using Microsoft.SPOT;
+using System.IO.Ports;
 using System.Threading;
 using System.Text;
 
-namespace PervasiveDigital.Firmata.Runtime
+namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
 {
-    public class FirmataService : IDisposable
+    public class FirmataEngine : IDisposable
     {
         // we intend to maintain compatibility with the main protocol implementation found at : https://github.com/firmata
-        public enum FirmataProtocolVersion
+        private enum FirmataProtocolVersion
         {
             Major = 2,
             Minor = 4,
@@ -91,47 +91,31 @@ namespace PervasiveDigital.Firmata.Runtime
         };
         private const int TOTAL_PIN_MODES = 11;
 
-        private readonly IBoardDefinition _board;
-        private ICommunicationChannel[] _channels;
-        private CircularBuffer _input = new CircularBuffer(256, 1, 256);
+        private SerialPort _port;
+        private CircularBuffer<byte> _input = new CircularBuffer<byte>(256, 1, 256);
         private AutoResetEvent _haveDataEvent = new AutoResetEvent(false);
         private int _cbInputMessage;
         private byte[] _inputMessage = new byte[MaxInputSize];
 
 
-        public FirmataService(string appName, int appMajorVersion, int appMinorVersion, IBoardDefinition board, params ICommunicationChannel[] channels)
+        public FirmataEngine(string portName)
         {
-            _board = board;
-            _channels = channels;
-
-            foreach (var channel in _channels)
-            {
-                channel.DataReceived += channel_DataReceived;
-            }
-
-            this.AppName = appName;
-            this.AppMajorVersion = appMajorVersion;
-            this.AppMinorVersion = appMinorVersion;
+            _port = new SerialPort(portName, 115200, Parity.None, 8, StopBits.One);
+            _port.DataReceived += _port_DataReceived;
+            _port.Open();
 
             new Thread(() => { ProcessReceivedData(); }).Start();
-
-            BlinkVersion();
-            SendVersion();
-            SendVersionAsSysEx();
         }
 
-        ~FirmataService()
+        ~FirmataEngine()
         {
             Dispose();
         }
 
         public void Dispose()
         {
-            foreach (var channel in _channels)
-            {
-                channel.DataReceived -= channel_DataReceived;
-            }
-            _channels = null;
+            _port.DataReceived -= _port_DataReceived;
+            _port.Close();
         }
 
         #region Public Interface
@@ -194,10 +178,12 @@ namespace PervasiveDigital.Firmata.Runtime
 
         #endregion
 
-        void channel_DataReceived(object sender, byte[] data)
+        void _port_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            if (data != null && data.Length > 0)
+            if (e.EventType == SerialData.Chars && _port.BytesToRead > 0)
             {
+                var data = new byte[_port.BytesToRead];
+                _port.Read(data, 0, data.Length);
                 _input.Put(data);
                 _haveDataEvent.Set();
             }
@@ -240,19 +226,19 @@ namespace PervasiveDigital.Firmata.Runtime
                             switch (multiByteCommand)
                             {
                                 case (byte)CommandCode.ANALOG_MESSAGE:
-                                    _board.ProcessAnalogMessage(multiByteChannel, _inputMessage[0] << 7 | _inputMessage[1]);
+                                    //_board.ProcessAnalogMessage(multiByteChannel, _inputMessage[0] << 7 | _inputMessage[1]);
                                     break;
                                 case (byte)CommandCode.DIGITAL_MESSAGE:
-                                    _board.ProcessDigitalMessage(multiByteChannel, _inputMessage[0] << 7 | _inputMessage[1]);
+                                    //_board.ProcessDigitalMessage(multiByteChannel, _inputMessage[0] << 7 | _inputMessage[1]);
                                     break;
                                 case (byte)CommandCode.SET_PIN_MODE:
-                                    _board.SetPinMode(_inputMessage[1], _inputMessage[0]);
+                                    //_board.SetPinMode(_inputMessage[1], _inputMessage[0]);
                                     break;
                                 case (byte)CommandCode.REPORT_ANALOG:
-                                    _board.ReportAnalog(multiByteChannel, _inputMessage[0]);
+                                    //_board.ReportAnalog(multiByteChannel, _inputMessage[0]);
                                     break;
                                 case (byte)CommandCode.REPORT_DIGITAL:
-                                    _board.ReportDigital(multiByteChannel, _inputMessage[0]);
+                                    //_board.ReportDigital(multiByteChannel, _inputMessage[0]);
                                     break;
                             }
                         }
@@ -293,7 +279,7 @@ namespace PervasiveDigital.Firmata.Runtime
                             parsingSysex = false;
                             _cbInputMessage = 0;
                             Array.Clear(_inputMessage, 0, _inputMessage.Length);
-                            _board.Reset();
+                            //_board.Reset();
                             break;
                         case (byte)CommandCode.REPORT_VERSION:
                             SendVersion();
@@ -333,31 +319,12 @@ namespace PervasiveDigital.Firmata.Runtime
                         j++;
                     }
                     var str = ConvertToString(_inputMessage, j);
-                    _board.ProcessStringMessage(str);
+                    //.ProcessStringMessage(str);
                     break;
                 default:
-                    _board.ProcessExtendedMessage(_inputMessage, _cbInputMessage);
+                    //_board.ProcessExtendedMessage(_inputMessage, _cbInputMessage);
                     break;
             }
-        }
-
-        private void BlinkVersion()
-        {
-            BlinkVersionPin((int)FirmataProtocolVersion.Major, 40, 210);
-            Thread.Sleep(250);
-            BlinkVersionPin((int)FirmataProtocolVersion.Minor, 40, 210);
-            Thread.Sleep(125);
-        }
-
-        private void BlinkVersionPin(int count, int onInterval, int offInterval)
-        {
-            for (int i = 0; i < count; i++)
-            {
-                Thread.Sleep(offInterval);
-                _board.VersionIndicatorLed(true);
-                Thread.Sleep(onInterval);
-                _board.VersionIndicatorLed(false);
-            } 
         }
 
         private void SendVersion()
@@ -404,10 +371,7 @@ namespace PervasiveDigital.Firmata.Runtime
 
         private void Send(byte[] data)
         {
-            foreach (var c in _channels)
-            {
-                c.Send(data);
-            }
+            _port.Write(data, 0, data.Length);
         }
 
         public static String ConvertToString(Byte[] byteArray)

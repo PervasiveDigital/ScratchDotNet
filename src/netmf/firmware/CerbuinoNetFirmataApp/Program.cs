@@ -25,8 +25,6 @@ namespace CerbuinoNetFirmataApp
         // This method is run when the mainboard is powered up or reset.   
         void ProgramStarted()
         {
-            Debug.Print("Program Started");
-
             _board = new CerbuinoBoard(Mainboard);
             //TODO: Read config values to find out if we have a USB serial adapter and on which port? do we have a serial-capable Bee? Do we have an ethernet port?
             //  Construct the comms channels on that basis.  For now, its hardcoded for serial usb on port 1, and with ethernet
