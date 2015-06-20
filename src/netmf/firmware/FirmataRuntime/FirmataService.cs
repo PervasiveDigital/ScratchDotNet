@@ -91,15 +91,23 @@ namespace PervasiveDigital.Firmata.Runtime
         };
         private const int TOTAL_PIN_MODES = 11;
 
-        private readonly IBoardDefinition _board;
+        private IBoardDefinition _board;
         private ICommunicationChannel[] _channels;
         private CircularBuffer _input = new CircularBuffer(256, 1, 256);
         private AutoResetEvent _haveDataEvent = new AutoResetEvent(false);
         private int _cbInputMessage;
         private byte[] _inputMessage = new byte[MaxInputSize];
+        private byte[] _versionBuffer = null;
 
 
-        public FirmataService(string appName, int appMajorVersion, int appMinorVersion, IBoardDefinition board, params ICommunicationChannel[] channels)
+        public FirmataService(string appName, int appMajorVersion, int appMinorVersion)
+        {
+            this.AppName = appName;
+            this.AppMajorVersion = appMajorVersion;
+            this.AppMinorVersion = appMinorVersion;
+        }
+
+        public void Open(IBoardDefinition board, params ICommunicationChannel[] channels)
         {
             _board = board;
             _channels = channels;
@@ -108,10 +116,6 @@ namespace PervasiveDigital.Firmata.Runtime
             {
                 channel.DataReceived += channel_DataReceived;
             }
-
-            this.AppName = appName;
-            this.AppMajorVersion = appMajorVersion;
-            this.AppMinorVersion = appMinorVersion;
 
             new Thread(() => { ProcessReceivedData(); }).Start();
 
@@ -136,9 +140,43 @@ namespace PervasiveDigital.Firmata.Runtime
 
         #region Public Interface
 
-        public string AppName { get; set; }
-        public int AppMajorVersion { get; set; }
-        public int AppMinorVersion { get; set; }
+        public void Announce()
+        {
+            SendVersionAsSysEx();
+        }
+
+        private string _appName;
+        public string AppName
+        {
+            get { return _appName; }
+            set
+            {
+                _appName = value;
+                _versionBuffer = null;
+            }
+        }
+
+        private int _appMajorVersion;
+        public int AppMajorVersion
+        {
+            get { return _appMajorVersion; }
+            set
+            {
+                _appMajorVersion = value;
+                _versionBuffer = null;
+            }
+        }
+
+        private int _appMinorVersion;
+        public int AppMinorVersion
+        {
+            get { return _appMinorVersion; }
+            set
+            {
+                _appMinorVersion = value;
+                _versionBuffer = null;
+            }
+        }
 
         public void SendAnalogValue(byte pin, int value)
         {
@@ -367,30 +405,32 @@ namespace PervasiveDigital.Firmata.Runtime
 
         private void SendVersionAsSysEx()
         {
-            // I would prefer to do this directly into 'buffer', but the output length is difficult to predict for strings with foreign chars
-            var name = Encoding.UTF8.GetBytes(this.AppName);
-
-            // beginsysex + command + fwmsjor + fwminor + appmajor + appminor + name + zero + endsysex
-            var len = 8 + 2 * name.Length;
-            var buffer = new byte[len];
-            Array.Clear(buffer, 0, buffer.Length);
-
-            buffer[0] = (byte)CommandCode.START_SYSEX;
-            buffer[1] = (byte)CommandCode.REPORT_FIRMWARE;
-            buffer[2] = (byte)FirmataProtocolVersion.Major;
-            buffer[3] = (byte)FirmataProtocolVersion.Minor;
-            buffer[4] = (byte)AppMajorVersion;
-            buffer[5] = (byte)AppMinorVersion;
-
-            // send each byte of the name as two bytes
-            for (var i = 0 ; i<name.Length ; ++i)
+            if (_versionBuffer == null)
             {
-                buffer[2 * i + 6] = (byte)(name[i] & 0x7f);
-                buffer[2 * i + 7] = (byte)((name[i] >> 7) & 0x7f);
-            }
-            buffer[buffer.Length - 1] = (byte)CommandCode.END_SYSEX;
+                // I would prefer to do this directly into 'buffer', but the output length is difficult to predict for strings with foreign chars
+                var name = Encoding.UTF8.GetBytes(this.AppName);
 
-            Send(buffer);
+                // beginsysex + command + fwmsjor + fwminor + appmajor + appminor + name + zero + endsysex
+                var len = 8 + 2 * name.Length;
+                _versionBuffer = new byte[len];
+                Array.Clear(_versionBuffer, 0, _versionBuffer.Length);
+
+                _versionBuffer[0] = (byte)CommandCode.START_SYSEX;
+                _versionBuffer[1] = (byte)CommandCode.REPORT_FIRMWARE;
+                _versionBuffer[2] = (byte)FirmataProtocolVersion.Major;
+                _versionBuffer[3] = (byte)FirmataProtocolVersion.Minor;
+                _versionBuffer[4] = (byte)AppMajorVersion;
+                _versionBuffer[5] = (byte)AppMinorVersion;
+
+                // send each byte of the name as two bytes
+                for (var i = 0; i < name.Length; ++i)
+                {
+                    _versionBuffer[2 * i + 6] = (byte)(name[i] & 0x7f);
+                    _versionBuffer[2 * i + 7] = (byte)((name[i] >> 7) & 0x7f);
+                }
+                _versionBuffer[_versionBuffer.Length - 1] = (byte)CommandCode.END_SYSEX;
+            }
+            Send(_versionBuffer);
         }
 
         private void SendCodeChannelAndValue(byte code, byte channel, int value)

@@ -67,6 +67,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
@@ -91,9 +92,9 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MFDeployEngine, Version=4.3.1.0, Culture=neutral, PublicKeyToken=2670f5f21e7f4192, processorArchitecture=x86">
+    <Reference Include="Microsoft.SPOT.Debugger, Version=4.3.1.0, Culture=neutral, PublicKeyToken=2670f5f21e7f4192, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\Microsoft .NET Micro Framework\v4.3\Tools\MFDeployEngine.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\Microsoft .NET Micro Framework\v4.3\Tools\Microsoft.SPOT.Debugger.dll</HintPath>
     </Reference>
     <Reference Include="Ninject, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Ninject.3.2.2.0\lib\net45-full\Ninject.dll</HintPath>
@@ -132,6 +133,25 @@
     <Compile Include="Common\RelayCommand.cs" />
     <Compile Include="Firmata\CircularBuffer.cs" />
     <Compile Include="Firmata\FirmataEngine.cs" />
+    <Compile Include="MFDeploy\MFAppDeploy.cs" />
+    <Compile Include="MFDeploy\MFConfigHelper.cs" />
+    <Compile Include="MFDeploy\MFCRC.cs" />
+    <Compile Include="MFDeploy\MFCryptoWrapper.cs" />
+    <Compile Include="MFDeploy\MFDeploy.cs" />
+    <Compile Include="MFDeploy\MFDevice.cs" />
+    <Compile Include="MFDeploy\MFExceptions.cs" />
+    <Compile Include="MFDeploy\MFKeyConfig.cs" />
+    <Compile Include="MFDeploy\MFNetworkConfig.cs" />
+    <Compile Include="MFDeploy\MFPlugin.cs" />
+    <Compile Include="MFDeploy\MFPlugInExceptions.cs" />
+    <Compile Include="MFDeploy\MFPortDefinition.cs" />
+    <Compile Include="MFDeploy\MFSslKeyConfig.cs" />
+    <Compile Include="MFDeploy\MFUsbConfig.cs" />
+    <Compile Include="MFDeploy\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Server\DeviceService.cs" />
     <Compile Include="Server\DeviceServer.cs" />
     <Compile Include="Server\IDeviceService.cs" />
@@ -190,9 +210,16 @@
     <Content Include="Assets\Scratch\Generic\js\scratchdotnet.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <EmbeddedResource Include="MFDeploy\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>Microsoft.NetMicroFramework.Tools.MFDeployTool.Engine.Properties</CustomToolNamespace>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <Content Include="Assets\Scratch\BrainPad\BrainPad.s2e">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

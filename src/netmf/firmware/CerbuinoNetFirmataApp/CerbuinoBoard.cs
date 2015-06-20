@@ -8,10 +8,12 @@ namespace CerbuinoNetFirmataApp
 {
     public class CerbuinoBoard : IBoardDefinition
     {
-        private Mainboard _mb;
+        private readonly FirmataService _firmata;
+        private readonly Mainboard _mb;
 
-        public CerbuinoBoard(Mainboard mb)
+        public CerbuinoBoard(FirmataService firmata, Mainboard mb)
         {
+            _firmata = firmata;
             _mb = mb;
         }
 
