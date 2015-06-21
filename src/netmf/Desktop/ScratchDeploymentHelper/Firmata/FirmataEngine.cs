@@ -91,6 +91,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
         };
         private const int TOTAL_PIN_MODES = 11;
 
+        private string _portName;
         private SerialPort _port;
         private CircularBuffer<byte> _input = new CircularBuffer<byte>(256, 1, 256);
         private AutoResetEvent _haveDataEvent = new AutoResetEvent(false);
@@ -100,11 +101,34 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
 
         public FirmataEngine(string portName)
         {
-            _port = new SerialPort(portName, 115200, Parity.None, 8, StopBits.One);
-            _port.DataReceived += _port_DataReceived;
-            _port.Open();
+            _portName = portName;
+        }
 
-            new Thread(() => { ProcessReceivedData(); }).Start();
+        public bool Open()
+        {
+            bool result = false;
+            try
+            {
+                _port = new SerialPort(_portName, 115200, Parity.None, 8, StopBits.One);
+                _port.DataReceived += _port_DataReceived;
+                _port.Open();
+
+                new Thread(() => { ProcessReceivedData(); }).Start();
+
+                result = true;
+            }
+            catch
+            {
+                result = false;
+            }
+            return result;
+        }
+
+        public void Close()
+        {
+            _port.DataReceived -= _port_DataReceived;
+            _port.Close();
+            //TODO: Kill receive thread
         }
 
         ~FirmataEngine()
@@ -114,8 +138,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
 
         public void Dispose()
         {
-            _port.DataReceived -= _port_DataReceived;
-            _port.Close();
+            Close();
         }
 
         #region Public Interface

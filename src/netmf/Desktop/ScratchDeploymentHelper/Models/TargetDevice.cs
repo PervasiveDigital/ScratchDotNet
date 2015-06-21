@@ -10,22 +10,38 @@ using PervasiveDigital.Scratch.DeploymentHelper.Firmata;
 namespace PervasiveDigital.Scratch.DeploymentHelper.Models
 {
     public enum DeviceType { NetMf, Firmata, Both }
-    public enum DeviceState { Untagged, Tagged, RunningFirmata }
 
     public class TargetDevice
     {
         private MFPortDefinition _port;
+        private MFDevice _device;
         private FirmataEngine _firmata;
-        private Guid _deviceGuid = Guid.Empty;
+        private Guid _deviceId = Guid.Empty;
+        private DeviceType _type;
 
-        public TargetDevice(MFPortDefinition port)
+        public TargetDevice(MFPortDefinition port, MFDevice device)
         {
             _port = port;
+            _device = device;
+            _type = DeviceType.NetMf;
+        }
+
+        public TargetDevice(MFPortDefinition port, MFDevice device, Guid id)
+        {
+            _port = port;
+            _device = device;
+            _deviceId = id;
+            _type = DeviceType.NetMf;
         }
 
         public TargetDevice(FirmataEngine firmata)
         {
             _firmata = firmata;
+        }
+
+        public DeviceType DeviceType
+        {
+            get { return _type; }
         }
 
         public MFPortDefinition NetMfPortDefinition
@@ -51,13 +67,20 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
 
         public Guid Id
         {
-            get { return _deviceGuid; }
-            set { _deviceGuid = value; }
+            get { return _deviceId; }
+            set { _deviceId = value; }
         }
 
         public TransportType Transport { get { return _port.Transport; } }
         public string Name { get { return _port.Name; } }
         public string Port { get { return _port.Port; } }
+
+        private void SetDeviceId(Guid id)
+        {
+            var buffer = id.ToByteArray();
+            var config = new MFConfigHelper(_device);
+            config.WriteConfig("S4NID", buffer);
+        }
 
     }
 }

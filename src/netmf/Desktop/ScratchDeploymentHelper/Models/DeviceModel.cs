@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 using Microsoft.NetMicroFramework.Tools.MFDeployTool.Engine;
 using PervasiveDigital.Scratch.DeploymentHelper.Common;
+using PervasiveDigital.Scratch.DeploymentHelper.Firmata;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper.Models
 {
@@ -50,15 +51,34 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
                 {
                     var id = GetDeviceId(device);
 
-                    //if (id==Guid.Empty)
-                    //{
-                    //    SetDeviceId(device, Guid.NewGuid());
-                    //    id = GetDeviceId(device);
-                    //}
-                    //if (!_devices.Any(x => x.Name == item.Name && x.Transport == item.Transport && x.Port == item.Port))
-                    //{
-                    //    _devices.Add(new TargetDevice(item));
-                    //}
+                    if (id == Guid.Empty)
+                    {
+                        // an untagged netmf device which may or may not be running firmata code
+                        if (!_devices.Any(x => x.Name == item.Name && x.Transport == item.Transport && x.Port == item.Port))
+                        {
+                            _devices.Add(new TargetDevice(item, device));
+                        }
+                    }
+                    else
+                    {
+                        if (!_devices.Any(x => x.Id == id))
+                        {
+                            _devices.Add(new TargetDevice(item, device, id));
+                        }
+                    }
+                }
+                else
+                {
+                    // device is null - maybe we have us a serial port here
+                    if (item.Transport == TransportType.Serial)
+                    {
+                        var serPortName = item.Port.Replace("\\\\.\\", "");
+
+                        var engine = new FirmataEngine(serPortName);
+                        if (engine.Open())
+                        {
+                        }
+                    }
                 }
             }
             // Remove items that have disappeared
