@@ -253,7 +253,6 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
-    <Content Include="Content\Images\Boards\GHI\BrainPad.jpg" />
     <Content Include="DesktopApplication\publish.html" />
     <Content Include="DesktopApplication\setup.exe" />
     <Content Include="favicon.ico" />
@@ -366,6 +365,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Content\Images\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
