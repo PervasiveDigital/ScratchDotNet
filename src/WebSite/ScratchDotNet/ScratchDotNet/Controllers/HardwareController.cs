@@ -4,26 +4,29 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
+using Microsoft.WindowsAzure.Storage.Table;
+
 using ScratchDotNet.Models;
 
 namespace ScratchDotNet.Controllers
 {
     public class HardwareController : Controller
     {
+        private readonly AzureStorageContext _storage;
+
+        public HardwareController(AzureStorageContext storage)
+        {
+            _storage = storage;
+        }
+
         // GET: Hardware
         public ActionResult Index()
         {
-            return View(new List<ManufacturerEntity>(new[] { 
-                new ManufacturerEntity("GHI Electronics")
-                {
-                    WebSite = "https://www.ghielectronics.com/"
-                },
-                new ManufacturerEntity("Molecule.Net")
-                {
-                    WebSite = "http://www.getmolecule.net/"
-                }
-            }
-            ));
+            var manufacturers = _storage.ManufacturersTable;
+            TableQuery<ManufacturerEntity> query = new TableQuery<ManufacturerEntity>();
+            var manufList = manufacturers.ExecuteQuery(query);
+
+            return View(manufList);
         }
 
         // GET: Hardware/Details/5
