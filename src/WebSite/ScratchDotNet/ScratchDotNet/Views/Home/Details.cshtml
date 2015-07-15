@@ -3,5 +3,35 @@
     ViewBag.Title = "Details";
 }
 
-<h2>Details</h2>
+<h2>@ViewBag.Title</h2>
 
+<div class="well">
+        This section is under construction. We will be adding images and diagrams to improve this section
+</div>
+
+<h3>How it Works</h3>
+<p>Scratch for .Net consists of three software components that work together to allow the MIT Scratch programming environment to work with .Net Micro Framework boards.</p>
+
+<h4>MIT Scratch</h4>
+<p>
+    The MIT Scratch program is available in two versions - an online version and a desktop version. Currently, Scratch for .Net only supports the desktop version of MIT scratch.
+    In the future, we will support the online version too. The desktop version of scratch is downloaded and installed locally on your computer and it requires a Gateway program
+    in order to communicate with your .Net Micro Framework board.
+</p>
+
+<h4>The Scratch for .Net Gateway</h4>
+<p>
+    The Gateway program serves three purposes 1) To install the correct firmware on your .Net Micro Framework board; 2) To allow you to configure your board if it
+    has options, like Gadgeteer peripherals; and 3) to act as an intermediary when the desktop version of Scratch needs to communicate with
+    your .Net Micro Framework board. When you start the Gateway program, it will detect your board and offer to install the firmware if needed, and it will make sure that the correct
+    programming blocks are available in your Scratch projects.
+</p>
+
+<h4>The Scratch for .Net Firmware</h4>
+<p>
+    Normally, you won't have to think about this one, because it is managed automatically.  In order for MIT Scratch to use your .Net Micro Framework board, Scratch needs to be able 
+    to send commands to the board and the board needs to be able to send messages to Scratch. That means we need a special program running on your .Net Micro Framework board. 
+    That program (the firmware) is not something you will normally need to think about because the Gateway program will install it on your board and manage the connection with the MIT Scratch program
+    automatically. However, if you have a .Net Micro Framework board that is not supported by one of the standard firmware images, you do have the option of building Scratch for .Net-compatible
+    firmware from source and installing that firmware manually.
+</p>

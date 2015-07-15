@@ -34,7 +34,7 @@
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
                     <li>@Html.ActionLink("About", "About", "Home")</li>
-                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                    <li>@Html.ActionLink("Forum", "Forum", "Home")</li>
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>
@@ -44,7 +44,7 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; @DateTime.Now.Year - Scratch for .Net Micro Framework</p>
+            <p>&copy; @DateTime.Now.Year - Pervasive Digital LLC</p>
         </footer>
     </div>
 
@@ -95,7 +95,6 @@
                 }
             });
         });
-
     });
     </script>
 

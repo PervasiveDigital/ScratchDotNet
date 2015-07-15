@@ -230,6 +230,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\HardwareController.cs" />
+    <Compile Include="Controllers\SoftwareController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -334,7 +335,7 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
-    <Content Include="Views\Home\Contact.cshtml" />
+    <Content Include="Views\Home\Forum.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
     <Content Include="Views\Account\ConfirmEmail.cshtml" />
@@ -360,6 +361,8 @@
     <Content Include="Views\Hardware\Index.cshtml" />
     <Content Include="Views\Home\GettingStarted.cshtml" />
     <Content Include="Views\Documentation\Index.cshtml" />
+    <Content Include="Views\Software\Gateway.cshtml" />
+    <Content Include="Views\Software\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

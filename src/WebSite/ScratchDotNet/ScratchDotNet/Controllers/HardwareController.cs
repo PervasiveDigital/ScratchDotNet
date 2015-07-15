@@ -30,9 +30,13 @@ namespace ScratchDotNet.Controllers
         }
 
         // GET: Hardware/Details/5
-        public ActionResult Details(int id)
+        public ActionResult Details(string id)
         {
-            return View();
+            var products = _storage.ProductsTable;
+            var query = new TableQuery<ProductEntity>().Where(TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal, id));
+            var item = products.ExecuteQuery(query);
+
+            return View(item);
         }
 
         // GET: Hardware/Create

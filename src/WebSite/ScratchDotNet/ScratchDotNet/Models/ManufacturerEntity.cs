@@ -9,8 +9,11 @@ namespace ScratchDotNet.Models
 {
     public class ManufacturerEntity : TableEntity
     {
+        private readonly AzureStorageContext _storage;
+
         public ManufacturerEntity()
         {
+            _storage = (AzureStorageContext)System.Web.Mvc.DependencyResolver.Current.GetService(typeof(AzureStorageContext));
         }
 
         public ManufacturerEntity(string manufName)
@@ -29,19 +32,9 @@ namespace ScratchDotNet.Models
         {
             get
             {
-                return new[] { 
-                    new ProductEntity(this.Name, "BrainPad")
-                    {
-                        Blocks = "Thermometer, accelerometer, buttons, touch, speaker, display, lights, servo, motor, GPIO, Serial",
-                        Description = "", 
-                        GenericFWSupport = true, CustomFWSupport = true,
-                        ScratchOnlineSupport = true, ScratchOfflineSupport = true,
-                        ImageFooter = "The BrainPad was specifically created for education and is well supported by Scratch for .Net with custom firmware and custom Scratch blocks that provide access to the BrainPad's sensors and actuators.", 
-                        ProductImageUrl = "https://s4netus.blob.core.windows.net/s4netproductimages/BrainPad.jpg", 
-                        ProductName = "BrainPad",
-                        ProductLink = "https://www.ghielectronics.com/catalog/product/536"
-                    }
-                };
+                var products = _storage.ProductsTable;
+                var query = new TableQuery<ProductEntity>().Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, this.RowKey));
+                return products.ExecuteQuery(query);
             }
         }
     }

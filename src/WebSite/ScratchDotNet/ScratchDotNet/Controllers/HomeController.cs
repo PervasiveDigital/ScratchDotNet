@@ -15,14 +15,14 @@ namespace ScratchDotNet.Controllers
 
         public ActionResult About()
         {
-            ViewBag.Message = "Your application description page.";
+            ViewBag.Message = "Scratch for .Net Micro Framework";
 
             return View();
         }
 
-        public ActionResult Contact()
+        public ActionResult Forum()
         {
-            ViewBag.Message = "Your contact page";
+            ViewBag.Message = "Scratch for .Net Forums";
 
             return View();
         }
@@ -30,26 +30,6 @@ namespace ScratchDotNet.Controllers
         public ActionResult Details()
         {
             ViewBag.Message = "Technical Overview page";
-
-            return View();
-        }
-
-        public ActionResult Hardware()
-        {
-            ViewBag.Message = "Compatible Hardware";
-
-            return View();
-        }
-        public ActionResult GettingStarted()
-        {
-            ViewBag.Message = "Getting Started";
-
-            return View();
-        }
-
-        public ActionResult Documentation()
-        {
-            ViewBag.Message = "Documentation Home Page";
 
             return View();
         }

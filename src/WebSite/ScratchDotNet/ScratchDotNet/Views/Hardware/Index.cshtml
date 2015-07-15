@@ -7,16 +7,10 @@
 <h2>Hardware</h2>
 
 <p>
-    Scratch for .Net Micro Framework consists of three software pieces : the firmware that runs on your .Net Micro Framework (.NetMF) device, the Scratch program from MIT,
-    and an optional desktop program that can prepare your .Net device by installing the correct firmware, and which acts as a software gateway for the
-    desktop (offline) version of the Scratch programming environment. What this means for choosing hardware is that you must install firmware on your .NetMF device so that
-    Scratch can talk to your .NetMF device.
-</p>
-
-<p>
-    We provide firmware images that should work with any .NetMF device running .Net Micro Framework version 4.3 QFE2 or above. We provide a generic firmware image that should work
-    on any modern .NetMF board, plus customized firmware for boards with special capabilities (like the GHI Electronics BrainPad and Gadgeteer Boards). The Desktop Gateway program
-    will help you select the best firmware for your board.
+    Scratch for .Net Micro Framework requires that you run Scratch for .Net firmware on your .Net Micro Framework device, which means your hardware and our firmware must be compatible.
+    We provide a generic firmware image that should work on any recent .NetMF board, and we also provide custom firmware for some boards with special capabilities (like the 
+    GHI Electronics BrainPad and Gadgeteer Boards). If your board is in the list of compatible hardware below, then the @Html.ActionLink("Scratch for .Net Gateway","Gateway", "Software") program will automatically
+    install the correct firmware for you. If your board is not listed, see the <a href="#BYOF">Building Your Own Firmware</a> section below.
 </p>
 
 <h2>Compatible Hardware</h2>
@@ -35,6 +29,7 @@
                 <div class="container">
                     <h4><a href="@mfg.WebSite" target="_blank">Visit web site</a></h4>
                 </div>
+                @{ var prodnum = 0; }
                 @foreach (var prod in mfg.Products)
                 {
                     <div class="col-md-4">
@@ -44,15 +39,15 @@
                         </a>
                         <div class="row">
                             <div class="col-md-4">
-                                <b>Supported:</b>
+                                <b>Scratch FW :</b>
                             </div>
                             <div class="col-md-8">
                                 @if (prod.CustomFWSupport)
                                 {
                                     @: Custom
                                     if (prod.GenericFWSupport)
-                                    { 
-                                        @: ,<nbsp/>
+                                    {
+                                        @: ,<nbsp />
                                     }
                                 }
                                 @if (prod.GenericFWSupport)
@@ -79,9 +74,14 @@
                         </div>
                         <br />
                         <p>
-                            @prod.ImageFooter
+                            @prod.Description
                         </p>
                     </div>
+                    ++prodnum;
+                    if ((prodnum % 3) == 0)
+                    {
+                        <div class="row"></div>
+                    }
                 }
             </div>
         </div>
@@ -90,11 +90,21 @@
     }
 </div>
 
-<h2>Creating Custom Firmware</h2>
+<h2>Gadgeteer Support</h2>
+<p>
+    Gadgeteer is a pluggable hardware technology created by Microsoft and supported across numerous vensors. The Gadgeteer architecture allows you to plug in many different 
+    types of sensors and actuators. Scratch for .Net supports Gadgeteer hardware on compatible boards. Special firmware is used to access the Gadgeteer peripheral devices.
+    If you see "Gadgeteer" listed in the "Blocks" for a given hardware device above, then special configuration assistance will be available
+    in the gateway program to help you configure your board (and to tell Scratch which Gadgeteer devices you have), and special Scratch blocks will be available withing the
+    Scratch editor for programming your Gadgeteer peripherals.
+</p>
+
+<a name="BYOF"></a>
+<h2>Building Your Own Firmware</h2>
 <p>
     If we don't offer firmware for your .NetMF board and your board has special features that are not covered by the generic firmware, or if you want to support older or newer versions
     of .Net Micro Framework, you can build your own firmware.
-    The source code is located on github in the <a href="https://github.com/martincalsyn/ScratchDotNet">ScratchDotNet</a> project. Feel free to download or fork the code.
+    The source code is located on github in the <a href="https://github.com/martincalsyn/ScratchDotNet" target="_blank">ScratchDotNet</a> project. Feel free to download or fork the code.
     Pull requests are welcomed if you wish to contribute your firmware additions or other changes back to the Scratch for .Net community. Scratch for .Net is a non-commercial, not-for-profit,
     open source software project. Your contributions will help others gain more from their Scratch experience on .Net Micro Framework hardware.
 </p>
