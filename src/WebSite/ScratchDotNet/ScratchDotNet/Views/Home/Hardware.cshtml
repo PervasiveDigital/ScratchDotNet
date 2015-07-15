@@ -1,0 +1,47 @@
+﻿
+@{
+    ViewBag.Title = "Hardware";
+}
+
+<h2>Hardware</h2>
+
+<p>Scratch for .Net Micro Framework consists of three software pieces : the firmware that runs on your .Net Micro Framework (.NetMF) device, the Scratch program from MIT,
+    and an optional desktop program that can prepare your .Net device by installing the correct firmware, and which acts as a software gateway for the 
+    desktop (offline) version of the Scratch programming environment. What this means for choosing hardware is that you must install firmware on your .NetMF device so that
+    Scratch can talk to your .NetMF device.</p>
+
+<p>We provide firmware images that should work with any .NetMF device running .Net Micro Framework version 4.3 QFE2 or above. We provide a generic firmware image that should work
+    on any modern .NetMF board, plus customized firmware for boards with special capabilities (like the GHI Electronics BrainPad and Gadgeteer Boards). The Desktop Gateway program
+    will help you select the best firmware for your board.</p>
+
+<h2>Compatible Hardware</h2>
+<p>The following boards have been tested with Scratch for .Net Micro Framework and may support additional features that are accessible through the Scratch for .Net Micro Framework
+    firmware.  Other boards and boards from other manufacturers should also work, using the generic Scratch for .NetMF firmware. Click on a manufacturer to see the supported boards.</p>
+
+<div class="row">
+    <div class="span4 collapse-group">
+        <a class="btn" data-toggle="collapse" data-target="#ghi"><h3>GHI Electronics</h3></a>
+        <div class="collapse" id="ghi">
+            <div class="col-md-4">
+
+                <a href="~/Content/Images/Boards/GHI/BrainPad.jpg" data-toggle="lightbox" data-title="A random title" data-footer="A custom footer text">
+                    <img class="img-responsive" src="~/Content/Images/Boards/GHI/BrainPad.jpg" />
+                </a>
+
+            </div>
+            <div class="col-md-4">
+                Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.
+            </div>
+            <div class="col-md-4">
+                Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.
+            </div>
+        </div>
+    </div>
+</div>
+
+<h2>Creating Custom Firmware</h2>
+<p>If we don't offer firmware for your .NetMF board and your board has special features that are not covered by the generic firmware, or if you want to support older or newer versions 
+    of .Net Micro Framework, you can build your own firmware.
+    The source code is located on github in the <a href="https://github.com/martincalsyn/ScratchDotNet">ScratchDotNet</a> project. Feel free to download or fork the code.
+    Pull requests are welcomed if you wish to contribute your firmware additions or other changes back to the Scratch for .Net community. Scratch for .Net is a non-commercial, not-for-profit,
+    open source software project. Your contributions will help others gain more from their Scratch experience on .Net Micro Framework hardware.</p>

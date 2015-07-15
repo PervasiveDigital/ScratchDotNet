@@ -3,11 +3,11 @@
 }
 
 <div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">Scratch for .Net (scratch4.net) is free software that allows you to use the <a href="http://scratch.mit/edu">MIT Scratch</a> programming
+    <h1>Scratch for .Net</h1>
+    <p class="lead">Scratch for .Net (scratch4.net) is free software that allows you to use the <a href="http://scratch.mit.edu">MIT Scratch</a> programming
     environment with .Net Micro Framwork micro-controller boards.  Please note that this site is under active development and is far from complete
     at this time.</p>
-    <p><a href="http://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+    <p><a href="@Url.Action("Details")", class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
 </div>
 
 <div class="row">
@@ -17,7 +17,7 @@
             You'll need a micro controller board that runs the .Net Micro Framework. Click the 'Learn More' button
             for a list of vendors and compatible boards.
         </p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301865">Learn More &raquo;</a></p>
+        <p><a class="btn btn-default" href="@Url.Action("Hardware")">Learn More &raquo;</a></p>
     </div>
     <div class="col-md-4">
         <h2>Get Software</h2>
@@ -25,7 +25,7 @@
             Install the Scratch offline editor and the Scratch4.Net Gateway program on your Windows system and you're
             all set. Click 'Download' for more information and links to these two programs.
         </p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301866">Download &raquo;</a></p>
+        <p><a class="btn btn-default" href="@Url.Action("GettingStarted")">Download &raquo;</a></p>
     </div>
     <div class="col-md-4">
         <h2>Have Fun!</h2>
@@ -34,6 +34,6 @@
             input devices and use them to control real-world output through displays and digital, analog and PWM outputs.
             Click below to access the Scratch4.Net documentation and sample programs.
         </p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
+        <p><a class="btn btn-default" href="@Url.Action("Index", "Documentation")">Learn more &raquo;</a></p>
     </div>
 </div>

@@ -22,7 +22,34 @@ namespace ScratchDotNet.Controllers
 
         public ActionResult Contact()
         {
-            ViewBag.Message = "Your contact page.";
+            ViewBag.Message = "Your contact page";
+
+            return View();
+        }
+
+        public ActionResult Details()
+        {
+            ViewBag.Message = "Technical Overview page";
+
+            return View();
+        }
+
+        public ActionResult Hardware()
+        {
+            ViewBag.Message = "Compatible Hardware";
+
+            return View();
+        }
+        public ActionResult GettingStarted()
+        {
+            ViewBag.Message = "Getting Started";
+
+            return View();
+        }
+
+        public ActionResult Documentation()
+        {
+            ViewBag.Message = "Documentation Home Page";
 
             return View();
         }
