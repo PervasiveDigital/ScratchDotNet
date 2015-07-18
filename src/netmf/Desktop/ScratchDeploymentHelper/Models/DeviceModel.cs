@@ -45,52 +45,57 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
             UpdateNetmfDeviceList();
         }
 
+        private AsyncLock _firmataDeviceListLock = new AsyncLock();
+
         private async void UpdateFirmataDeviceList()
         {
-            // Treat serial ports as firmata first, deployable targets secondly
-            // Deployment usually happens on USB and firmata is always found on serial,
-            //   so making this presumption speeds things up.
-            var serialPorts = SerialPort.GetPortNames();
-            foreach (var portname in serialPorts)
+            using (var releaser = await _firmataDeviceListLock.LockAsync())
             {
-                // only probe if we don't already have this port registered
-                if (_devices.Any(x => x is FirmataTargetDevice && ((FirmataTargetDevice)x).DisplayName == portname))
-                    continue;
+                // Treat serial ports as firmata first, deployable targets secondly
+                // Deployment usually happens on USB and firmata is always found on serial,
+                //   so making this presumption speeds things up.
+                var serialPorts = SerialPort.GetPortNames();
+                foreach (var portname in serialPorts)
+                {
+                    // only probe if we don't already have this port registered
+                    if (_devices.Any(x => x is FirmataTargetDevice && ((FirmataTargetDevice)x).DisplayName == portname))
+                        continue;
 
-                bool probeSuccessful = false;
-                var engine = new FirmataEngine(portname);
-                try
-                {
-                    await engine.ProbeAndOpen();
-                    var fwVers = await engine.GetFullFirmwareVersion();
-                    Debug.WriteLine("Found on {0} : App:'{1}' app version v{2} protocol version v{3}", portname, fwVers.Name, fwVers.AppVersion, fwVers.Version);
-                    probeSuccessful = true;
-                }
-                catch
-                {
-                    probeSuccessful = false;
-                }
-                if (probeSuccessful)
-                {
-                    lock (_devices)
+                    bool probeSuccessful = false;
+                    var engine = new FirmataEngine(portname);
+                    try
                     {
-                        _devices.Add(new FirmataTargetDevice(portname, engine));
+                        await engine.ProbeAndOpen();
+                        var fwVers = await engine.GetFullFirmwareVersion();
+                        Debug.WriteLine("Found on {0} : App:'{1}' app version v{2} protocol version v{3}", portname, fwVers.Name, fwVers.AppVersion, fwVers.Version);
+                        probeSuccessful = true;
                     }
-                }
-            }
-
-            // Remove items that have disappeared
-            foreach (var knownItem in _devices.ToArray())
-            {
-                if (knownItem is FirmataTargetDevice)
-                {
-                    var item = (FirmataTargetDevice)knownItem;
-                    if (!serialPorts.Any(x => x == item.DisplayName))
+                    catch
+                    {
+                        probeSuccessful = false;
+                    }
+                    if (probeSuccessful)
                     {
                         lock (_devices)
                         {
-                            knownItem.Dispose();
-                            _devices.Remove(knownItem);
+                            _devices.Add(new FirmataTargetDevice(portname, engine));
+                        }
+                    }
+                }
+
+                // Remove items that have disappeared
+                foreach (var knownItem in _devices.ToArray())
+                {
+                    if (knownItem is FirmataTargetDevice)
+                    {
+                        var item = (FirmataTargetDevice)knownItem;
+                        if (!serialPorts.Any(x => x == item.DisplayName))
+                        {
+                            lock (_devices)
+                            {
+                                knownItem.Dispose();
+                                _devices.Remove(knownItem);
+                            }
                         }
                     }
                 }
