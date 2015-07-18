@@ -133,6 +133,7 @@
     <Compile Include="Common\RelayCommand.cs" />
     <Compile Include="Common\TaskExtensions.cs" />
     <Compile Include="Firmata\CircularBuffer.cs" />
+    <Compile Include="Firmata\Exceptions.cs" />
     <Compile Include="Firmata\FirmataEngine.cs" />
     <Compile Include="MFDeploy\MFAppDeploy.cs" />
     <Compile Include="MFDeploy\MFConfigHelper.cs" />

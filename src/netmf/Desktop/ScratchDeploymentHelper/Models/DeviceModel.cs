@@ -9,6 +9,7 @@ using Microsoft.NetMicroFramework.Tools.MFDeployTool.Engine;
 using PervasiveDigital.Scratch.DeploymentHelper.Common;
 using PervasiveDigital.Scratch.DeploymentHelper.Firmata;
 using System.IO.Ports;
+using System.Diagnostics;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper.Models
 {
@@ -22,7 +23,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
             _deploy = new MFDeploy();
             _deploy.OnDeviceListUpdate += _deploy_OnDeviceListUpdate;
             // This is slow and needs to run in the background
-            UpdateDeviceList();
+            Task.Run(() => UpdateDeviceList());
         }
 
         public void Dispose()
@@ -38,7 +39,13 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
 
         public ObservableCollection<TargetDevice> Devices { get { return _devices; } }
 
-        private async void UpdateDeviceList()
+        private void UpdateDeviceList()
+        {
+            UpdateFirmataDeviceList();
+            UpdateNetmfDeviceList();
+        }
+
+        private async void UpdateFirmataDeviceList()
         {
             // Treat serial ports as firmata first, deployable targets secondly
             // Deployment usually happens on USB and firmata is always found on serial,
@@ -46,9 +53,24 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
             var serialPorts = SerialPort.GetPortNames();
             foreach (var portname in serialPorts)
             {
+                // only probe if we don't already have this port registered
+                if (_devices.Any(x => x is FirmataTargetDevice && ((FirmataTargetDevice)x).DisplayName == portname))
+                    continue;
+
+                bool probeSuccessful = false;
                 var engine = new FirmataEngine(portname);
-                var probeSuccess = await engine.Probe();
-                if (probeSuccess)
+                try
+                {
+                    await engine.ProbeAndOpen();
+                    var fwVers = await engine.GetFullFirmwareVersion();
+                    Debug.WriteLine("Found on {0} : App:'{1}' app version v{2} protocol version v{3}", portname, fwVers.Name, fwVers.AppVersion, fwVers.Version);
+                    probeSuccessful = true;
+                }
+                catch
+                {
+                    probeSuccessful = false;
+                }
+                if (probeSuccessful)
                 {
                     lock (_devices)
                     {
@@ -57,44 +79,88 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
                 }
             }
 
-            // This call is painfully slow
-            var portlist = _deploy.DeviceList.Cast<MFPortDefinition>().ToArray();
-
-            // Add new items
-            foreach (var item in portlist)
+            // Remove items that have disappeared
+            foreach (var knownItem in _devices.ToArray())
             {
-                if (item.Transport == TransportType.Serial)
+                if (knownItem is FirmataTargetDevice)
                 {
-                    var serPortName = item.Port.Replace("\\\\.\\", "");
+                    var item = (FirmataTargetDevice)knownItem;
+                    if (!serialPorts.Any(x => x == item.DisplayName))
+                    {
+                        lock (_devices)
+                        {
+                            knownItem.Dispose();
+                            _devices.Remove(knownItem);
+                        }
+                    }
+                }
+            }
+        }
 
-                    // If this is a serial port that we did not mark as a firmata device
-                    //   earlier, then maybe it is a deployable target.
-                    if (!_devices.Any(x => x.DisplayName == serPortName))
-                    { 
+        // These vars are used to make sure that we queue up at most one more mf device update
+        // These updates are super slow and the change event fires often meaning that we were getting
+        //    lots of nested updates queued up.  The logic around these vars will insure that we never
+        //    queue up more than one more update beyond what we are doing right now.
+        private bool _fUpdateInProgress = false;
+        private bool _fNeedToUpdate = false;
+
+        private void UpdateNetmfDeviceList()
+        {
+            if (_fUpdateInProgress)
+            {
+                _fNeedToUpdate = true;
+                return;
+            }
+
+            _fUpdateInProgress = true;
+            do
+            {
+                _fNeedToUpdate = false;
+
+                // This call is painfully slow
+                var portlist = _deploy.DeviceList.Cast<MFPortDefinition>().ToArray();
+
+                // Add new items
+                foreach (var item in portlist)
+                {
+                    if (item.Transport == TransportType.Serial)
+                    {
+                        //var serPortName = item.Port.Replace("\\\\.\\", "");
+
+                        //if (_devices.Any(x => x is FirmataTargetDevice && ((FirmataTargetDevice)x).DisplayName == serPortName))
+                        //    continue;
+
+                        //// If this is a serial port that we did not mark as a firmata device
+                        ////   earlier, then maybe it is a deployable target.
+                        //if (!_devices.Any(x => x.DisplayName == serPortName))
+                        //{
+                        //    AddDeployableTarget(item);
+                        //}
+                    }
+                    else
+                    {
                         AddDeployableTarget(item);
                     }
                 }
-                else
-                {
-                    AddDeployableTarget(item);
-                }
-            }
 
-            // Remove items that have disappeared
-            //foreach (var knownItem in _devices.ToArray())
-            //{
-            //    if (knownItem is MfTargetDevice)
-            //    {
-            //        var item = (MfTargetDevice)knownItem;
-            //        if (!portlist.Any(x => x.Name == item.Name && x.Transport == item.Transport && (x.Port == item.Port || x.Port.Replace("\\\\.\\", "") == item.Port)))
-            //        {
-            //            lock (_devices)
-            //            {
-            //                _devices.Remove(knownItem);
-            //            }
-            //        }
-            //    }
-            //}
+                // Remove items that have disappeared
+                foreach (var knownItem in _devices.ToArray())
+                {
+                    if (knownItem is MfTargetDevice)
+                    {
+                        var item = (MfTargetDevice)knownItem;
+                        if (!portlist.Any(x => x.Name == item.Name && x.Transport == item.Transport && x.Port == item.Port))
+                        {
+                            lock (_devices)
+                            {
+                                knownItem.Dispose();
+                                _devices.Remove(knownItem);
+                            }
+                        }
+                    }
+                }
+            } while (_fNeedToUpdate);
+            _fUpdateInProgress = false;
         }
 
         private void AddDeployableTarget(MFPortDefinition item)
@@ -112,15 +178,9 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
             }
         }
 
-        private void UpdateFirmataDeviceList()
-        {
-            // Open each serial port and probe for a firmata board
-            
-        }
-
         void _deploy_OnDeviceListUpdate(object sender, EventArgs e)
         {
-            UpdateDeviceList();
+            Task.Run(() => UpdateDeviceList());
         }
 
         private MFDevice ConnectToNetmfDevice(MFPortDefinition port)

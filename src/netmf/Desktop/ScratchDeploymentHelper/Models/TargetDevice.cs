@@ -30,7 +30,11 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
 
         public override void Dispose()
         {
-            _device.Dispose();
+            if (_device != null)
+            {
+                _device.Dispose();
+                _device = null;
+            }
         }
 
         public MFPortDefinition NetMfPortDefinition
@@ -75,8 +79,11 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
 
         public override void Dispose()
         {
-            _firmata.Dispose();
-            _firmata = null;
+            if (_firmata != null)
+            {
+                _firmata.Dispose();
+                _firmata = null;
+            }
         }
 
         public override string DisplayName

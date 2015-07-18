@@ -173,14 +173,12 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
             return result;
         }
 
-        public async Task<bool> Probe()
+        public async Task ProbeAndOpen()
         {
             var probeRates = new int[] { 115200, 57600, 19200, 9600 };
-            var result = false;
-
+            bool success = false;
             foreach (var rate in probeRates)
             {
-                bool success = false;
                 try
                 {
                     if (!Open(rate))
@@ -195,12 +193,16 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
 
                         try
                         {
-                            var version = await RequestVersion();
+                            var version = await GetFirmataVersion();
+                            if (version.Major < (int)FirmataProtocolVersion.Major ||
+                                (version.Major == (int)FirmataProtocolVersion.Major && version.Minor < (int)FirmataProtocolVersion.Minor))
+                                throw new UnsupportedFirmataVersionException(new Version((int)FirmataProtocolVersion.Major, (int)FirmataProtocolVersion.Minor), version);
+
                             success = true;
                         }
                         catch (TimeoutException)
                         {
-                            success = true;
+                            success = false;
                         }
                     } while (!success && --retries > 0);
                 }
@@ -214,12 +216,13 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
                 //   is at the right baud rate and is ready for use.
                 if (success)
                 {
-                    result = true;
                     break;
                 }
             }
-
-            return result;
+            if (!success)
+            {
+                throw new FirmataNotFoundException();
+            }
         }
 
         public void Close()
@@ -285,16 +288,36 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
 
         public void SendString(byte command, string s)
         {
-            var data = Encoding.UTF8.GetBytes(s);
+            var strdata = Encoding.UTF8.GetBytes(s);
+            var buffer = new byte[strdata.Length * 2];
+
+            // send each byte of the name as two bytes
+            for (var i = 0; i < strdata.Length; ++i)
+            {
+                buffer[2 * i + 2] = (byte)(strdata[i] & 0x7f);
+                buffer[2 * i + 3] = (byte)((strdata[i] >> 7) & 0x7f);
+            }
+
+            SendSysex(command, buffer, 0, buffer.Length);
+        }
+
+        public void SendSysex(byte command)
+        {
+            Send(new byte[] { (byte)CommandCode.START_SYSEX, command, (byte)CommandCode.END_SYSEX });
+        }
+
+        public void SendSysex(byte command, byte[] data)
+        {
             SendSysex(command, data, 0, data.Length);
         }
 
         public void SendSysex(byte command, byte[] data, int start, int len)
         {
-            var buffer = new byte[2 + len * 2];
+            var buffer = new byte[3 + len];
             buffer[0] = (byte)CommandCode.START_SYSEX;
-            Array.Copy(data, start, buffer, 1, len);
-            buffer[buffer.Length-1] = (byte)CommandCode.END_SYSEX;
+            buffer[1] = command;
+            Array.Copy(data, start, buffer, 2, len);
+            buffer[buffer.Length - 1] = (byte)CommandCode.END_SYSEX;
             Send(buffer);
         }
 
@@ -431,6 +454,10 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
                 case (byte)CommandCode.REPORT_VERSION:
                     SendVersionAsSysEx();
                     break;
+                case (byte)CommandCode.REPORT_FIRMWARE:
+                    var key = ComputeCommandKey((byte)CommandCode.START_SYSEX, (byte)CommandCode.REPORT_FIRMWARE);
+                    CompleteTask(key, _inputMessage, 0 , _cbInputMessage);
+                    break;
                 case (byte)CommandCode.STRING_DATA:
                     int bufferLength = (_cbInputMessage - 1) / 2;
                     int i = 1;
@@ -454,11 +481,18 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
             }
         }
 
-        private async Task<Version> RequestVersion(int timeout = DefaultTimeout)
+        public async Task<Version> GetFirmataVersion(int timeout = DefaultTimeout)
         {
             Send(new byte[] { (byte)CommandCode.REPORT_VERSION });
             var response = await Expect(timeout, (byte)CommandCode.REPORT_VERSION);
             return new Version(response[1], response[2]);
+        }
+
+        public async Task<FirmwareVersion> GetFullFirmwareVersion(int timeout = DefaultTimeout)
+        {
+            SendSysex((byte)CommandCode.REPORT_VERSION);
+            var response = await Expect(timeout, (byte)CommandCode.START_SYSEX, (byte)CommandCode.REPORT_FIRMWARE);
+            return new FirmwareVersion(response);
         }
 
         private Task<byte[]> Expect(int timeout, params byte[] prefix)
@@ -504,14 +538,21 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
 
         private void CompleteTask(int key, params byte[] result)
         {
+            CompleteTask(key, result, 0, result.Length);
+        }
+
+        private void CompleteTask(int key, byte[] data, int start, int len)
+        {
             lock (_taskTable)
             {
                 if (_taskTable.ContainsKey(key))
                 {
-                    if (_taskTable[key].Count>0)
+                    if (_taskTable[key].Count > 0)
                     {
                         var tr = _taskTable[key][0];
                         tr.Timer.Dispose();
+                        var result = new byte[len];
+                        Array.Copy(data, start, result, 0, len);
                         tr.TCS.TrySetResult(result);
                     }
                     RemoveTask(key);
@@ -604,5 +645,26 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
             Encoding.UTF8.GetDecoder().Convert(byteArray, 0, len, chars, 0, len, false, out bytesUsed, out charsUsed, out completed);
             return new string(chars, 0, charsUsed);
         }
+    }
+
+    public class FirmwareVersion
+    {
+        public FirmwareVersion(byte[] data)
+        {
+            this.Version = new Version(data[1], data[2]);
+            this.AppVersion = new Version(data[3], data[4]);
+
+            int len = (data.Length - 5) / 2;
+            var buffer = new byte[len];
+            for (int i = 0 ; i<len ; ++i)
+            {
+                buffer[i] = (byte)((data[2 * i + 5] & 0x7f) | ((data[2 * i + 6] & 0x7f) << 7));
+            }
+            this.Name = Encoding.UTF8.GetString(buffer);
+        }
+
+        public Version Version { get; private set; }
+        public Version AppVersion { get; private set; }
+        public string Name { get; private set; }
     }
 }

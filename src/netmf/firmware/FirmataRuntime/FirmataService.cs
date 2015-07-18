@@ -217,15 +217,35 @@ namespace PervasiveDigital.Firmata.Runtime
 
         public void SendString(byte command, string s)
         {
-            var data = Encoding.UTF8.GetBytes(s);
+            var strdata = Encoding.UTF8.GetBytes(s);
+            var buffer = new byte[strdata.Length * 2];
+
+            // send each byte of the name as two bytes
+            for (var i = 0; i < strdata.Length; ++i)
+            {
+                buffer[2 * i + 2] = (byte)(strdata[i] & 0x7f);
+                buffer[2 * i + 3] = (byte)((strdata[i] >> 7) & 0x7f);
+            }
+
+            SendSysex(command, buffer, 0, buffer.Length);
+        }
+
+        public void SendSysex(byte command)
+        {
+            Send(new byte[] { (byte)CommandCode.START_SYSEX, command, (byte)CommandCode.END_SYSEX });
+        }
+
+        public void SendSysex(byte command, byte[] data)
+        {
             SendSysex(command, data, 0, data.Length);
         }
 
         public void SendSysex(byte command, byte[] data, int start, int len)
         {
-            var buffer = new byte[2 + len * 2];
+            var buffer = new byte[3 + len * 2];
             buffer[0] = (byte)CommandCode.START_SYSEX;
-            Array.Copy(data, start, buffer, 1, len);
+            buffer[1] = command;
+            Array.Copy(data, start, buffer, 2, len);
             buffer[buffer.Length-1] = (byte)CommandCode.END_SYSEX;
             Send(buffer);
         }
