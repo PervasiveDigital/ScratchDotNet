@@ -256,6 +256,7 @@ namespace PervasiveDigital.Firmata.Runtime
                     if (_input.Size == 0)
                         _haveDataEvent.WaitOne();
 
+                    command = 0;
                     byte b = _input.Get();
                     if (parsingSysex)
                     {

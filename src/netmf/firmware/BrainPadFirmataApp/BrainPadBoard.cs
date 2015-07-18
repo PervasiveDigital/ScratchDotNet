@@ -85,12 +85,12 @@ namespace BrainPadFirmataApp
         public void Process()
         {
             // Announce our presence every five seconds
-            var now = DateTime.UtcNow;
-            if ((now - _lastAnnouncement).Seconds > 4)
-            {
-                _firmata.Announce();
-                _lastAnnouncement = now;
-            }
+            //var now = DateTime.UtcNow;
+            //if ((now - _lastAnnouncement).Seconds > 4)
+            //{
+            //    _firmata.Announce();
+            //    _lastAnnouncement = now;
+            //}
 
             CheckDigitalInputs();
         }

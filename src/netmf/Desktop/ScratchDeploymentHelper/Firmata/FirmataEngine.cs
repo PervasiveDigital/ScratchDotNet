@@ -14,6 +14,11 @@ using System;
 using System.IO.Ports;
 using System.Threading;
 using System.Text;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+using PervasiveDigital.Scratch.DeploymentHelper.Common;
+using System.Diagnostics;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
 {
@@ -91,6 +96,15 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
         };
         private const int TOTAL_PIN_MODES = 11;
 
+#if DEBUG
+        // two minutes in debug
+        private const int DefaultTimeout = 120000;
+#else
+        // one second timeout in release code
+        private const int DefaultTimeout = 1000;
+#endif
+
+        private bool _isOpen;
         private string _portName;
         private SerialPort _port;
         private CircularBuffer<byte> _input = new CircularBuffer<byte>(256, 1, 256);
@@ -98,37 +112,122 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
         private int _cbInputMessage;
         private byte[] _inputMessage = new byte[MaxInputSize];
 
+        private class TaskRecord
+        {
+            public TaskRecord(Timer timer, TaskCompletionSource<byte[]> tcs)
+            {
+                this.Timer = timer;
+                this.TCS = tcs;
+            }
+
+            public Timer Timer { get; private set; }
+            public TaskCompletionSource<byte[]> TCS { get; private set; }
+        }
+
+        private readonly Dictionary<int, List<TaskRecord>> _taskTable = new Dictionary<int, List<TaskRecord>>();
 
         public FirmataEngine(string portName)
         {
             _portName = portName;
         }
 
-        public bool Open()
+        public bool Open(int baud = 115200)
         {
+            if (_isOpen)
+                Close();
+
             bool result = false;
             try
             {
-                _port = new SerialPort(_portName, 115200, Parity.None, 8, StopBits.One);
+                _port = new SerialPort(_portName, baud, Parity.None, 8, StopBits.One);
                 _port.DataReceived += _port_DataReceived;
-                _port.Open();
 
-                new Thread(() => { ProcessReceivedData(); }).Start();
+                int openRetries = 5;
+                do
+                {
+                    try
+                    {
+                        _port.Open();
+                    }
+                    catch (System.UnauthorizedAccessException ex)
+                    {
+                        _port.Close();
+                        Debug.WriteLine("SerialPort open failed with exception : " + ex.Message);
+                        Thread.Sleep(1000);
+                    }
+                } while (!_port.IsOpen && --openRetries > 0);
+                
+                if (_port.IsOpen)
+                {
+                    new Thread(() => { ProcessReceivedData(); }).Start();
+                }
 
-                result = true;
+                result = _port.IsOpen;
             }
             catch
             {
                 result = false;
             }
+
+            _isOpen = result;
+            return result;
+        }
+
+        public async Task<bool> Probe()
+        {
+            var probeRates = new int[] { 115200, 57600, 19200, 9600 };
+            var result = false;
+
+            foreach (var rate in probeRates)
+            {
+                bool success = false;
+                try
+                {
+                    if (!Open(rate))
+                        continue;
+
+                    int retries = 3;
+                    do
+                    {
+                        Send(new byte[] { (byte)CommandCode.SYSTEM_RESET });
+                        Send(new byte[] { (byte)CommandCode.SYSTEM_RESET });
+                        Send(new byte[] { (byte)CommandCode.SYSTEM_RESET });
+
+                        try
+                        {
+                            var version = await RequestVersion();
+                            success = true;
+                        }
+                        catch (TimeoutException)
+                        {
+                            success = true;
+                        }
+                    } while (!success && --retries > 0);
+                }
+                finally
+                {
+                    if (!success)
+                        Close();
+                }
+
+                // If we got a successful probe, then return. The session
+                //   is at the right baud rate and is ready for use.
+                if (success)
+                {
+                    result = true;
+                    break;
+                }
+            }
+
             return result;
         }
 
         public void Close()
         {
+            _isOpen = false;
             _port.DataReceived -= _port_DataReceived;
             _port.Close();
-            //TODO: Kill receive thread
+            _haveDataEvent.Set();
         }
 
         ~FirmataEngine()
@@ -226,7 +325,10 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
                 {
                     if (_input.Size == 0)
                         _haveDataEvent.WaitOne();
+                    if (!_isOpen)
+                        break;
 
+                    command = 0;
                     byte b = _input.Get();
                     if (parsingSysex)
                     {
@@ -263,6 +365,10 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
                                 case (byte)CommandCode.REPORT_DIGITAL:
                                     //_board.ReportDigital(multiByteChannel, _inputMessage[0]);
                                     break;
+                                case (byte)CommandCode.REPORT_VERSION:
+                                    var key = ComputeCommandKey((byte)CommandCode.REPORT_VERSION);
+                                    CompleteTask(key, multiByteCommand, _inputMessage[1], _inputMessage[0]);
+                                    break;
                             }
                         }
                     }
@@ -282,6 +388,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
                         case (byte)CommandCode.ANALOG_MESSAGE:
                         case (byte)CommandCode.DIGITAL_MESSAGE:
                         case (byte)CommandCode.SET_PIN_MODE:
+                        case (byte)CommandCode.REPORT_VERSION:
                             dataNeeded = 2;
                             multiByteCommand = command;
                             break;
@@ -303,9 +410,6 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
                             _cbInputMessage = 0;
                             Array.Clear(_inputMessage, 0, _inputMessage.Length);
                             //_board.Reset();
-                            break;
-                        case (byte)CommandCode.REPORT_VERSION:
-                            SendVersion();
                             break;
                         default:
                             break;
@@ -347,6 +451,96 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
                 default:
                     //_board.ProcessExtendedMessage(_inputMessage, _cbInputMessage);
                     break;
+            }
+        }
+
+        private async Task<Version> RequestVersion(int timeout = DefaultTimeout)
+        {
+            Send(new byte[] { (byte)CommandCode.REPORT_VERSION });
+            var response = await Expect(timeout, (byte)CommandCode.REPORT_VERSION);
+            return new Version(response[1], response[2]);
+        }
+
+        private Task<byte[]> Expect(int timeout, params byte[] prefix)
+        {
+            var key = ComputeCommandKey(prefix);
+
+            var tcs = new TaskCompletionSource<byte[]>();
+            var task = tcs.Task;
+
+            if (timeout == 0)
+            {
+                // We've already timed out.
+                tcs.SetException(new TimeoutException());
+                return tcs.Task;
+            }
+
+            var timer = new Timer(state =>
+            {
+                // Recover your state information
+                var myTcs = (TaskCompletionSource<byte[]>)state;
+                // Fault our proxy with a TimeoutException
+                myTcs.TrySetException(new TimeoutException());
+                // Remove the task from the to-do list
+                RemoveTask(key);
+            }, tcs, timeout, Timeout.Infinite);
+
+            AddTask(key, new TaskRecord(timer, tcs));
+
+            return task;
+        }
+
+        private int ComputeCommandKey(params byte[] command)
+        {
+            if (command.Length == 0 || command.Length > 4)
+                throw new ArgumentException("command must be 1-4 bytes", "command");
+            int key = 0;
+            foreach (var b in command)
+            {
+                key = (key << 8) | b;
+            }
+            return key;
+        }
+
+        private void CompleteTask(int key, params byte[] result)
+        {
+            lock (_taskTable)
+            {
+                if (_taskTable.ContainsKey(key))
+                {
+                    if (_taskTable[key].Count>0)
+                    {
+                        var tr = _taskTable[key][0];
+                        tr.Timer.Dispose();
+                        tr.TCS.TrySetResult(result);
+                    }
+                    RemoveTask(key);
+                }
+            }
+        }
+
+        private void AddTask(int key, TaskRecord tr)
+        {
+            lock (_taskTable)
+            {
+                if (!_taskTable.ContainsKey(key))
+                {
+                    _taskTable.Add(key, new List<TaskRecord>());
+                }
+                _taskTable[key].Add(tr);
+            }
+        }
+
+        private void RemoveTask(int key)
+        {
+            lock (_taskTable)
+            {
+                if (_taskTable.ContainsKey(key))
+                {
+                    _taskTable[key].RemoveAt(0);
+                    if (_taskTable[key].Count == 0)
+                        _taskTable.Remove(key);
+                }
             }
         }
 
@@ -410,6 +604,5 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
             Encoding.UTF8.GetDecoder().Convert(byteArray, 0, len, chars, 0, len, false, out bytesUsed, out charsUsed, out completed);
             return new string(chars, 0, charsUsed);
         }
-
     }
 }

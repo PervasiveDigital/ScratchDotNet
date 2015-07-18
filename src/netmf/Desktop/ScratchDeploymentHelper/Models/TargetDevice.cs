@@ -9,50 +9,79 @@ using PervasiveDigital.Scratch.DeploymentHelper.Firmata;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper.Models
 {
-    public enum DeviceType { NetMf, Firmata, Both }
+    public abstract class TargetDevice : IDisposable
+    {
+        public abstract void Dispose();
 
-    public class TargetDevice
+        public abstract string DisplayName { get; }
+    }
+
+    public class MfTargetDevice : TargetDevice
     {
         private MFPortDefinition _port;
         private MFDevice _device;
-        private FirmataEngine _firmata;
         private Guid _deviceId = Guid.Empty;
-        private DeviceType _type;
 
-        public TargetDevice(MFPortDefinition port, MFDevice device)
+        public MfTargetDevice(MFPortDefinition port, MFDevice device)
         {
             _port = port;
             _device = device;
-            _type = DeviceType.NetMf;
         }
 
-        public TargetDevice(MFPortDefinition port, MFDevice device, Guid id)
+        public override void Dispose()
         {
-            _port = port;
-            _device = device;
-            _deviceId = id;
-            _type = DeviceType.NetMf;
-        }
-
-        public TargetDevice(FirmataEngine firmata)
-        {
-            _firmata = firmata;
-        }
-
-        public DeviceType DeviceType
-        {
-            get { return _type; }
+            _device.Dispose();
         }
 
         public MFPortDefinition NetMfPortDefinition
         {
             get { return _port; }
-            set 
+            set
             {
                 if (_port != null)
                     throw new Exception("This device is already bound to a port");
-                _port = value; 
+                _port = value;
             }
+        }
+
+        public TransportType Transport { get { return _port.Transport; } }
+        public string Name { get { return _port.Name; } }
+        public string Port { get { return _port.Port; } }
+
+        public override string DisplayName
+        {
+            get { return this.Name; }
+        }
+
+        private void SetDeviceId(Guid id)
+        {
+            var buffer = id.ToByteArray();
+            var config = new MFConfigHelper(_device);
+            config.WriteConfig("S4NID", buffer);
+        }
+
+    }
+
+    public class FirmataTargetDevice : TargetDevice
+    {
+        private string _name;
+        private FirmataEngine _firmata;
+
+        public FirmataTargetDevice(string name, FirmataEngine firmata)
+        {
+            _name = name;
+            _firmata = firmata;
+        }
+
+        public override void Dispose()
+        {
+            _firmata.Dispose();
+            _firmata = null;
+        }
+
+        public override string DisplayName
+        {
+            get { return _name; }
         }
 
         public FirmataEngine Firmata
@@ -63,23 +92,6 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
                 if (_firmata != null)
                     throw new Exception("This device is already bound to a firmata engine");
             }
-        }
-
-        public Guid Id
-        {
-            get { return _deviceId; }
-            set { _deviceId = value; }
-        }
-
-        public TransportType Transport { get { return _port.Transport; } }
-        public string Name { get { return _port.Name; } }
-        public string Port { get { return _port.Port; } }
-
-        private void SetDeviceId(Guid id)
-        {
-            var buffer = id.ToByteArray();
-            var config = new MFConfigHelper(_device);
-            config.WriteConfig("S4NID", buffer);
         }
 
     }

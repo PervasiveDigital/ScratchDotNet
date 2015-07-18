@@ -20,7 +20,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
             _dispatcher = disp;
         }
 
-        public string Name { get { return _source.Name; } }
+        public string Name { get { return _source.DisplayName; } }
 
         public TargetDevice ViewSource
         {
