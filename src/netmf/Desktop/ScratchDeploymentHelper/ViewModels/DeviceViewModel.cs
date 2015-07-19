@@ -32,7 +32,7 @@ using System.Windows.Threading;
 namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
 {
 
-    public class DeviceViewModel : ViewModelBase,IViewProxy<TargetDevice>
+    public class DeviceViewModel : ViewModelBase, IViewProxy<TargetDevice>
     {
         private TargetDevice _source;
 
@@ -40,17 +40,25 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
         {
         }
 
+        public void Dispose()
+        {
+            _source = null;
+        }
+
         public string Name { get { return _source.DisplayName; } }
 
         public TargetDevice ViewSource
         {
             get { return _source; }
-            set { _source = value; }
+            set 
+            { 
+                _source = value;
+                this.OnViewSourceChanged();
+            }
         }
 
-        public void Dispose()
+        protected virtual void OnViewSourceChanged()
         {
-            _source = null;
         }
     }
 }

@@ -67,6 +67,9 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
             }
             _deviceInfo = _device.MFDeviceInfo;
             _configBytes = ReadConfiguration();
+            OnPropertyChanged("IsFirmataInstalled");
+            OnPropertyChanged("FirmataAppVersion");
+            OnPropertyChanged("FirmataAppName");
         }
 
         public bool IsFirmataInstalled
@@ -101,11 +104,19 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
             }
         }
 
-        private bool _xisFirmataInstalled = false;
-        public bool xIsFirmataInstalled
+        public string FirmataAppName
         {
-            get { return _xisFirmataInstalled; }
-            set { SetProperty(ref _xisFirmataInstalled, value); }
+            get
+            {
+                if (_deviceInfo == null || !_deviceInfo.Valid)
+                    return null;
+                foreach (var item in _deviceInfo.Assemblies)
+                {
+                    if (item.Name.EndsWith("FirmataApp"))
+                        return item.Name;
+                }
+                return null;
+            }
         }
 
         public MFPortDefinition NetMfPortDefinition

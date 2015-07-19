@@ -31,28 +31,48 @@ using PervasiveDigital.Scratch.DeploymentHelper.Models;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
 {
-    public class FirmataTargetDeviceViewModel : ViewModelBase, IViewProxy<FirmataTargetDevice>
+    public class FirmataTargetDeviceViewModel : DeviceViewModel
     {
-        private FirmataTargetDevice _source;
-
         public FirmataTargetDeviceViewModel(Dispatcher disp)
             : base(disp)
         {
-
         }
 
-        public void Dispose()
+        public FirmataTargetDevice Source { get { return (FirmataTargetDevice)this.ViewSource; } }
+
+        public string AppName { get { return this.Source.AppName; } }
+
+        public string AppVersion 
+        { 
+            get 
+            {
+                if (this.Source.AppVersion != null)
+                    return this.Source.AppVersion.ToString();
+                else
+                    return "";
+            }
+        }
+
+        public string ProtocolVersion
         {
-            _source = null;
+            get
+            {
+                if (this.Source.ProtocolVersion != null)
+                    return this.Source.ProtocolVersion.ToString();
+                else
+                    return "";
+            }
         }
-
-        public FirmataTargetDevice ViewSource
+        protected override void OnViewSourceChanged()
         {
-            get { return _source; }
-            set { _source = value; }
+            base.OnViewSourceChanged();
+            this.Source.PropertyChanged += Source_PropertyChanged;
         }
 
-        public string Name { get { return _source.DisplayName; } }
+        void Source_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            this.OnPropertyChanged(e.PropertyName);
+        }
 
     }
 }

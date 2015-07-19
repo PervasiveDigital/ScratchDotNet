@@ -126,6 +126,7 @@
     <Compile Include="Common\AsyncLock.cs" />
     <Compile Include="Common\BindableBase.cs" />
     <Compile Include="Common\CollectionExtensions.cs" />
+    <Compile Include="Common\Converters.cs" />
     <Compile Include="Common\ILogger.cs" />
     <Compile Include="Common\IViewProxy.cs" />
     <Compile Include="Common\Logger.cs" />
@@ -165,6 +166,10 @@
     <Compile Include="ViewModels\DeviceViewModel.cs" />
     <Compile Include="ViewModels\FirmataTargetDeviceViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
+    <Page Include="Themes\Generic.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\DevicePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

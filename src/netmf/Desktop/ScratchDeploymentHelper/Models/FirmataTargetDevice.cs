@@ -40,6 +40,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
         {
             _name = name;
             _firmata = firmata;
+            Task.Run(() => InitializeAsync());
         }
 
         public override void Dispose()
@@ -51,9 +52,38 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
             }
         }
 
+        private async void InitializeAsync()
+        {
+            var version = await _firmata.GetFullFirmwareVersion();
+            this.AppName = version.Name;
+            this.AppVersion = version.AppVersion;
+            this.ProtocolVersion = version.Version;
+        }
+
         public override string DisplayName
         {
             get { return _name; }
+        }
+
+        private string _appName = "";
+        public string AppName
+        {
+            get { return _appName; }
+            set { SetProperty(ref _appName, value); }
+        }
+
+        private Version _appVersion;
+        public Version AppVersion
+        {
+            get { return _appVersion; }
+            set { SetProperty(ref _appVersion, value); }
+        }
+
+        private Version _protocolVersion;
+        public Version ProtocolVersion
+        {
+            get { return _protocolVersion; }
+            set { SetProperty(ref _protocolVersion, value); }
         }
 
         public FirmataEngine Firmata
