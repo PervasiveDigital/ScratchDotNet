@@ -15,6 +15,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FirmataRuntime", "firmware\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CerbuinoNetFirmataApp", "firmware\CerbuinoNetFirmataApp\CerbuinoNetFirmataApp.csproj", "{86FDF73E-9063-41E1-ABC0-44426E670E28}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{F6FFC199-7A79-47DF-B2CE-02FFE81181D7}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\LICENSE = ..\..\LICENSE
+		..\..\README.md = ..\..\README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
