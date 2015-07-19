@@ -154,12 +154,16 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Models\FirmataTargetDevice.cs" />
+    <Compile Include="Models\MfTargetDevice.cs" />
+    <Compile Include="Models\ViewModelBase.cs" />
     <Compile Include="Server\DeviceService.cs" />
     <Compile Include="Server\DeviceServer.cs" />
     <Compile Include="Server\IDeviceService.cs" />
     <Compile Include="ViewModels\DevicePageViewModel.cs" />
     <Compile Include="ViewModels\DevicesPageViewModel.cs" />
     <Compile Include="ViewModels\DeviceViewModel.cs" />
+    <Compile Include="ViewModels\FirmataTargetDeviceViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Page Include="Views\DevicePage.xaml">
       <SubType>Designer</SubType>
@@ -179,6 +183,7 @@
     </Compile>
     <Compile Include="AppModule.cs" />
     <Compile Include="Common\ObservableDictionary.cs" />
+    <Compile Include="ViewModels\MfTargetDeviceViewModel.cs" />
     <Compile Include="Views\DevicePage.xaml.cs">
       <DependentUpon>DevicePage.xaml</DependentUpon>
     </Compile>

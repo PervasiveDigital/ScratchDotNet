@@ -18,14 +18,13 @@ using System.Windows.Threading;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
 {
-    public class DeviceViewModel : IViewProxy<TargetDevice>
+
+    public class DeviceViewModel : ViewModelBase,IViewProxy<TargetDevice>
     {
-        private Dispatcher _dispatcher;
         private TargetDevice _source;
 
-        public DeviceViewModel(Dispatcher disp)
+        public DeviceViewModel(Dispatcher disp) : base(disp)
         {
-            _dispatcher = disp;
         }
 
         public string Name { get { return _source.DisplayName; } }

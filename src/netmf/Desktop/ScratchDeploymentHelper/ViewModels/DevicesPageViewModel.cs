@@ -35,6 +35,8 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
             _view = view;
 
             _devices = new ObservableViewCollection<TargetDevice, DeviceViewModel>(_view.Dispatcher);
+            _devices.ViewMap.Add(typeof(MfTargetDevice), typeof(MfTargetDeviceViewModel));
+            _devices.ViewMap.Add(typeof(FirmataTargetDevice), typeof(FirmataTargetDeviceViewModel));
         }
 
         public ICommand ConnectCommand
