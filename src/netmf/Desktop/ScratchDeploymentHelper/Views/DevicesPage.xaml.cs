@@ -54,7 +54,10 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Views
         private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (e.AddedItems != null && e.AddedItems.Count > 0)
-                this.ViewModel.DeviceSelected((DeviceViewModel)e.AddedItems[0]);
+            {
+                if (e.AddedItems[0] is DeviceViewModel)
+                    this.ViewModel.DeviceSelected((DeviceViewModel)e.AddedItems[0]);
+            }
             else
                 this.ViewModel.DeviceSelected(null);
         }

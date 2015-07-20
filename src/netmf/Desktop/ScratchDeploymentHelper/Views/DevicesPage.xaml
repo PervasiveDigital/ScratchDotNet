@@ -59,7 +59,14 @@
                         </Grid>
                         <!-- Action Panel -->
                         <Grid Grid.Column="2">
-                            <Button Click="Button_Click">Deploy</Button>
+                            <StackPanel>
+                                <TextBlock Margin="10,10,0,0" Style="{StaticResource DeviceTitleStyle}">Choose Firmware Image</TextBlock>
+                                <ComboBox Margin="10,0,10,10">
+                                    <ComboBoxItem>BrainPad</ComboBoxItem>
+                                    <ComboBoxItem>Generic Firmata</ComboBoxItem>
+                                </ComboBox>
+                                <Button Margin="10,5,0,0" Click="Button_Click" Width="150" Height="20">Deploy</Button>
+                            </StackPanel>
                         </Grid>
                     </Grid>
                 </DataTemplate>

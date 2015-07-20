@@ -1,4 +1,25 @@
-﻿using System;
+﻿//-------------------------------------------------------------------------
+//  (c) 2015 Pervasive Digital LLC
+//
+//  This file is part of Scratch for .Net Micro Framework
+//
+//  "Scratch for .Net Micro Framework" is free software: you can 
+//  redistribute it and/or modify it under the terms of the 
+//  GNU General Public License as published by the Free Software 
+//  Foundation, either version 3 of the License, or (at your option) 
+//  any later version.
+//
+//  "Scratch for .Net Micro Framework" is distributed in the hope that
+//  it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+//  warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+//  the GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with "Scratch for .Net Micro Framework". If not, 
+//  see <http://www.gnu.org/licenses/>.
+//
+//-------------------------------------------------------------------------
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,13 +32,13 @@ using Newtonsoft.Json;
 
 using PervasiveDigital.Scratch.Common;
 
-namespace PervasiveDigital.Scratch.Common
+namespace PervasiveDigital.Scratch.DeploymentHelper.Models
 {
     public class FirmwareManager
     {
-        private const string S4NHost = "http://az787340.vo.msecnd.net/";
-        private const string FirmwarePath = "firmware/";
         private const string FirmwareDictionaryFile = "firmware-{0}.{1}.json";
+
+        private readonly LibraryManager _libmgr;
 
         private string _s4nPath;
         private string _fwPath;
@@ -27,8 +48,9 @@ namespace PervasiveDigital.Scratch.Common
         private FirmwareDictionary _firmwareDictionary;
         private object _fwDictLock = new object();
 
-        public FirmwareManager()
+        public FirmwareManager(LibraryManager libmgr)
         {
+            _libmgr = libmgr;
             EnsureDirectoryStructure();
             Task.Run(() => UpdateFirmwareDictionary());
         }
@@ -48,7 +70,7 @@ namespace PervasiveDigital.Scratch.Common
         private async void UpdateFirmwareDictionary()
         {
             var destPath = GetFirmwareDictionaryPath();
-            var uriString = S4NHost + FirmwarePath + GetFirmwareDictionaryFileName();
+            var uriString = Constants.S4NHost + Constants.FirmwarePath + GetFirmwareDictionaryFileName();
             var uri = new Uri(uriString);
 
             var lastWrite = File.GetLastWriteTime(destPath);

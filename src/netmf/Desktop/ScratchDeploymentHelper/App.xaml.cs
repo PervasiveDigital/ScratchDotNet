@@ -45,7 +45,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper
 
         public App()
         {
-            _kernel = new StandardKernel(new AppModule());
+            _kernel = new StandardKernel(new AppModule(), new Scratch.Common.Module());
         }
 
         public static IKernel Kernel { get { return _kernel; } }

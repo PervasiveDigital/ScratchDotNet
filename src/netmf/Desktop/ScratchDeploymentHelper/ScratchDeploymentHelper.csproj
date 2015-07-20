@@ -160,7 +160,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Models\FirmataTargetDevice.cs" />
-    <Compile Include="Models\FirmwareDictionary.cs" />
     <Compile Include="Models\FirmwareManager.cs" />
     <Compile Include="Models\MfTargetDevice.cs" />
     <Compile Include="Models\ViewModelBase.cs" />
@@ -278,6 +277,12 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Scratch.Common\Scratch.Common.csproj">
+      <Project>{82f5725d-ccf9-4501-a0c5-9ea6725faf00}</Project>
+      <Name>Scratch.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
