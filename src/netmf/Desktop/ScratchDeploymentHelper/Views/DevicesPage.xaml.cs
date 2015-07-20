@@ -58,5 +58,10 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Views
             else
                 this.ViewModel.DeviceSelected(null);
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            this.ViewModel.Deploy();
+        }
     }
 }

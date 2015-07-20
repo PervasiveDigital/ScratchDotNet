@@ -21,11 +21,18 @@
 //-------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Collections;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 using Microsoft.NetMicroFramework.Tools.MFDeployTool.Engine;
+using Microsoft.SPOT.Debugger.WireProtocol;
+
+using Ninject;
+
 using PervasiveDigital.Scratch.DeploymentHelper.Firmata;
 using PervasiveDigital.Scratch.DeploymentHelper.Common;
 
@@ -89,6 +96,15 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
             }
         }
 
+        public Version TargetFrameworkVersion
+        {
+            get
+            {
+                if (_deviceInfo == null || !_deviceInfo.Valid)
+                    return null;
+                return _deviceInfo.TargetFrameworkVersion;
+            }
+        }
         public Version FirmataAppVersion
         {
             get
@@ -193,6 +209,57 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
             if (config.IsDeploymentKeyLocked)
                 throw new Exception("Deployment locked");
             config.WriteConfig("S4NCFG", cfg);
+        }
+
+        public IEnumerable<string> GetCompatibleFirmwareImages()
+        {
+            var fwmgr = App.Kernel.Get<FirmwareManager>();
+
+            return null;
+        }
+
+        // from : https://github.com/NETMF/netmf-interpreter/blob/43e9082ed1b7a34b5d2b1b00687d5e75749b2c16/Framework/CorDebug/VsProjectFlavorCfg.cs
+        public void Deploy()
+        {
+            var foo = this.GetCompatibleFirmwareImages();
+            return;
+            var engine = _device.DbgEngine;
+
+            var systemAssemblies = new Hashtable();
+
+            var assms = engine.ResolveAllAssemblies();
+            foreach (var resolvedAssembly in assms)
+            {
+                if ((resolvedAssembly.m_reply.m_flags & Commands.Debugging_Resolve_Assembly.Reply.c_Deployed) == 0)
+                {
+                    systemAssemblies[resolvedAssembly.m_reply.Name.ToLower()] = resolvedAssembly.m_reply.m_version;
+                }
+            }
+
+            //TODO: get list of dependencies
+
+            DeploySystemAssemblies(systemAssemblies);
+
+            var assemblies = new ArrayList();
+
+            var files = Directory.GetFiles("c:\\deploy", "*.pe");
+            foreach (var file in files)
+            {
+                var assmBytes = File.ReadAllBytes(file);
+                Debug.WriteLine("Read {0} bytes from {1}", assmBytes.Length, file);
+                assemblies.Add(assmBytes);
+            }
+
+            //engine.Deployment_Execute(assemblies, true, MessageHandler);
+        }
+
+        private void DeploySystemAssemblies(Hashtable systemAssemblies)
+        {
+        }
+
+        private void MessageHandler(string msg)
+        {
+            Debug.WriteLine(msg);
         }
 
     }

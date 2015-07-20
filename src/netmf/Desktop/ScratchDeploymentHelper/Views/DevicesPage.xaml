@@ -59,7 +59,7 @@
                         </Grid>
                         <!-- Action Panel -->
                         <Grid Grid.Column="2">
-                            
+                            <Button Click="Button_Click">Deploy</Button>
                         </Grid>
                     </Grid>
                 </DataTemplate>

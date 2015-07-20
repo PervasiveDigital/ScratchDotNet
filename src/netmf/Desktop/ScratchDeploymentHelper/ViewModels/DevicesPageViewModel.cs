@@ -102,5 +102,11 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
             _view.NavigationService.Navigate(new DevicePage(device));
         }
 
+        public void Deploy()
+        {
+            if (_selectedDevice!=null && _selectedDevice is MfTargetDeviceViewModel)
+                ((MfTargetDeviceViewModel)_selectedDevice).Deploy();
+        }
+
     }
 }

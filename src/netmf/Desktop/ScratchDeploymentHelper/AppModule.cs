@@ -28,6 +28,7 @@ using System.Threading.Tasks;
 using Ninject.Modules;
 using PervasiveDigital.Scratch.DeploymentHelper.Common;
 using PervasiveDigital.Scratch.DeploymentHelper.Server;
+using PervasiveDigital.Scratch.DeploymentHelper.Models;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper
 {
@@ -40,6 +41,8 @@ namespace PervasiveDigital.Scratch.DeploymentHelper
 
             // The device server
             this.Bind<DeviceServer>().ToSelf().InSingletonScope();
+
+            this.Bind<FirmwareManager>().ToSelf().InSingletonScope();
         }
     }
 }

@@ -65,5 +65,10 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
         {
             this.OnPropertyChanged(e.PropertyName);
         }
+
+        public void Deploy()
+        {
+            this.Source.Deploy();
+        }
     }
 }
