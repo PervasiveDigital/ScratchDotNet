@@ -31,6 +31,9 @@ namespace FirmwareDictionaryTool
                 TargetProductName = "BrainPad",
                 TargetFrameworkVersion = new Version(4,3,1,0),
                 TargetDeviceUsbName = "G30_G30",
+                ClrBuildInfoContains = "GHI Electronics",
+                OEM = 0xff,
+                SKU = 0xffff,
                 ConfigurationExtension = null,
             };
 

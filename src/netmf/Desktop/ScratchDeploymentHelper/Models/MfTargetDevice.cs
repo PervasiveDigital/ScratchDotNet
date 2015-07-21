@@ -35,6 +35,7 @@ using Ninject;
 
 using PervasiveDigital.Scratch.DeploymentHelper.Firmata;
 using PervasiveDigital.Scratch.DeploymentHelper.Common;
+using PervasiveDigital.Scratch.Common;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper.Models
 {
@@ -211,18 +212,21 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
             config.WriteConfig("S4NCFG", cfg);
         }
 
-        public IEnumerable<string> GetCompatibleFirmwareImages()
+        public IEnumerable<FirmwareImage> GetCompatibleFirmwareImages(bool bestMatchesOnly)
         {
+            if (_deviceInfo == null)
+                return new List<FirmwareImage>();
+
             var fwmgr = App.Kernel.Get<FirmwareManager>();
 
-            return null;
+            var candidates = fwmgr.FindCompatibleImages(bestMatchesOnly, _deviceInfo.TargetFrameworkVersion, _port.Name, _deviceInfo.OEM, _deviceInfo.SKU);
+            
+            return candidates;
         }
 
         // from : https://github.com/NETMF/netmf-interpreter/blob/43e9082ed1b7a34b5d2b1b00687d5e75749b2c16/Framework/CorDebug/VsProjectFlavorCfg.cs
         public void Deploy()
         {
-            var foo = this.GetCompatibleFirmwareImages();
-            return;
             var engine = _device.DbgEngine;
 
             var systemAssemblies = new Hashtable();

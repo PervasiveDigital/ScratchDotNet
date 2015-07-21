@@ -21,14 +21,16 @@
 //-------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 using PervasiveDigital.Scratch.DeploymentHelper.Common;
 using PervasiveDigital.Scratch.DeploymentHelper.Models;
 using PervasiveDigital.Scratch.DeploymentHelper.Views;
-using System.Windows.Input;
+using PervasiveDigital.Scratch.Common;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
 {
@@ -37,6 +39,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
         private readonly DevicesPage _view;
         private readonly DeviceModel _dm;
         private readonly ObservableViewCollection<TargetDevice, DeviceViewModel> _devices;
+        private bool _fInitialized = false;
 
         private RelayCommand _connectCommand;
 
@@ -78,17 +81,21 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
         {
             get
             {
-                EnsureDevicesCollection();
+                InitializeCollections();
                 return _devices;
             }
         }
 
         public string AppVersion { get { return App.Version; } }
 
-
-        private async void EnsureDevicesCollection()
+        private async void InitializeCollections()
         {
-            await _devices.Attach(_dm.Devices);
+            if (!_fInitialized)
+            {
+                await _devices.Attach(_dm.Devices);
+
+                _fInitialized = true;
+            }
         }
 
         public void DeviceSelected(DeviceViewModel selected)

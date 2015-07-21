@@ -41,8 +41,6 @@ namespace PervasiveDigital.Scratch.DeploymentHelper
 
             // The device server
             this.Bind<DeviceServer>().ToSelf().InSingletonScope();
-
-            this.Bind<FirmwareManager>().ToSelf().InSingletonScope();
         }
     }
 }

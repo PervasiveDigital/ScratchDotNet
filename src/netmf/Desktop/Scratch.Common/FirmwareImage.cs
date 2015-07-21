@@ -51,6 +51,11 @@ namespace PervasiveDigital.Scratch.Common
         public string AppName { get; set; }
         public string Description { get; set; }
 
+        public string ClrBuildInfoContains { get; set; }
+
+        public int OEM { get; set; }
+        public int SKU { get; set; }
+
         public string TargetManufacturer { get; set; }
         public string TargetProductName { get; set; }
         public string TargetDeviceUsbName { get; set; }

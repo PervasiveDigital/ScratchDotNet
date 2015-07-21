@@ -66,5 +66,14 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Views
         {
             this.ViewModel.Deploy();
         }
+
+        private void AllFirmwareCheckBox_Changed(object sender, RoutedEventArgs e)
+        {
+            if (sender is CheckBox)
+            {
+                var dc = ((CheckBox)sender).DataContext;
+                ((MfTargetDeviceViewModel)dc).PopulateImages();
+            }
+        }
     }
 }

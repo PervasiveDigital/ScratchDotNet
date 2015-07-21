@@ -55,6 +55,32 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
             Task.Run(() => UpdateFirmwareDictionary());
         }
 
+        public IEnumerable<FirmwareImage> FindCompatibleImages(bool bestMatchesOnly, Version targetFrameworkVersion, string usbString, int oem, int sku)
+        {
+            // Start with usb string + OEM + SKU matches, then company matches, then targetframework
+            var candidates = new List<Tuple<FirmwareImage,int>>();
+            foreach (var image in _firmwareDictionary.Images)
+            {
+                int score = 0;
+                // if this doesn't match, then nothing else matters
+                if (image.TargetFrameworkVersion != targetFrameworkVersion)
+                    continue;
+                if (image.TargetDeviceUsbName == usbString)
+                    ++score;
+                if (image.OEM == oem)
+                {
+                    ++score;
+                    if (image.SKU == sku)
+                        ++score;
+                }
+                if (!bestMatchesOnly || score > 0)
+                    candidates.Add(new Tuple<FirmwareImage,int>(image,score));
+            }
+
+            var sorted = candidates.OrderByDescending(x => x.Item2);
+            return sorted.Select(tpl => tpl.Item1).ToList();
+        }
+
         private void EnsureDirectoryStructure()
         {
             var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);

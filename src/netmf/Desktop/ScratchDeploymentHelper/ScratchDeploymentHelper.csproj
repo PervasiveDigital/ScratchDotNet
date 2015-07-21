@@ -170,6 +170,7 @@
     <Compile Include="ViewModels\DevicesPageViewModel.cs" />
     <Compile Include="ViewModels\DeviceViewModel.cs" />
     <Compile Include="ViewModels\FirmataTargetDeviceViewModel.cs" />
+    <Compile Include="ViewModels\FirmwareImageViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Page Include="Themes\Generic.xaml">
       <SubType>Designer</SubType>

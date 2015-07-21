@@ -286,7 +286,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Common
             // block simultaneous accesses that might occur during Attach initialization
             using (var releaser = await _lock.LockAsync())
             {
-                await this.Dispatcher.InvokeAsync(() =>
+                this.Dispatcher.Invoke(() =>
                 {
                     switch (args.Action)
                     {

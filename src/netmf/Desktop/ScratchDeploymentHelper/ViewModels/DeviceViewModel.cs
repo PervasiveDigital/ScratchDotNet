@@ -28,6 +28,8 @@ using System.Threading.Tasks;
 using PervasiveDigital.Scratch.DeploymentHelper.Common;
 using PervasiveDigital.Scratch.DeploymentHelper.Models;
 using System.Windows.Threading;
+using System.Collections.ObjectModel;
+using PervasiveDigital.Scratch.Common;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
 {
