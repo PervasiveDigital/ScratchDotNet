@@ -253,6 +253,8 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\Images\ghi_logo.png" />
+    <Content Include="Content\Images\pdlogo.horiz.png" />
     <Content Include="DesktopApplication\publish.html" />
     <Content Include="DesktopApplication\setup.exe" />
     <Content Include="favicon.ico" />
@@ -264,43 +266,23 @@
     <Content Include="Scripts\ai.0.15.0-build12287.min.js" />
     <Content Include="ApplicationInsights.config" />
     <Content Include="DesktopApplication\ScratchDeploymentHelper.application" />
-    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_7\Assets\Deployments\ScratchTetheredRuntime.pe.deploy" />
-    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_7\Assets\Scratch\BrainPad\BrainPad.s2e.deploy" />
-    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_7\Assets\Scratch\Gadgeteer\js\scratchdotnet.js.deploy" />
-    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_7\Assets\Scratch\Gadgeteer\ScratchDotNet.s2e.deploy" />
-    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_7\Assets\Scratch\Generic\js\scratchdotnet.js.deploy" />
-    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_7\Assets\Scratch\Generic\ScratchDotNet.s2e.deploy" />
-    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_7\MFDeployEngine.dll.deploy" />
-    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_7\Microsoft.SPOT.Debugger.dll.deploy" />
-    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_7\Microsoft.SPOT.Tasks.dll.deploy" />
-    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_7\Ninject.dll.deploy" />
-    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_7\ScratchDeploymentHelper.application" />
-    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_7\ScratchDeploymentHelper.exe.config.deploy" />
-    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_7\ScratchDeploymentHelper.exe.deploy" />
-    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_7\ScratchDeploymentHelper.exe.manifest" />
-    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_7\WinUsbInvoke.dll.deploy" />
-    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_8\Assets\Deployments\ScratchTetheredRuntime.pe.deploy" />
-    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_8\Assets\Scratch\BrainPad\BrainPad.s2e.deploy" />
-    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_8\Assets\Scratch\Gadgeteer\js\scratchdotnet.js.deploy" />
-    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_8\Assets\Scratch\Gadgeteer\ScratchDotNet.s2e.deploy" />
-    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_8\Assets\Scratch\Generic\js\scratchdotnet.js.deploy" />
-    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_8\Assets\Scratch\Generic\ScratchDotNet.s2e.deploy" />
-    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_8\en-US\ScratchDeploymentHelper.resources.dll.deploy" />
-    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_8\MFDeployEngine.dll.deploy" />
-    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_8\Microsoft.SPOT.Debugger.dll.deploy" />
-    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_8\Microsoft.SPOT.Tasks.dll.deploy" />
-    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_8\Ninject.dll.deploy" />
-    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_8\ScratchDeploymentHelper.application" />
-    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_8\ScratchDeploymentHelper.exe.config.deploy" />
-    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_8\ScratchDeploymentHelper.exe.deploy" />
-    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_8\ScratchDeploymentHelper.exe.manifest" />
-    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_8\WinUsbInvoke.dll.deploy" />
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Content\bootstrap-theme.css.map" />
     <Content Include="Content\bootstrap.css.map" />
+    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_12\en-US\ScratchDeploymentHelper.resources.dll.deploy" />
+    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_12\Microsoft.SPOT.Debugger.dll.deploy" />
+    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_12\Microsoft.SPOT.Tasks.dll.deploy" />
+    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_12\Newtonsoft.Json.dll.deploy" />
+    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_12\Ninject.dll.deploy" />
+    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_12\Scratch.Common.dll.deploy" />
+    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_12\ScratchDeploymentHelper.application" />
+    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_12\ScratchDeploymentHelper.exe.config.deploy" />
+    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_12\ScratchDeploymentHelper.exe.deploy" />
+    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_12\ScratchDeploymentHelper.exe.manifest" />
+    <Content Include="DesktopApplication\Application Files\ScratchDeploymentHelper_1_0_0_12\WinUsbInvoke.dll.deploy" />
     <None Include="Properties\PublishProfiles\ScratchDotNet.pubxml" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -365,7 +347,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Content\Images\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
