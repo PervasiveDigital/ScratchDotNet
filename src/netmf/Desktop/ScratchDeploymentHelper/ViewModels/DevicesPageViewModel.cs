@@ -101,7 +101,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
         public void DeviceSelected(DeviceViewModel selected)
         {
             _selectedDevice = selected;
-            _connectCommand.RaiseCanExecuteChanged();
+            ((RelayCommand)this.ConnectCommand).RaiseCanExecuteChanged();
         }
 
         private void Connect(DeviceViewModel device)

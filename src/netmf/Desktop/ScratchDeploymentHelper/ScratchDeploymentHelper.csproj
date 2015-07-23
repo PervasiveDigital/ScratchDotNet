@@ -176,6 +176,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\DeploymentLogWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\DevicePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -195,6 +199,9 @@
     <Compile Include="AppModule.cs" />
     <Compile Include="Common\ObservableDictionary.cs" />
     <Compile Include="ViewModels\MfTargetDeviceViewModel.cs" />
+    <Compile Include="Views\DeploymentLogWindow.xaml.cs">
+      <DependentUpon>DeploymentLogWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\DevicePage.xaml.cs">
       <DependentUpon>DevicePage.xaml</DependentUpon>
     </Compile>

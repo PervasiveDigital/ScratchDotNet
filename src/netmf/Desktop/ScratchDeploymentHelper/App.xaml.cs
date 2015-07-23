@@ -33,6 +33,7 @@ using PervasiveDigital.Scratch.DeploymentHelper.Models;
 using PervasiveDigital.Scratch.DeploymentHelper.Server;
 using System.Deployment.Application;
 using System.Reflection;
+using PervasiveDigital.Scratch.DeploymentHelper.Views;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper
 {
@@ -41,7 +42,8 @@ namespace PervasiveDigital.Scratch.DeploymentHelper
     /// </summary>
     public partial class App : Application
     {
-        public static IKernel _kernel;
+        private static DeploymentLogWindow _logWindow;
+        private static IKernel _kernel;
 
         public App()
         {
@@ -49,6 +51,37 @@ namespace PervasiveDigital.Scratch.DeploymentHelper
         }
 
         public static IKernel Kernel { get { return _kernel; } }
+
+        public static void ShowDeploymentLogWindow()
+        {
+            if (_logWindow == null)
+            {
+                _logWindow = new DeploymentLogWindow();
+                _logWindow.Closed += _logWindow_Closed;
+            }
+            _logWindow.Show();
+            _logWindow.BringIntoView();
+        }
+
+        static void _logWindow_Closed(object sender, EventArgs e)
+        {
+            _logWindow.Closed -= _logWindow_Closed;
+            _logWindow = null;
+        }
+
+        public static void ClearLogWindow()
+        {
+            if (_logWindow != null)
+                _logWindow.Clear();
+        }
+
+        public static void AppendToLogWindow(string msg)
+        {
+            if (_logWindow!=null)
+            {
+                _logWindow.WriteLine(msg);
+            }
+        }
 
         private void Application_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e)
         {

@@ -55,26 +55,37 @@ namespace PervasiveDigital.Scratch.Common
                 Directory.CreateDirectory(_libPath);
         }
 
-        public async Task<string> GetLibrary(Guid id)
+        public string GetLibrary(Guid id, Action<string> mh)
         {
-            var path = Path.Combine(_libPath, id.ToString("N"));
-            bool fDownload = false;
-            if (!Directory.Exists(path))
-                fDownload = true;
-            if (!fDownload)
+            try
+            {
+                var path = Path.Combine(_libPath, id.ToString("N"));
+                bool fDownload = false;
+                if (!Directory.Exists(path))
+                    fDownload = true;
+                if (!fDownload)
+                    return path;
+
+                var packageName = id.ToString("N") + ".zip";
+                
+                mh(string.Format("Downloading {0} ...", packageName));
+
+                var uriString = Constants.S4NHost + Constants.FirmwarePath + packageName;
+                var uri = new Uri(uriString);
+                var tempFile = Path.GetTempFileName();
+                var client = new WebClient();
+                client.DownloadFile(uri, tempFile);
+
+                // unzip where it belongs
+                ZipFile.ExtractToDirectory(tempFile, _libPath);
+
                 return path;
-
-            var packageName = id.ToString("N") + ".zip";
-            var uriString = Constants.S4NHost + Constants.FirmwarePath + packageName;
-            var uri = new Uri(uriString);
-            var tempFile = Path.GetTempFileName();
-            var client = new WebClient();
-            client.DownloadFile(uri, tempFile);
-
-            // unzip where it belongs
-            ZipFile.ExtractToDirectory(tempFile, path);
-
-            return path;
+            }
+            catch (Exception ex)
+            {
+                mh(string.Format("ERROR: failed to download or extract the code library due to an exception : {0}",ex.Message));
+                return null;
+            }
         }
     }
 }

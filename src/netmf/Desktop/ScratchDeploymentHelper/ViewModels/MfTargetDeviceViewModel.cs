@@ -199,7 +199,8 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
         {
             if (this.SelectedFirmware != null)
             {
-                await this.Source.Deploy(this.SelectedFirmware.ViewSource.Id);
+                App.ShowDeploymentLogWindow();
+                await this.Source.Deploy(this.SelectedFirmware.ViewSource.Id, App.AppendToLogWindow);
             }
         }
     }

@@ -36,6 +36,7 @@ using Ninject;
 using PervasiveDigital.Scratch.DeploymentHelper.Firmata;
 using PervasiveDigital.Scratch.DeploymentHelper.Common;
 using PervasiveDigital.Scratch.Common;
+using System.Reflection;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper.Models
 {
@@ -241,12 +242,16 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
         }
 
         // from : https://github.com/NETMF/netmf-interpreter/blob/43e9082ed1b7a34b5d2b1b00687d5e75749b2c16/Framework/CorDebug/VsProjectFlavorCfg.cs
-        public async Task Deploy(Guid imageId)
+        public async Task Deploy(Guid imageId, Action<string> messageHandler)
         {
             var fwmgr = App.Kernel.Get<FirmwareManager>();
             var engine = _device.DbgEngine;
 
-            var systemAssemblies = new Hashtable();
+            var image = fwmgr.GetImage(imageId);
+            messageHandler(string.Format("Deploying {0} to {1}", image.Name, this.Name));
+            messageHandler("");
+
+            var systemAssemblies = new Dictionary<string, Commands.Debugging_Resolve_Assembly.Version>();
 
             var assms = engine.ResolveAllAssemblies();
             foreach (var resolvedAssembly in assms)
@@ -257,34 +262,69 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
                 }
             }
 
-            var assemblyList = await fwmgr.GetAssembliesForImage(imageId, MessageHandler);
+            var assemblyList = await fwmgr.GetAssembliesForImage(imageId, messageHandler);
             if (assemblyList == null || assemblyList.Count == 0)
-                return;
-
-            var assemblies = new ArrayList(assemblyList);
-
-            DeploySystemAssemblies(systemAssemblies);
-
-
-            var files = Directory.GetFiles("c:\\deploy", "*.pe");
-            foreach (var file in files)
             {
-                var assmBytes = File.ReadAllBytes(file);
-                Debug.WriteLine("Read {0} bytes from {1}", assmBytes.Length, file);
-                assemblies.Add(assmBytes);
+                messageHandler("ERROR: Failed to load assemblies for deployment");
+                return;
             }
 
-            engine.Deployment_Execute(assemblies, true, MessageHandler);
+            var assemblies = new ArrayList();
+
+            foreach (var assm in assemblyList)
+            {
+                var assemblyInfo = assm.Item1;
+                var assemblyData = assm.Item2;
+
+                var deployThis = true;
+
+                var name = Path.ChangeExtension(assemblyInfo.Filename, null).ToLower();
+                if (systemAssemblies.ContainsKey(name))
+                {
+                    var deployedVersion = systemAssemblies[name];
+
+                    Assembly temp = Assembly.Load(assemblyData);
+                    Version undeployedVersion = temp.GetName().Version;
+
+                    if (deployedVersion.iMajorVersion == undeployedVersion.Major &&
+                        deployedVersion.iMinorVersion == undeployedVersion.Minor &&
+                        deployedVersion.iBuildNumber == undeployedVersion.Build &&
+                        deployedVersion.iRevisionNumber == undeployedVersion.Revision)
+                    {
+                        deployThis = false;
+                    }
+                    else
+                    {
+                        // Special case - MSCORLIB can't be deployed more than once
+                        if (temp.GetName().Name.ToLower().Contains("mscorlib"))
+                        {
+                            string message = string.Format("ERROR: Cannot deploy the base assembly '{9}', or any of his satellite assemblies, to device - {0} twice. Assembly '{9}' on the device has version {1}.{2}.{3}.{4}, while the program is trying to deploy version {5}.{6}.{7}.{8} ",
+                                this.Name,
+                                deployedVersion.iMajorVersion, deployedVersion.iMinorVersion, deployedVersion.iBuildNumber, deployedVersion.iRevisionNumber,
+                                undeployedVersion.Major, undeployedVersion.Minor, undeployedVersion.Build, undeployedVersion.Revision,
+                                temp.GetName().Name);
+                            messageHandler(message);
+                            return;
+                        }
+                    }
+                }
+
+                if (deployThis)
+                {
+                    long length = (assemblyData.Length + 3) / 4 * 4;
+                    var buffer = new byte[length];
+                    Array.Copy(assemblyData, buffer, assemblyData.Length);
+                    assemblies.Add(buffer);
+                }
+            }
+
+            messageHandler("Deploying assemblies...");
+
+            engine.Deployment_Execute(assemblies, true, (s) => { messageHandler(s); });
         }
 
         private void DeploySystemAssemblies(Hashtable systemAssemblies)
         {
         }
-
-        private void MessageHandler(string msg)
-        {
-            Debug.WriteLine(msg);
-        }
-
     }
 }

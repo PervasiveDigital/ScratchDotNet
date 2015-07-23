@@ -37,11 +37,10 @@ namespace PervasiveDigital.Scratch.Common
 {
     public class FirmwareManager
     {
-        private const string S4NHost = "https://s4netus.blob.core.windows.net/";
-        private const string FirmwarePath = "firmware/";
-        private const string ImagePath = "s4netproductimages/";
         private const string FirmwareDictionaryFile = "firmware-{0}.{1}.json";
         private static Version FirmwareVersion = new Version(1, 0);
+
+        private readonly LibraryManager _libmgr;
 
         private string _s4nPath;
         private string _fwPath;
@@ -51,9 +50,16 @@ namespace PervasiveDigital.Scratch.Common
         private FirmwareDictionary _firmwareDictionary;
         private object _fwDictLock = new object();
 
-        public FirmwareManager()
+        public FirmwareManager(LibraryManager libmgr)
         {
+            _libmgr = libmgr;
             EnsureDirectoryStructure();
+        }
+
+        public FirmwareImage GetImage(Guid imageId)
+        {
+            var image = _firmwareDictionary.Images.FirstOrDefault(x => x.Id == imageId);
+            return image;        
         }
 
         public IEnumerable<FirmwareHost> FindMatchingBoards(Version targetFrameworkVersion, string usbString, string clrBuildInfo, int oem, int sku)
@@ -118,7 +124,7 @@ namespace PervasiveDigital.Scratch.Common
             }
 
             // Read from the network
-            var networkPath = S4NHost + ImagePath + board.ProductImageName;
+            var networkPath = Constants.S4NHost + Constants.ImagePath + board.ProductImageName;
             var buffer = new byte[4096];
             var req = (HttpWebRequest)WebRequest.Create(networkPath);
             using (var response = (HttpWebResponse)await req.GetResponseAsync())
@@ -157,7 +163,7 @@ namespace PervasiveDigital.Scratch.Common
         public async Task UpdateFirmwareDictionary()
         {
             var destPath = GetFirmwareDictionaryPath();
-            var uriString = S4NHost + FirmwarePath + GetFirmwareDictionaryFileName();
+            var uriString = Constants.S4NHost + Constants.FirmwarePath + GetFirmwareDictionaryFileName();
             var uri = new Uri(uriString);
 
             var lastWrite = File.GetLastWriteTime(destPath);
@@ -221,26 +227,23 @@ namespace PervasiveDigital.Scratch.Common
             }
         }
 
-        public delegate void MessageHandler(string msg);
-
-        public async Task<List<byte[]>> GetAssembliesForImage(Guid id, MessageHandler mh)
+        public async Task<List<Tuple<FirmwareAssembly, byte[]>>> GetAssembliesForImage(Guid id, Action<string> mh)
         {
             if (_firmwareDictionary == null)
             {
-                mh("No database of firmware images is available. Connect to the internet and restart this program to download firmware.");
+                mh("ERROR: No database of firmware images is available. Connect to the internet and restart this program to download firmware.");
                 return null;
             }
 
             var image = _firmwareDictionary.Images.FirstOrDefault(x => x.Id == id);
             if (image == null)
             {
-                mh("Firmware image not found");
+                mh("ERROR: Firmware image not found");
                 return null;
             }
 
-            var result = new List<byte[]>();
+            var result = new List<Tuple<FirmwareAssembly, byte[]>>();
 
-            var probed = new HashSet<Guid>();
             foreach (var assemId in image.RequiredAssemblies)
             {
                 var assemblyInfo = _firmwareDictionary.Assemblies.FirstOrDefault(x => x.Id == assemId);
@@ -249,12 +252,32 @@ namespace PervasiveDigital.Scratch.Common
                     mh(string.Format("The firmware database is corrupt. Missing assembly record {0}", assemId.ToString()));
                     return null;
                 }
-                if (!probed.Contains(assemblyInfo.LibraryId))
+                var libPath = _libmgr.GetLibrary(assemblyInfo.LibraryId, mh);
+                if (string.IsNullOrEmpty(libPath))
                 {
-                    //@@@
+                    mh("ERROR: Failed to download library");
+                    return null;
+                }
+
+                byte[] data = null;
+                try
+                {
+                    var path = Path.Combine(
+                        libPath,
+                        assemblyInfo.IsLittleEndian ? "le" : "be",
+                        assemblyInfo.Filename);
+                    data = File.ReadAllBytes(path);
+                }
+                catch (Exception ex)
+                {
+                    mh(string.Format("ERROR: Exception while reading assembly for deployment : {0}", ex.Message));
+                    return null;
+                }
+                if (data!=null)
+                {
+                    result.Add(Tuple.Create(assemblyInfo,data));
                 }
             }
-            await Task.Delay(0);
 
             return result;
         }
