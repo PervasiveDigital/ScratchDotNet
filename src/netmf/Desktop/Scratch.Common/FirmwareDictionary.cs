@@ -30,6 +30,7 @@ namespace PervasiveDigital.Scratch.Common
     public class FirmwareDictionary
     {
         private static Version CurrentVersion = new Version(1, 0);
+        private List<FirmwareHost> _boards;
         private List<FirmwareImage> _images;
         private List<FirmwareAssembly> _assemblies;
         private Version _version;
@@ -41,6 +42,17 @@ namespace PervasiveDigital.Scratch.Common
 
         public int DictionaryMajorVersion { get { return _version.Major; } }
         public int DictionaryMinorVersion { get { return _version.Minor; } }
+
+        public List<FirmwareHost> Boards
+        {
+            get
+            {
+                if (_boards == null)
+                    _boards = new List<FirmwareHost>();
+                return _boards;
+            }
+            set { _boards = value; }
+        }
 
         public List<FirmwareImage> Images
         {

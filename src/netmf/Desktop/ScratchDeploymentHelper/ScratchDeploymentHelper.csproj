@@ -160,7 +160,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Models\FirmataTargetDevice.cs" />
-    <Compile Include="Models\FirmwareManager.cs" />
     <Compile Include="Models\MfTargetDevice.cs" />
     <Compile Include="Models\ViewModelBase.cs" />
     <Compile Include="Server\DeviceService.cs" />
@@ -170,6 +169,7 @@
     <Compile Include="ViewModels\DevicesPageViewModel.cs" />
     <Compile Include="ViewModels\DeviceViewModel.cs" />
     <Compile Include="ViewModels\FirmataTargetDeviceViewModel.cs" />
+    <Compile Include="ViewModels\FirmwareHostViewModel.cs" />
     <Compile Include="ViewModels\FirmwareImageViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Page Include="Themes\Generic.xaml">
@@ -222,12 +222,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Content Include="Assets\Scratch\Gadgeteer\js\scratchdotnet.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Scratch\Generic\js\scratchdotnet.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <EmbeddedResource Include="MFDeploy\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -239,15 +233,6 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <Content Include="Assets\Scratch\BrainPad\BrainPad.s2e">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Scratch\Generic\ScratchDotNet.s2e">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Scratch\Gadgeteer\ScratchDotNet.s2e">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -284,6 +269,9 @@
       <Project>{82f5725d-ccf9-4501-a0c5-9ea6725faf00}</Project>
       <Name>Scratch.Common</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Images\Scratch4DotNetLogo.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -38,5 +38,10 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
         {
             _dispatcher = disp;
         }
+
+        public Dispatcher Dispatcher
+        {
+            get { return _dispatcher; }
+        }
     }
 }

@@ -35,6 +35,8 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
 {
     public class MfTargetDeviceViewModel : DeviceViewModel
     {
+        private readonly ObservableCollection<FirmwareHost> _boardsSource = new ObservableCollection<FirmwareHost>();
+        private readonly ObservableViewCollection<FirmwareHost, FirmwareHostViewModel> _boards;
         private readonly ObservableCollection<FirmwareImage> _imagesSource = new ObservableCollection<FirmwareImage>();
         private readonly ObservableViewCollection<FirmwareImage, FirmwareImageViewModel> _images;
         private bool _fInitialized = false;
@@ -42,6 +44,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
         public MfTargetDeviceViewModel(Dispatcher disp)
             : base(disp)
         {
+            _boards = new ObservableViewCollection<FirmwareHost, FirmwareHostViewModel>(disp);
             _images = new ObservableViewCollection<FirmwareImage, FirmwareImageViewModel>(disp);
         }
 
@@ -50,6 +53,15 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
         public bool IsFirmataInstalled { get { return this.Source.IsFirmataInstalled; } }
 
         public string FirmataAppName { get { return this.Source.FirmataAppName ?? ""; } }
+
+        public ObservableViewCollection<FirmwareHost, FirmwareHostViewModel> Boards
+        {
+            get
+            {
+                InitializeCollections();
+                return _boards;
+            }
+        }
 
         public ObservableViewCollection<FirmwareImage, FirmwareImageViewModel> FirmwareImages
         {
@@ -64,6 +76,8 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
         {
             if (!_fInitialized)
             {
+                await _boards.Attach(_boardsSource);
+                PopulateBoards();
                 await _images.Attach(_imagesSource);
                 PopulateImages();
 
@@ -71,15 +85,42 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
             }
         }
 
-        public void PopulateImages()
+        public void PopulateBoards()
         {
             Guid originallySelected = Guid.Empty;
-            if (this.SelectedFirmware!=null)
+            if (this.SelectedFirmware != null)
+                originallySelected = this.SelectedBoard.Id;
+
+            var boards = this.Source.GetCandidateBoards();
+            _boardsSource.Clear();
+            _boardsSource.AddRange(boards);
+
+            if (originallySelected == Guid.Empty)
+                this.SelectedBoard = _boards.FirstOrDefault();
+            else
+                this.SelectedBoard = _boards.FirstOrDefault(x => x.Id == originallySelected);
+        }
+
+        public void PopulateImages()
+        {
+            if (this.SelectedBoard == null)
+                return;
+
+            Guid originallySelected = Guid.Empty;
+            if (this.SelectedFirmware != null)
                 originallySelected = this.SelectedFirmware.Id;
 
-            var images = this.Source.GetCompatibleFirmwareImages(!this.ShowAllCompatibleFirmwareImages);
+            var images = this.Source.GetCompatibleFirmwareImages(this.SelectedBoard.Id);
             _imagesSource.Clear();
             _imagesSource.AddRange(images);
+
+            if (this.Source.FirmataAppVersion != null && !string.IsNullOrEmpty(this.Source.FirmataAppName))
+            {
+                foreach (var item in _images)
+                {
+                    item.IsInstalled = (item.ViewSource.AppName == FirmataAppName && item.ViewSource.AppVersion == this.Source.FirmataAppVersion);
+                }
+            }
 
             if (originallySelected == Guid.Empty)
                 this.SelectedFirmware = _images.FirstOrDefault();
@@ -87,11 +128,11 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
                 this.SelectedFirmware = _images.FirstOrDefault(x => x.Id == originallySelected);
         }
 
-        private bool _showAllImages;
-        public bool ShowAllCompatibleFirmwareImages
+        private FirmwareHostViewModel _selectedBoard;
+        public FirmwareHostViewModel SelectedBoard
         {
-            get { return _showAllImages; }
-            set { SetProperty(ref _showAllImages, value); }
+            get { return _selectedBoard; }
+            set { SetProperty(ref _selectedBoard, value); }
         }
 
         private FirmwareImageViewModel _selectedFirmware;
@@ -112,6 +153,30 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
             }
         }
 
+        //public bool IsImageRecognized
+        //{
+        //    get
+        //    {
+
+        //    }
+        //}
+
+        //public string ImageCreatedBy
+        //{
+        //    get
+        //    {
+
+        //    }
+        //}
+
+        //public string ImageSupportUrl
+        //{
+        //    get
+        //    {
+
+        //    }
+        //}
+
         protected override void OnViewSourceChanged()
         {
             base.OnViewSourceChanged();
@@ -125,13 +190,17 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
             {
                 // This property only changes when we succeed in reading device info or after a deployment
                 //   so use it to trigger a refresh of the list of images.
+                PopulateBoards();
                 PopulateImages();
             }
         }
 
-        public void Deploy()
+        public async void Deploy()
         {
-            this.Source.Deploy();
+            if (this.SelectedFirmware != null)
+            {
+                await this.Source.Deploy(this.SelectedFirmware.ViewSource.Id);
+            }
         }
     }
 }

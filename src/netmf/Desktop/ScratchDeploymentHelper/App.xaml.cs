@@ -62,7 +62,16 @@ namespace PervasiveDigital.Scratch.DeploymentHelper
 
             var dm = App.Kernel.Get<DeviceModel>();
             if (dm != null)
-                dm.Dispose();
+            {
+                try
+                {
+                    dm.Dispose();
+                }
+                catch 
+                {
+                    // bugs in MFDeploy code can cause this to throw
+                }
+            }
         }
 
         private void Application_Startup(object sender, StartupEventArgs e)

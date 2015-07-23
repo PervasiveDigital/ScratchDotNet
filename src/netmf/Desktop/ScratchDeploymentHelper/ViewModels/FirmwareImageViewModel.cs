@@ -23,7 +23,23 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
         {
         }
 
-        public string DisplayName { get { return _source.Name; } }
+        private bool _fIsInstalled;
+        public bool IsInstalled
+        {
+            get { return _fIsInstalled; }
+            set { SetProperty(ref _fIsInstalled, value); }
+        }
+
+        public string DisplayName 
+        { 
+            get 
+            { 
+                var result = _source.Name;
+                if (this.IsInstalled)
+                    result += " (installed)";
+                return result;
+            } 
+        }
 
         public Guid Id { get { return _source.Id; } }
 

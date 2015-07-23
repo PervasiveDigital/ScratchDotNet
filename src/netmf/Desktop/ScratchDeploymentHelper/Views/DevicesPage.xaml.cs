@@ -64,14 +64,18 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Views
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            this.ViewModel.Deploy();
+            if (sender is FrameworkElement)
+            {
+                var dc = ((FrameworkElement)sender).DataContext;
+                ((MfTargetDeviceViewModel)dc).Deploy();
+            }
         }
 
         private void AllFirmwareCheckBox_Changed(object sender, RoutedEventArgs e)
         {
-            if (sender is CheckBox)
+            if (sender is FrameworkElement)
             {
-                var dc = ((CheckBox)sender).DataContext;
+                var dc = ((FrameworkElement)sender).DataContext;
                 ((MfTargetDeviceViewModel)dc).PopulateImages();
             }
         }

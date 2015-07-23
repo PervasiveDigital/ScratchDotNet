@@ -26,7 +26,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Ninject.Modules;
-using PervasiveDigital.Scratch.DeploymentHelper.Models;
 
 namespace PervasiveDigital.Scratch.Common
 {

@@ -39,6 +39,7 @@ using Ninject.Parameters;
 
 using PervasiveDigital.Scratch.DeploymentHelper.Models;
 using PervasiveDigital.Scratch.DeploymentHelper.ViewModels;
+using PervasiveDigital.Scratch.Common;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper.Views
 {
@@ -53,8 +54,10 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Views
             this.Loaded += MainWindow_Loaded;
         }
 
-        void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            var fwmgr = App.Kernel.Get<FirmwareManager>();
+            await fwmgr.UpdateFirmwareDictionary();
             this.Navigate(new DevicesPage());
         }
 

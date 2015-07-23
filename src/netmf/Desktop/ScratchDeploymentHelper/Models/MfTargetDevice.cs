@@ -212,21 +212,38 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
             config.WriteConfig("S4NCFG", cfg);
         }
 
-        public IEnumerable<FirmwareImage> GetCompatibleFirmwareImages(bool bestMatchesOnly)
+        public IEnumerable<FirmwareHost> GetCandidateBoards()
+        {
+            if (_deviceInfo == null)
+                return new List<FirmwareHost>();
+
+            var fwmgr = App.Kernel.Get<FirmwareManager>();
+
+            var buildInfo =
+                "clr:" + (_deviceInfo.ClrBuildInfo ?? "") + "," +
+                "hal:" + (_deviceInfo.HalBuildInfo ?? "") + "," +
+                "soln:" + (_deviceInfo.SolutionBuildInfo ?? "");
+            var candidates = fwmgr.FindMatchingBoards(_deviceInfo.TargetFrameworkVersion, _port.Name, buildInfo, _deviceInfo.OEM, _deviceInfo.SKU);
+
+            return candidates;
+        }
+
+        public IEnumerable<FirmwareImage> GetCompatibleFirmwareImages(Guid hostId)
         {
             if (_deviceInfo == null)
                 return new List<FirmwareImage>();
 
             var fwmgr = App.Kernel.Get<FirmwareManager>();
 
-            var candidates = fwmgr.FindCompatibleImages(bestMatchesOnly, _deviceInfo.TargetFrameworkVersion, _port.Name, _deviceInfo.OEM, _deviceInfo.SKU);
+            var candidates = fwmgr.GetCompatibleImages(hostId);
             
             return candidates;
         }
 
         // from : https://github.com/NETMF/netmf-interpreter/blob/43e9082ed1b7a34b5d2b1b00687d5e75749b2c16/Framework/CorDebug/VsProjectFlavorCfg.cs
-        public void Deploy()
+        public async Task Deploy(Guid imageId)
         {
+            var fwmgr = App.Kernel.Get<FirmwareManager>();
             var engine = _device.DbgEngine;
 
             var systemAssemblies = new Hashtable();
@@ -240,11 +257,14 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
                 }
             }
 
-            //TODO: get list of dependencies
+            var assemblyList = await fwmgr.GetAssembliesForImage(imageId, MessageHandler);
+            if (assemblyList == null || assemblyList.Count == 0)
+                return;
+
+            var assemblies = new ArrayList(assemblyList);
 
             DeploySystemAssemblies(systemAssemblies);
 
-            var assemblies = new ArrayList();
 
             var files = Directory.GetFiles("c:\\deploy", "*.pe");
             foreach (var file in files)
@@ -254,7 +274,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
                 assemblies.Add(assmBytes);
             }
 
-            //engine.Deployment_Execute(assemblies, true, MessageHandler);
+            engine.Deployment_Execute(assemblies, true, MessageHandler);
         }
 
         private void DeploySystemAssemblies(Hashtable systemAssemblies)

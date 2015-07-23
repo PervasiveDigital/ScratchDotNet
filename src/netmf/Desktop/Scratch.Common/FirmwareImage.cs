@@ -50,24 +50,17 @@ namespace PervasiveDigital.Scratch.Common
         public string Name { get; set; }
         public string AppName { get; set; }
         public string Description { get; set; }
-
-        public string ClrBuildInfoContains { get; set; }
-
-        public int OEM { get; set; }
-        public int SKU { get; set; }
-
-        public string TargetManufacturer { get; set; }
-        public string TargetProductName { get; set; }
-        public string TargetDeviceUsbName { get; set; }
+        public string ImageCreatedBy { get; set; }
+        public string ImageSupportUrl { get; set; }
 
         public string ConfigurationExtension { get; set; }
 
-        public Version Version
+        public Version AppVersion
         {
             get
             {
                 if (_version == null)
-                    _version = new Version(1, 0);
+                    _version = new Version(1, 0, 0, 0);
                 return _version;
             }
             set { _version = value; }

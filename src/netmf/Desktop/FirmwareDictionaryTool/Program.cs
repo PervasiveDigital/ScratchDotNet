@@ -21,32 +21,36 @@ namespace FirmwareDictionaryTool
 
             var dict = new FirmwareDictionary();
 
-            var image = new FirmwareImage()
+            //
+            // Firmware Images
+            //
+            var brainPadImage = new FirmwareImage()
             {
                 Id = Guid.Parse("b335f011-7604-4984-9418-33c9ce00d3ae"),
                 Name = "BrainPad",
                 AppName = "BrainPadFirmataApp",
+                AppVersion = new Version(1, 0, 0, 0),
                 Description = "This firmware unlocks all of the features of the GHI Electronics BrainPad",
-                TargetManufacturer = "GHI Electronics",
-                TargetProductName = "BrainPad",
-                TargetFrameworkVersion = new Version(4,3,1,0),
-                TargetDeviceUsbName = "G30_G30",
-                ClrBuildInfoContains = "GHI Electronics",
-                OEM = 0xff,
-                SKU = 0xffff,
+                TargetFrameworkVersion = new Version(4, 3, 1, 0),
                 ConfigurationExtension = null,
+                ImageCreatedBy = "Pervasive Digital LLC",
+                ImageSupportUrl = "mailto:support@pervasive.digital",
             };
+            dict.Images.Add(brainPadImage);
 
+            //
+            // Assemblies
+            //
             var assm = new FirmwareAssembly()
             {
                 Id = Guid.Parse("99d20fa1-895e-49b6-9a4f-45e4e08ff106"),
                 Filename = "Microsoft.SPOT.Graphics.pe",
                 IsLittleEndian = true,
                 LibraryId = MicrosoftSpot431LibraryId,
-                TargetFrameworkVersion = image.TargetFrameworkVersion,
+                TargetFrameworkVersion = new Version(4, 3, 1, 0),
             };
             dict.Assemblies.Add(assm);
-            image.RequiredAssemblies.Add(assm.Id);
+            brainPadImage.RequiredAssemblies.Add(assm.Id);
 
             assm = new FirmwareAssembly()
             {
@@ -54,10 +58,10 @@ namespace FirmwareDictionaryTool
                 Filename = "Microsoft.SPOT.Hardware.USB.pe",
                 IsLittleEndian = true,
                 LibraryId = MicrosoftSpot431LibraryId,
-                TargetFrameworkVersion = image.TargetFrameworkVersion,
+                TargetFrameworkVersion = new Version(4, 3, 1, 0),
             };
             dict.Assemblies.Add(assm);
-            image.RequiredAssemblies.Add(assm.Id);
+            brainPadImage.RequiredAssemblies.Add(assm.Id);
 
             assm = new FirmwareAssembly()
             {
@@ -65,10 +69,10 @@ namespace FirmwareDictionaryTool
                 Filename = "GHI.Hardware.pe",
                 IsLittleEndian = true,
                 LibraryId = ghiSdkLibraryId,
-                TargetFrameworkVersion = image.TargetFrameworkVersion,
+                TargetFrameworkVersion = new Version(4, 3, 1, 0),
             };
             dict.Assemblies.Add(assm);
-            image.RequiredAssemblies.Add(assm.Id);
+            brainPadImage.RequiredAssemblies.Add(assm.Id);
 
             assm = new FirmwareAssembly()
             {
@@ -76,23 +80,40 @@ namespace FirmwareDictionaryTool
                 Filename = "FirmataRuntime.pe",
                 IsLittleEndian = true,
                 LibraryId = brainPad431LibraryId,
-                TargetFrameworkVersion = image.TargetFrameworkVersion,
+                TargetFrameworkVersion = new Version(4, 3, 1, 0),
             };
             dict.Assemblies.Add(assm);
-            image.RequiredAssemblies.Add(assm.Id);
-            
+            brainPadImage.RequiredAssemblies.Add(assm.Id);
+
             assm = new FirmwareAssembly()
             {
                 Id = Guid.Parse("5b61839a-bc8b-4328-800b-e3372a7262e2"),
                 Filename = "BrainPadFirmataApp.pe",
                 IsLittleEndian = true,
                 LibraryId = brainPad431LibraryId,
-                TargetFrameworkVersion = image.TargetFrameworkVersion,
+                TargetFrameworkVersion = new Version(4, 3, 1, 0),
             };
             dict.Assemblies.Add(assm);
-            image.RequiredAssemblies.Add(assm.Id);
+            brainPadImage.RequiredAssemblies.Add(assm.Id);
 
-            dict.Images.Add(image);
+            //
+            // Boards
+            //
+
+            var board = new FirmwareHost()
+            {
+                Id = Guid.Parse("6a9bdb56-8005-428d-9f29-8c425d9614b0"),
+                Name = "BrainPad",
+                ProductImageName = "BrainPad.jpg",
+                Manufacturer = "GHI Electronics",
+                Description = "Hardware for STEM education",
+                UsbName = "G30_G30",
+                BuildInfoContains = "GHI Electronics",
+                OEM = 0xff,
+                SKU = 0xffff,
+            };
+            board.CompatibleImages.Add(brainPadImage.Id);
+            dict.Boards.Add(board);
 
             var content = JsonConvert.SerializeObject(dict, Formatting.Indented);
             File.WriteAllText("dict.json", content);

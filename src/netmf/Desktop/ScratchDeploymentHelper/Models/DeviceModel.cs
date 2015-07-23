@@ -63,7 +63,9 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
         private void UpdateDeviceList()
         {
             UpdateFirmataDeviceList();
-            UpdateNetmfDeviceList();
+            UpdateNetmfDeviceList(TransportType.USB);
+            // We do this separately, and in the background because it is incredibly slow
+            //UpdateNetmfDeviceList(TransportType.TCPIP);
         }
 
         private AsyncLock _firmataDeviceListLock = new AsyncLock();
@@ -127,46 +129,37 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
         // These updates are super slow and the change event fires often meaning that we were getting
         //    lots of nested updates queued up.  The logic around these vars will insure that we never
         //    queue up more than one more update beyond what we are doing right now.
-        private bool _fUpdateInProgress = false;
-        private bool _fNeedToUpdate = false;
+        private bool[] _fUpdateInProgress = new[] { false, false };
+        private bool[] _fNeedToUpdate = new[] { false, false };
 
-        private void UpdateNetmfDeviceList()
+        private void UpdateNetmfDeviceList(TransportType transportType)
         {
-            if (_fUpdateInProgress)
+            int transportIndex;
+            if (transportType == TransportType.USB)
+                transportIndex = 0;
+            else if (transportType == TransportType.TCPIP)
+                transportIndex = 1;
+            else
+                throw new ArgumentOutOfRangeException("Invalid transport type");
+
+            if (_fUpdateInProgress[transportIndex])
             {
-                _fNeedToUpdate = true;
+                _fNeedToUpdate[transportIndex] = true;
                 return;
             }
 
-            _fUpdateInProgress = true;
+            _fUpdateInProgress[transportIndex] = true;
             do
             {
-                _fNeedToUpdate = false;
+                _fNeedToUpdate[transportIndex] = false;
 
                 // This call is painfully slow
-                var portlist = _deploy.DeviceList.Cast<MFPortDefinition>().ToArray();
+                var portlist = _deploy.EnumPorts(transportType);
 
                 // Add new items
                 foreach (var item in portlist)
                 {
-                    if (item.Transport == TransportType.Serial)
-                    {
-                        //var serPortName = item.Port.Replace("\\\\.\\", "");
-
-                        //if (_devices.Any(x => x is FirmataTargetDevice && ((FirmataTargetDevice)x).DisplayName == serPortName))
-                        //    continue;
-
-                        //// If this is a serial port that we did not mark as a firmata device
-                        ////   earlier, then maybe it is a deployable target.
-                        //if (!_devices.Any(x => x.DisplayName == serPortName))
-                        //{
-                        //    AddDeployableTarget(item);
-                        //}
-                    }
-                    else
-                    {
-                        AddDeployableTarget(item);
-                    }
+                    AddDeployableTarget(item);
                 }
 
                 // Remove items that have disappeared
@@ -185,8 +178,8 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
                         }
                     }
                 }
-            } while (_fNeedToUpdate);
-            _fUpdateInProgress = false;
+            } while (_fNeedToUpdate[transportIndex]);
+            _fUpdateInProgress[transportIndex] = false;
         }
 
         private void AddDeployableTarget(MFPortDefinition item)

@@ -52,6 +52,7 @@
     <Compile Include="Constants.cs" />
     <Compile Include="FirmwareAssembly.cs" />
     <Compile Include="FirmwareDictionary.cs" />
+    <Compile Include="FirmwareHost.cs" />
     <Compile Include="FirmwareImage.cs" />
     <Compile Include="FirmwareManager.cs" />
     <Compile Include="LibraryManager.cs" />
