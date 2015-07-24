@@ -16,8 +16,9 @@ limitations under the License.
 Note: This code is a work in progress.
  * rev 0: initial release.
  * rev 0.01: improved display and changed classes to static
+ * rev 0.02: PlayFrequency() only plays values greater than zero
+ *           simplified the Color class
 */
-
 
 using GHI.IO;
 using Microsoft.SPOT;
@@ -43,86 +44,43 @@ public static class BrainPad
     /// </summary>
     public static class Color
     {
-        private static ushort _white = FromRGB(255, 255, 255);
-        private static ushort _black = FromRGB(0, 0, 0);
-        private static ushort _red = FromRGB(255, 0, 0);
-        private static ushort _green = FromRGB(0, 255, 0);
-        private static ushort _blue = FromRGB(0, 0, 255);
-        private static ushort _yellow = FromRGB(255, 255, 0);
-        private static ushort _fuchsia = FromRGB(255, 0, 255);
-        private static ushort _cyan = FromRGB(0, 255, 255);
-        private static ushort _brown = FromRGB(0xA5, 0x2A, 0x2A);
-        private static ushort _orange = FromRGB(0xFF, 0xA5, 0x00);
-        private static ushort _pink = FromRGB(0xFF, 0xC0, 0xCB);
-        private static ushort _gray = FromRGB(0x80, 0x80, 0x80);
-        private static ushort _purple = FromRGB(0x80, 0x00, 0x80);
-
         /// <summary>
         /// A palette of colors to choose from.
         /// </summary>
-        public enum Palette
+        public enum Palette : ushort
         {
+            Aqua = 2047,
             Black = 0,
-            White,
-            Red,
-            Green,
-            Blue,
-            Yellow,
-            Fuchsia,
-            Cyan,
-            Brown,
-            Orange,
-            Pink,
-            Gray,
-            Purple
-        }
-
-        private static ushort FromRGB(byte R, byte G, byte B)
-        {
-            R >>= (8 - 5);
-            G >>= (8 - 6);
-            B >>= (8 - 5);
-
-            ushort color = (ushort)(R << (5 + 6));
-            color |= (ushort)(G << 5);
-            color |= B;
-
-            return color;
-        }
-
-        private static byte[] UShortToRGB(ushort value)
-        {
-            byte R = (byte)(((value & 0xF800) >> 11) * 8);
-            byte G = (byte)(((value & 0x7E0) >> 5) * 4);
-            byte B = (byte)((value & 0x1F) * 8);
-
-            return new byte[3] { R, G, B };
+            Blue = 31,
+            Fushcia = 63519,
+            Gray = 21130,
+            Green = 1024,
+            Lime = 2016,
+            Maroon = 32768,
+            Navy = 16,
+            Olive = 33792,
+            Orange = 64480,
+            Purple = 32784,
+            Red = 63488,
+            Silver = 50712,
+            Teal = 1040,
+            Violet = 30751,
+            White = 65535,
+            Yellow = 65504
         }
 
         /// <summary>
-        /// Converts a palette color into it's numeric value.
+        /// Get the Red, Green and Blue values from a Palette color.
         /// </summary>
-        /// <param name="color">The <see cref="Palette" /> you wish to convert.</param>
-        /// <returns>A numeric value represeting the color.</returns>
-        public static ushort FromPalette(Palette color)
+        /// <param name="color">Palette color.</param>
+        /// <returns>The Red, Green and Blue values.</returns>
+        public static byte[] RgbFromPalette(Color.Palette color)
         {
-            switch (color)
-            {
-                case Palette.White: return _white;
-                case Palette.Black: return _black;
-                case Palette.Red: return _red;
-                case Palette.Green: return _green;
-                case Palette.Blue: return _blue;
-                case Palette.Yellow: return _yellow;
-                case Palette.Fuchsia: return _fuchsia;
-                case Palette.Cyan: return _cyan;
-                case Palette.Brown: return _brown;
-                case Palette.Orange: return _orange;
-                case Palette.Pink: return _pink;
-                case Palette.Gray: return _gray;
-                case Palette.Purple: return _purple;
-                default: return 0;
-            }
+            var ushortColor = (ushort)color;
+            var red = (byte)(((ushortColor & 0xF800) >> 11) * 8);
+            var green = (byte)(((ushortColor & 0x7E0) >> 5) * 4);
+            var blue = (byte)((ushortColor & 0x1F) * 8);
+            return new byte[3] { red, green, blue };
         }
     }
 
@@ -134,10 +92,12 @@ public static class BrainPad
     {
         Debug.Print(msg);
     }
+
     public static void DebugOutput(int i)
     {
         Debug.Print(i.ToString());
     }
+
     public static void DebugOutput(double d)
     {
         Debug.Print(d.ToString());
@@ -192,7 +152,7 @@ public static class BrainPad
     public static class ServoMotor
     {
 
-        private static PWM _pwm = new PWM(Cpu.PWMChannel.PWM_4, 20000, 1250, PWM.ScaleFactor.Microseconds, false);
+        private static PWM _pwm = new PWM(Cpu.PWMChannel.PWM_0, 20000, 1250, PWM.ScaleFactor.Microseconds, false);
         private static bool _started = false;
 
         /// <summary>
@@ -247,7 +207,7 @@ public static class BrainPad
         private static PWM[] _rgb = new PWM[3]{ 
             new PWM((Cpu.PWMChannel)10, 10000, 1, false),
             new PWM((Cpu.PWMChannel)9, 10000, 1, false),
-            new PWM(Cpu.PWMChannel.PWM_0, 10000, 1, false)};
+            new PWM((Cpu.PWMChannel)8, 10000, 1, false)};
         private static bool _started = false;
 
         /// <summary>
@@ -256,27 +216,8 @@ public static class BrainPad
         /// <param name="color">The <see cref="Palette" /> color to use.</param>
         public static void SetColor(Color.Palette color)
         {
-            switch (color)
-            {
-                case Color.Palette.Red:
-                    SetColor(1, 0, 0);
-                    break;
-                case Color.Palette.Green:
-                    SetColor(0, 1, 0);
-                    break;
-                case Color.Palette.Blue:
-                    SetColor(0, 0, 1);
-                    break;
-                case Color.Palette.Yellow:
-                    SetColor(1, 1, 0);
-                    break;
-                case Color.Palette.Fuchsia:
-                    SetColor(1, 0, 1);
-                    break;
-                case Color.Palette.Cyan:
-                    SetColor(0, 1, 1);
-                    break;
-            }
+            byte[] rgb = Color.RgbFromPalette(color);
+            SetColor(rgb[0] / 255.0, rgb[1] / 255.0, rgb[2] / 255.0);
         }
 
         /// <summary>
@@ -421,7 +362,6 @@ public static class BrainPad
             Gsharp = 1661,
         }
 
-
         /// <summary>
         /// Plays a Note.
         /// </summary>
@@ -436,7 +376,6 @@ public static class BrainPad
 
         }
 
-
         /// <summary>
         /// Plays a Frequency.
         /// </summary>
@@ -445,9 +384,12 @@ public static class BrainPad
         {
             Stop();
 
-            _pwm.Frequency = frequency;
-            _pwm.Start();
-            _started = true;
+            if (frequency > 0)
+            {
+                _pwm.Frequency = frequency;
+                _pwm.Start();
+                _started = true;
+            }
         }
 
         /// <summary>
@@ -463,13 +405,102 @@ public static class BrainPad
         }
     }
 
+    // we don't need the button helpers for firmata, and in fact they interfere with direct IO processing
+#if DEFINE_BUTTONS
+    /// <summary>
+    /// Controls the buttons on the BrainPad.
+    /// </summary>
+    public static class Button
+    {
+        private static int[] _pins = new int[4] { 15, 45, 26, 5 };
+        private static InterruptPort[] _ports1 = new InterruptPort[4];
+
+        /// <summary>
+        /// Directional pad buttons.
+        /// </summary>
+        public enum DPad
+        {
+            Up = 0,
+            Down,
+            Left,
+            Right
+        }
+
+        /// <summary>
+        /// The state of a button.
+        /// </summary>
+        public enum State
+        {
+            Pressed = 0,
+            NotPressed
+        }
+
+        static Button()
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                _ports1[i] = new InterruptPort((Cpu.Pin)_pins[i], true, Port.ResistorMode.PullUp, Port.InterruptMode.InterruptEdgeBoth);
+                _ports1[i].OnInterrupt += Button_OnInterrupt;
+            }
+        }
+
+        public static bool IsDownPressed()
+        {
+            return IsPressed(DPad.Down);
+        }
+
+        public static bool IsUpPressed()
+        {
+            return IsPressed(DPad.Up);
+        }
+
+        public static bool IsLeftPressed()
+        {
+            return IsPressed(DPad.Left);
+        }
+
+        public static bool IsRightPressed()
+        {
+            return IsPressed(DPad.Right);
+        }
+
+        public delegate void EventDelegate(DPad d, State state);
+        public static event EventDelegate OnEvent;
+
+        /// <summary>
+        /// Determine if a button was pressed.
+        /// </summary>
+        /// <param name="button">The <see cref="DPad"/> button to check.</param>
+        /// <returns></returns>
+        public static bool IsPressed(DPad button)
+        {
+
+            int i = (int)button;
+            return !_ports1[i].Read();
+
+        }
+
+        static void Button_OnInterrupt(uint data1, uint data2, DateTime time)
+        {
+            for (int i = 0; i < _pins.Length; i++)
+            {
+                if (_pins[i] == data1)
+                {
+                    if (OnEvent != null)
+                        OnEvent.Invoke((DPad)i, (State)data2);
+                }
+            }
+        }
+    }
+#endif
+
     /// <summary>
     /// Controls the Traffic Light.
     /// </summary>
     public static class TrafficLight
     {
         private static PWM[] _ryg = new PWM[3]{
-            new PWM((Cpu.PWMChannel)8, 200, 1, false),
+            new PWM((Cpu.PWMChannel)4, 200, 1, false),
             new PWM(Cpu.PWMChannel.PWM_7, 200, 1, false),
             new PWM((Cpu.PWMChannel)14, 200, 1, false)
         };
@@ -529,8 +560,6 @@ public static class BrainPad
         /// <param name="color">Red, Yellow or Green</param>
         public static void TurnOn(BrainPad.Color.Palette color)
         {
-            //TurnOff(color);
-
             switch (color)
             {
                 case BrainPad.Color.Palette.Red:
@@ -710,7 +739,7 @@ public static class BrainPad
         }
     }
 
-    /// <summary>
+    /// <summary> 
     /// Controls the Display on the BrainPad.
     /// </summary>
     public static class Display
@@ -718,7 +747,7 @@ public static class BrainPad
         const int cs = (28);
         const int rs = 37;
         const int reset = 36;
-        const int backlight = 9;
+        const int backlight = 4;
 
         static SPI.Configuration _spi_con;
         static SPI _spi;
@@ -742,14 +771,15 @@ public static class BrainPad
             _spi = new SPI(_spi_con);
 
             Reset();
+
             //------------------------------------------------------------------//  
-            //-------------------Software Reset-------------------------------//
+            //--------------------------Software Reset--------------------------//
             //------------------------------------------------------------------//
 
             WriteCommand(0x11);//Sleep exit 
             Thread.Sleep(120);
 
-            //ST7735R Frame Rate
+            // ST7735R Frame Rate
             WriteCommand(0xB1);
             WriteData(0x01); WriteData(0x2C); WriteData(0x2D);
             WriteCommand(0xB2);
@@ -758,10 +788,10 @@ public static class BrainPad
             WriteData(0x01); WriteData(0x2C); WriteData(0x2D);
             WriteData(0x01); WriteData(0x2C); WriteData(0x2D);
 
-            WriteCommand(0xB4); //Column inversion 
+            WriteCommand(0xB4); // Column inversion 
             WriteData(0x07);
 
-            //ST7735R Power Sequence
+            // ST7735R Power Sequence
             WriteCommand(0xC0);
             WriteData(0xA2); WriteData(0x02); WriteData(0x84);
             WriteCommand(0xC1); WriteData(0xC5);
@@ -772,14 +802,13 @@ public static class BrainPad
             WriteCommand(0xC4);
             WriteData(0x8A); WriteData(0xEE);
 
-            WriteCommand(0xC5); //VCOM 
+            WriteCommand(0xC5); // VCOM 
             WriteData(0x0E);
 
-            WriteCommand(0x36); //MX, MY, RGB mode 
-            //WriteData(0xC8);
+            WriteCommand(0x36); // MX, MY, RGB mode
             WriteData(MADCTL_MX | MADCTL_MY | MADCTL_BGR);
 
-            //ST7735R Gamma Sequence
+            // ST7735R Gamma Sequence
             WriteCommand(0xe0);
             WriteData(0x0f); WriteData(0x1a);
             WriteData(0x0f); WriteData(0x18);
@@ -815,14 +844,14 @@ public static class BrainPad
             WriteCommand(0x3A); //65k mode 
             WriteData(0x05);
 
-            //rotate
+            // rotate
             WriteCommand(ST7735_MADCTL);
-            //WriteData((byte)(MADCTL_MV | MADCTL_MX | (this.isBgr ? MADCTL_BGR : 0)));
             WriteData((byte)(MADCTL_MV | MADCTL_MY | (isBgr ? MADCTL_BGR : 0)));
 
-            WriteCommand(0x29);//Display on
+            WriteCommand(0x29); //Display on
             Thread.Sleep(50);
         }
+
         private static void WriteData(byte[] data)
         {
             _rs.Write(true);
@@ -852,8 +881,9 @@ public static class BrainPad
             _reset.Write(true);
             Thread.Sleep(1000);
         }
-        ///*
+
         private static byte[] b4 = new byte[4];
+
         private static void SetClip(int x, int y, int w, int h)
         {
 
@@ -877,33 +907,12 @@ public static class BrainPad
             b4[3] = (byte)y_end;
             _spi.Write(b4);
         }
-        //*/
 
-        /*
-        private static void SetClip(int x, int y, int w, int h)
-        {
-            if (w < 1 || h < 1)
-                throw new Exception();
-
-            ushort x_end = (ushort)(x + w - 1);
-            ushort y_end = (ushort)(y + h - 1);
-            WriteCommand(0x2A);
-            WriteData((byte)((x >> 8) & 0xFF));
-            WriteData((byte)(x & 0xFF));
-            WriteData((byte)((x_end >> 8) & 0xFF));
-            WriteData((byte)(x_end & 0xFF));
-            WriteCommand(0x2B);
-            WriteData((byte)((y >> 8) & 0xFF));
-            WriteData((byte)(y & 0xFF));
-            WriteData((byte)((y_end >> 8) & 0xFF));
-            WriteData((byte)(y_end & 0xFF));
-        }
-        //*/
+        static byte[] temp = new byte[160 * 2 * 16];
 
         /// <summary>
         /// Clears the Display.
         /// </summary>
-        static byte[] temp = new byte[160 * 2 * 16];
         public static void Clear()
         {
             SetClip(0, 0, 160, 128);
@@ -921,34 +930,38 @@ public static class BrainPad
             WriteCommand(0x2C);
             WriteData(data);
         }
+
         public static void DrawImage(int x, int y, Image img)
         {
             SetClip(x, y, img._width, img._height);
             DrawImage(img.Pixels);
         }
+
         public class Image
         {
             public int _width;
             public int _height;
             public byte[] Pixels;
+
             public Image(int width, int height)
             {
                 _width = width;
                 _height = height;
                 Pixels = new byte[width * height * 2];
             }
-            public void SetPixel(int x, int y, BrainPad.Color.Palette color)
+
+            public void SetPixel(int x, int y, Color.Palette color)
             {
                 if (x > _width || x < 0)
                     return;
                 if (y > _height || y < 0)
                     return;
-                ushort col = BrainPad.Color.FromPalette(color);
-                Pixels[(x * _width + y) * 2 + 0] = (byte)(col >> 8);
-                Pixels[(x * _width + y) * 2 + 1] = (byte)col;
 
+                Pixels[(x * _width + y) * 2 + 0] = (byte)((ushort)color >> 8);
+                Pixels[(x * _width + y) * 2 + 1] = (byte)color;
             }
         };
+
         /// <summary>
         /// Draws a filled rectangle.
         /// </summary>
@@ -957,18 +970,18 @@ public static class BrainPad
         /// <param name="w">Width</param>
         /// <param name="h">Height</param>
         /// <param name="color">The color to use.</param>
-        public static void DrawFillRect(int x, int y, int w, int h, BrainPad.Color.Palette color)
+        public static void DrawFillRect(int x, int y, int w, int h, Color.Palette color)
         {
-            ushort _color = BrainPad.Color.FromPalette(color);
             SetClip(x, y, w, h);
+
             byte[] colors = new byte[w * h * 2];
             for (int i = 0; i < colors.Length; i += 2)
             {
-                colors[i] = (byte)((_color >> 8) & 0xFF);
-                colors[i + 1] = (byte)((_color >> 0) & 0xFF);
+                colors[i] = (byte)(((ushort)color >> 8) & 0xFF);
+                colors[i + 1] = (byte)(((ushort)color >> 0) & 0xFF);
             }
-            DrawImage(colors);
 
+            DrawImage(colors);
         }
 
         /// <summary>
@@ -995,13 +1008,11 @@ public static class BrainPad
         /// <param name="x">Starting X coordinate.</param>
         /// <param name="y">Starting Y coordinate.</param>
         /// <param name="color">The color to use.</param>
-        public static void SetPixel(int x, int y, BrainPad.Color.Palette color)
+        public static void SetPixel(int x, int y, Color.Palette color)
         {
-            ushort _color = BrainPad.Color.FromPalette(color);
             SetClip(x, y, 1, 1);
-            b2[0] = (byte)(_color >> 8);
-            b2[1] = (byte)(_color >> 0);
-            //WriteCommand(0x2C);
+            b2[0] = (byte)((ushort)color >> 8);
+            b2[1] = (byte)((ushort)color >> 0);
             DrawImage(b2);
         }
 
@@ -1013,7 +1024,7 @@ public static class BrainPad
         /// <param name="x1">Ending X coordinate.</param>
         /// <param name="y1">Ending Y coordinate.</param>
         /// <param name="color">The color to use.</param>
-        public static void DrawLine(int x0, int y0, int x1, int y1, BrainPad.Color.Palette color)
+        public static void DrawLine(int x0, int y0, int x1, int y1, Color.Palette color)
         {
             int t;
             bool steep = System.Math.Abs(y1 - y0) > System.Math.Abs(x1 - x0);
@@ -1080,7 +1091,7 @@ public static class BrainPad
         /// <param name="y0">Starting Y coordinate.</param>
         /// <param name="r">The radius.</param>
         /// <param name="color">The color to use.</param>
-        public static void DrawCircle(int x0, int y0, int r, BrainPad.Color.Palette color)
+        public static void DrawCircle(int x0, int y0, int r, Color.Palette color)
         {
             int f = 1 - r;
             int ddF_x = 1;
@@ -1125,7 +1136,7 @@ public static class BrainPad
         /// <param name="w">Width</param>
         /// <param name="h">Height</param>
         /// <param name="color">The color to use.</param>
-        public static void DrawRect(int x, int y, int w, int h, BrainPad.Color.Palette color)
+        public static void DrawRect(int x, int y, int w, int h, Color.Palette color)
         {
             // chnage to be like the fill rect for speed
             for (int i = x; i < x + w; i++)
@@ -1239,25 +1250,11 @@ public static class BrainPad
 	        0x08, 0x08, 0x2a, 0x1c, 0x08  /* ~ */
         };
 
-        /*
-        private static void Draw8PixelsSlow(int x, int y, byte c, ushort color)
-        {
-            for (int i = 0; i < 8; i++)
-            {
-                if (((c >> i) & 1) > 0)
-                    SetPixel(x, y + i, color);
-                else
-                    SetPixel(x, y + i, 0);
-            }
-
-        }
-        */
-
-
         private static byte[] chartemp = new byte[8 * 2];
         private static void Draw8Pixels(int x, int y, byte c, ushort color)
         {
             Array.Clear(chartemp, 0, chartemp.Length);
+
             for (int i = 0; i < 8; i++)
             {
                 if (((c >> i) & 1) > 0)
@@ -1266,8 +1263,8 @@ public static class BrainPad
                     chartemp[i * 2 + 1] = (byte)(color >> 0);
                 }
             }
+
             SetClip(x, y, 1, 8);
-            //WriteCommand(0x2C);
             DrawImage(chartemp);
         }
 
@@ -1293,20 +1290,17 @@ public static class BrainPad
                     xlargechartemp[i * 8 + 7] = lower;
                 }
             }
+
             SetClip(x, y, 1, 32);
-            //WriteCommand(0x2C);
             DrawImage(xlargechartemp);
 
             SetClip(x + 1, y, 1, 32);
-            //WriteCommand(0x2C);
             DrawImage(xlargechartemp);
 
             SetClip(x + 2, y, 1, 32);
-            //WriteCommand(0x2C);
             DrawImage(xlargechartemp);
 
             SetClip(x + 3, y, 1, 32);
-            //WriteCommand(0x2C);
             DrawImage(xlargechartemp);
         }
 
@@ -1327,36 +1321,13 @@ public static class BrainPad
                     largechartemp[i * 4 + 3] = lower;
                 }
             }
+
             SetClip(x, y, 1, 16);
             DrawImage(largechartemp);
 
             SetClip(x + 1, y, 1, 16);
             DrawImage(largechartemp);
         }
-        /*
-        private static void Draw8LargePixelsSlow(int x, int y, byte c, BrainPad.Color.Palette color)
-        {
-            for (int i = 0; i < 8; i++)
-            {
-                if (((c >> i) & 1) > 0)
-                {
-                    SetPixel(x, y + i * 2, color);
-                    SetPixel(x + 1, y + i * 2, color);
-                    SetPixel(x, y + i * 2 + 1, color);
-                    SetPixel(x + 1, y + i * 2 + 1, color);
-
-                }
-                else
-                {
-                    SetPixel(x, y + i * 2, 0);
-                    SetPixel(x + 1, y + i * 2, 0);
-                    SetPixel(x, y + i * 2 + 1, 0);
-                    SetPixel(x + 1, y + i * 2 + 1, 0);
-                }
-            }
-
-        }
-        */
 
         /// <summary>
         /// Draws a character in large font.
@@ -1365,28 +1336,32 @@ public static class BrainPad
         /// <param name="y">Starting Y coordinate.</param>
         /// <param name="c">The character to draw.</param>
         /// <param name="color">The color to use.</param>
-        public static void DrawLargeCharacter(int x, int y, char c, BrainPad.Color.Palette color)
+        public static void DrawLargeCharacter(int x, int y, char c, Color.Palette color)
         {
             if (c > 126 || c < 32)
                 return;
+
             c = (char)(c - 32);
+
             for (int i = 0; i < 5; i++)
             {
-                //Draw8LargePixelsSlow(x + i * 2, y, font[5 * c + i], color);
-                Draw8LargePixels(x + i * 2, y, font[5 * c + i], BrainPad.Color.FromPalette(color));
+                Draw8LargePixels(x + i * 2, y, font[5 * c + i], (ushort)color);
             }
         }
 
-        public static void DrawXLargeCharacter(int x, int y, char c, BrainPad.Color.Palette color)
+        public static void DrawXLargeCharacter(int x, int y, char c, Color.Palette color)
         {
             if (c > 126 || c < 32)
                 return;
+
             c = (char)(c - 32);
+
             for (int i = 0; i < 5; i++)
             {
-                Draw8XLargePixels(x + i * 4, y, font[5 * c + i], BrainPad.Color.FromPalette(color));
+                Draw8XLargePixels(x + i * 4, y, font[5 * c + i], (ushort)color);
             }
         }
+
         /// <summary>
         /// Draws a string in large font.
         /// </summary>
@@ -1394,7 +1369,7 @@ public static class BrainPad
         /// <param name="y">Starting Y coordinate.</param>
         /// <param name="str">The string to draw.</param>
         /// <param name="color">The color to use.</param>
-        public static void DrawLargeString(int x, int y, string str, BrainPad.Color.Palette color)
+        public static void DrawLargeString(int x, int y, string str, Color.Palette color)
         {
             for (int i = 0; i < str.Length; i++)
             {
@@ -1402,7 +1377,7 @@ public static class BrainPad
             }
         }
 
-        public static void DrawXLargeString(int x, int y, string str, BrainPad.Color.Palette color)
+        public static void DrawXLargeString(int x, int y, string str, Color.Palette color)
         {
             for (int i = 0; i < str.Length; i++)
             {
@@ -1417,14 +1392,15 @@ public static class BrainPad
         /// <param name="y">Starting Y coordinate.</param>
         /// <param name="c">The character to draw.</param>
         /// <param name="color">The color to use.</param>
-        public static void DrawCharacter(int x, int y, char c, BrainPad.Color.Palette color)
+        public static void DrawCharacter(int x, int y, char c, Color.Palette color)
         {
-            ushort _color = BrainPad.Color.FromPalette(color);
             if (c > 126 || c < 32)
                 return;
+
             c = (char)(c - 32);
+
             for (int i = 0; i < 5; i++)
-                Draw8Pixels(x + i, y, font[5 * c + i], _color);
+                Draw8Pixels(x + i, y, font[5 * c + i], (ushort)color);
         }
 
         /// <summary>
@@ -1434,7 +1410,7 @@ public static class BrainPad
         /// <param name="y">Starting Y coordinate.</param>
         /// <param name="str">The string to draw.</param>
         /// <param name="color">The color to use.</param>
-        public static void DrawString(int x, int y, string str, BrainPad.Color.Palette color)
+        public static void DrawString(int x, int y, string str, Color.Palette color)
         {
             for (int i = 0; i < str.Length; i++)
             {
@@ -1476,8 +1452,8 @@ public static class BrainPad
         private I2CDevice _device;
         private I2CDevice.Configuration _configuration;
         private int _clockRateKhz = 400;
-
         private int _timeout = 1000;
+
         public I2C(byte address)
         {
             _configuration = new I2CDevice.Configuration(address, _clockRateKhz);

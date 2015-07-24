@@ -24,7 +24,7 @@ using Microsoft.SPOT;
 using Microsoft.SPOT.Hardware.UsbClient;
 using System.Threading;
 
-namespace USBDevice
+namespace PervasiveDigital.UsbHelper
 {
     class USB
     {
@@ -125,7 +125,6 @@ namespace USBDevice
 
         public static bool Init()
         {
-
             // See if the hardware supports USB
             UsbController[] controllers = UsbController.GetControllers();
             // Bail out if USB is not supported on this hardware!

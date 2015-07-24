@@ -96,7 +96,7 @@
     },
     {
       "Id": "62239dee-07d4-4447-997f-fa3808e250bd",
-      "LibraryId": "26571886-8ec7-4d55-9d43-c418545f2169",
+      "LibraryId": "7b180bc6-6873-455a-9253-e768b841f5a0",
       "IsLittleEndian": true,
       "Filename": "FirmataRuntime.pe",
       "TargetFrameworkVersion": {
@@ -110,7 +110,7 @@
     },
     {
       "Id": "5b61839a-bc8b-4328-800b-e3372a7262e2",
-      "LibraryId": "26571886-8ec7-4d55-9d43-c418545f2169",
+      "LibraryId": "7b180bc6-6873-455a-9253-e768b841f5a0",
       "IsLittleEndian": true,
       "Filename": "BrainPadFirmataApp.pe",
       "TargetFrameworkVersion": {

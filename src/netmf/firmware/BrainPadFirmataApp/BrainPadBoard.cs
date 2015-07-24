@@ -40,7 +40,7 @@ namespace BrainPadFirmataApp
         {
             new InputPort((Cpu.Pin)15, true, Port.ResistorMode.PullUp),
             new InputPort((Cpu.Pin)45, true, Port.ResistorMode.PullUp),
-            new InputPort((Cpu.Pin)4, true, Port.ResistorMode.PullUp),
+            new InputPort((Cpu.Pin)26, true, Port.ResistorMode.PullUp),
             new InputPort((Cpu.Pin)5, true, Port.ResistorMode.PullUp),
         };
 
