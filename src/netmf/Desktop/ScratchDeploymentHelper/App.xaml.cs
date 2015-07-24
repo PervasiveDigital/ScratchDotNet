@@ -34,6 +34,7 @@ using PervasiveDigital.Scratch.DeploymentHelper.Server;
 using System.Deployment.Application;
 using System.Reflection;
 using PervasiveDigital.Scratch.DeploymentHelper.Views;
+using Microsoft.ApplicationInsights;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper
 {
@@ -47,7 +48,16 @@ namespace PervasiveDigital.Scratch.DeploymentHelper
 
         public App()
         {
+            this.DispatcherUnhandledException += App_DispatcherUnhandledException;
             _kernel = new StandardKernel(new AppModule(), new Scratch.Common.Module());
+
+            var telemetryClient = new TelemetryClient();
+            telemetryClient.InstrumentationKey = "2a8f2947-dfe9-48ef-8c8d-13184f9e46f9";
+            telemetryClient.Context.Session.Id = Guid.NewGuid().ToString();
+            //telemetryClient.Context.User.AccountId = Username;
+            //telemetryClient.Context.Component.Version = Settings.Default.Version;
+            telemetryClient.TrackEvent("Application Start");
+            _kernel.Bind<TelemetryClient>().ToConstant(telemetryClient).InSingletonScope();
         }
 
         public static IKernel Kernel { get { return _kernel; } }
@@ -87,8 +97,23 @@ namespace PervasiveDigital.Scratch.DeploymentHelper
         {
         }
 
+        void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            var tc = _kernel.Get<TelemetryClient>();
+            if (tc != null)
+            {
+                tc.TrackException(e.Exception);
+            }
+        }
+
         private void Application_Exit(object sender, ExitEventArgs e)
         {
+            var tc = _kernel.Get<TelemetryClient>();
+            if (tc!=null)
+            {
+                tc.Flush();
+            }
+
             var host = App.Kernel.Get<DeviceServer>();
             if (host != null)
                 host.Close();

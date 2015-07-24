@@ -93,6 +93,10 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.ApplicationInsights, Version=1.1.0.1899, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.ApplicationInsights.1.1.0\lib\net45\Microsoft.ApplicationInsights.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.SPOT.Debugger, Version=4.3.1.0, Culture=neutral, PublicKeyToken=2670f5f21e7f4192, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files (x86)\Microsoft .NET Micro Framework\v4.3\Tools\Microsoft.SPOT.Debugger.dll</HintPath>

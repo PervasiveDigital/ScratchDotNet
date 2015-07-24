@@ -1,0 +1,126 @@
+{
+  "DictionaryMajorVersion": 1,
+  "DictionaryMinorVersion": 0,
+  "Boards": [
+    {
+      "Id": "6a9bdb56-8005-428d-9f29-8c425d9614b0",
+      "Name": "BrainPad",
+      "Description": "Hardware for STEM education",
+      "ProductImageName": "BrainPad.jpg",
+      "OEM": 255,
+      "SKU": 65535,
+      "Manufacturer": "GHI Electronics",
+      "UsbName": "G30_G30",
+      "BuildInfoContains": "GHI Electronics",
+      "CompatibleImages": [
+        "b335f011-7604-4984-9418-33c9ce00d3ae"
+      ]
+    }
+  ],
+  "Images": [
+    {
+      "Id": "b335f011-7604-4984-9418-33c9ce00d3ae",
+      "Name": "BrainPad",
+      "AppName": "BrainPadFirmataApp",
+      "Description": "This firmware unlocks all of the features of the GHI Electronics BrainPad",
+      "ImageCreatedBy": "Pervasive Digital LLC",
+      "ImageSupportUrl": "mailto:support@pervasive.digital",
+      "ConfigurationExtension": null,
+      "AppVersion": {
+        "Major": 1,
+        "Minor": 0,
+        "Build": 0,
+        "Revision": 0,
+        "MajorRevision": 0,
+        "MinorRevision": 0
+      },
+      "TargetFrameworkVersion": {
+        "Major": 4,
+        "Minor": 3,
+        "Build": 1,
+        "Revision": 0,
+        "MajorRevision": 0,
+        "MinorRevision": 0
+      },
+      "RequiredAssemblies": [
+        "99d20fa1-895e-49b6-9a4f-45e4e08ff106",
+        "a39662ef-143e-4cb4-9f75-22f0ea1b404b",
+        "302fe463-f90c-4a03-9554-e8af4903f516",
+        "62239dee-07d4-4447-997f-fa3808e250bd",
+        "5b61839a-bc8b-4328-800b-e3372a7262e2"
+      ]
+    }
+  ],
+  "Assemblies": [
+    {
+      "Id": "99d20fa1-895e-49b6-9a4f-45e4e08ff106",
+      "LibraryId": "e98b4d8f-6f47-4663-bbae-bbe6fc8a019f",
+      "IsLittleEndian": true,
+      "Filename": "Microsoft.SPOT.Graphics.pe",
+      "TargetFrameworkVersion": {
+        "Major": 4,
+        "Minor": 3,
+        "Build": 1,
+        "Revision": 0,
+        "MajorRevision": 0,
+        "MinorRevision": 0
+      }
+    },
+    {
+      "Id": "a39662ef-143e-4cb4-9f75-22f0ea1b404b",
+      "LibraryId": "e98b4d8f-6f47-4663-bbae-bbe6fc8a019f",
+      "IsLittleEndian": true,
+      "Filename": "Microsoft.SPOT.Hardware.USB.pe",
+      "TargetFrameworkVersion": {
+        "Major": 4,
+        "Minor": 3,
+        "Build": 1,
+        "Revision": 0,
+        "MajorRevision": 0,
+        "MinorRevision": 0
+      }
+    },
+    {
+      "Id": "302fe463-f90c-4a03-9554-e8af4903f516",
+      "LibraryId": "9dea3dc3-6e24-45c4-9d1f-79cc35020e34",
+      "IsLittleEndian": true,
+      "Filename": "GHI.Hardware.pe",
+      "TargetFrameworkVersion": {
+        "Major": 4,
+        "Minor": 3,
+        "Build": 1,
+        "Revision": 0,
+        "MajorRevision": 0,
+        "MinorRevision": 0
+      }
+    },
+    {
+      "Id": "62239dee-07d4-4447-997f-fa3808e250bd",
+      "LibraryId": "26571886-8ec7-4d55-9d43-c418545f2169",
+      "IsLittleEndian": true,
+      "Filename": "FirmataRuntime.pe",
+      "TargetFrameworkVersion": {
+        "Major": 4,
+        "Minor": 3,
+        "Build": 1,
+        "Revision": 0,
+        "MajorRevision": 0,
+        "MinorRevision": 0
+      }
+    },
+    {
+      "Id": "5b61839a-bc8b-4328-800b-e3372a7262e2",
+      "LibraryId": "26571886-8ec7-4d55-9d43-c418545f2169",
+      "IsLittleEndian": true,
+      "Filename": "BrainPadFirmataApp.pe",
+      "TargetFrameworkVersion": {
+        "Major": 4,
+        "Minor": 3,
+        "Build": 1,
+        "Revision": 0,
+        "MajorRevision": 0,
+        "MinorRevision": 0
+      }
+    }
+  ]
+}
