@@ -102,7 +102,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper
             var tc = _kernel.Get<TelemetryClient>();
             if (tc != null)
             {
-                tc.TrackException(e.Exception, new Dictionary<string,string>() {{"type");
+                tc.TrackException(e.Exception, new Dictionary<string,string>() {{"type", "DispatcherUnhandledException"}});
             }
         }
 
