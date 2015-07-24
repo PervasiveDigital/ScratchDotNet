@@ -32,6 +32,7 @@ using Newtonsoft.Json;
 
 using PervasiveDigital.Scratch.Common;
 using System.Threading;
+using Microsoft.ApplicationInsights;
 
 namespace PervasiveDigital.Scratch.Common
 {
@@ -40,6 +41,7 @@ namespace PervasiveDigital.Scratch.Common
         private const string FirmwareDictionaryFile = "firmware-{0}.{1}.json";
         private static Version FirmwareVersion = new Version(1, 0);
 
+        private readonly TelemetryClient _tc;
         private readonly LibraryManager _libmgr;
 
         private string _s4nPath;
@@ -50,8 +52,9 @@ namespace PervasiveDigital.Scratch.Common
         private FirmwareDictionary _firmwareDictionary;
         private object _fwDictLock = new object();
 
-        public FirmwareManager(LibraryManager libmgr)
+        public FirmwareManager(TelemetryClient tc, LibraryManager libmgr)
         {
+            _tc = tc;
             _libmgr = libmgr;
             EnsureDirectoryStructure();
         }
@@ -123,26 +126,37 @@ namespace PervasiveDigital.Scratch.Common
                 // ignore exceptions here and try to read from the net again.
             }
 
-            // Read from the network
-            var networkPath = Constants.S4NHost + Constants.ImagePath + board.ProductImageName;
-            var buffer = new byte[4096];
-            var req = (HttpWebRequest)WebRequest.Create(networkPath);
-            using (var response = (HttpWebResponse)await req.GetResponseAsync())
+            try
             {
-                var output = new FileStream(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None);
-                using (var stream = response.GetResponseStream())
+                // Read from the network
+                var networkPath = Constants.S4NHost + Constants.ImagePath + board.ProductImageName;
+                var buffer = new byte[4096];
+                var req = (HttpWebRequest)WebRequest.Create(networkPath);
+                using (var response = (HttpWebResponse)await req.GetResponseAsync())
                 {
-                    int count = 0;
-                    do
+                    var output = new FileStream(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None);
+                    using (var stream = response.GetResponseStream())
                     {
-                        count = await stream.ReadAsync(buffer, 0, buffer.Length);
-                        if (count > 0)
-                            output.Write(buffer, 0, count);
-                    } while (count > 0);
+                        int count = 0;
+                        do
+                        {
+                            count = await stream.ReadAsync(buffer, 0, buffer.Length);
+                            if (count > 0)
+                                output.Write(buffer, 0, count);
+                        } while (count > 0);
+                    }
+                    output.Close();
                 }
-                output.Close();
+                return File.ReadAllBytes(path);
             }
-            return File.ReadAllBytes(path);
+            catch (Exception ex)
+            {
+                _tc.TrackException(ex, new Dictionary<string, string>() 
+                    {
+                        { "boardId", id.ToString() }
+                    });
+                return null;
+            }
         }
 
         private void EnsureDirectoryStructure()
@@ -174,7 +188,7 @@ namespace PervasiveDigital.Scratch.Common
             {
                 try
                 {
-                    // We've never retrieved the file - got get a copy unconditionally
+                    // We've never retrieved the file - go get a copy unconditionally
                     // Use a temp file because DownloadFile will create a zero-length file if there is an error retrieving the web content
                     var tempFile = Path.GetTempFileName();
                     var client = new WebClient();
@@ -182,8 +196,9 @@ namespace PervasiveDigital.Scratch.Common
                     File.Copy(tempFile, destPath, true);
                     ReadFirmwareDictionary();
                 }
-                catch (WebException wex)
+                catch (Exception ex)
                 {
+                    _tc.TrackException(ex);
                     _firmwareDictionary = null;
                 }
             }
@@ -217,13 +232,21 @@ namespace PervasiveDigital.Scratch.Common
                         else
                         {
                             // error - file not updated
+                            _tc.TrackException(wex);
                         }
                     }
                     else
                     {
                         // error - file not updated
+                        _tc.TrackException(wex);
                     }
                 }
+                catch (Exception ex)
+                {
+                    _tc.TrackException(ex);
+                }
+                if (_firmwareDictionary == null || _firmwareDictionary.Boards.Count == 0)
+                    throw new Exception("Unable to load firmware dictionary. Program cannot start");
             }
         }
 
@@ -239,6 +262,10 @@ namespace PervasiveDigital.Scratch.Common
             if (image == null)
             {
                 mh("ERROR: Firmware image not found");
+                _tc.TrackEvent("dictMissingImage", new Dictionary<string, string>()
+                        {
+                            { "imageId", id.ToString() },
+                        });
                 return null;
             }
 
@@ -250,6 +277,11 @@ namespace PervasiveDigital.Scratch.Common
                 if (assemblyInfo==null)
                 {
                     mh(string.Format("The firmware database is corrupt. Missing assembly record {0}", assemId.ToString()));
+                    _tc.TrackEvent("fwmgrDictMissingAssem", new Dictionary<string, string>()
+                        {
+                            { "imageId", id.ToString() },
+                            { "assemId", id.ToString() },
+                        });
                     return null;
                 }
                 var libPath = _libmgr.GetLibrary(assemblyInfo.LibraryId, mh);
@@ -271,11 +303,25 @@ namespace PervasiveDigital.Scratch.Common
                 catch (Exception ex)
                 {
                     mh(string.Format("ERROR: Exception while reading assembly for deployment : {0}", ex.Message));
+                    _tc.TrackException(ex, new Dictionary<string, string>()
+                        {
+                            { "imageId", id.ToString() },
+                            { "assemId", assemId.ToString() },
+                        });
                     return null;
                 }
                 if (data!=null)
                 {
                     result.Add(Tuple.Create(assemblyInfo,data));
+                }
+                else
+                {
+                    _tc.TrackEvent("fwmgrZeroLengthAssem", new Dictionary<string, string>()
+                        {
+                            { "imageId", id.ToString() },
+                            { "assemId", id.ToString() },
+                        });
+                    return null;
                 }
             }
 
@@ -295,6 +341,11 @@ namespace PervasiveDigital.Scratch.Common
                 catch (FileNotFoundException fnfex)
                 {
                     _firmwareDictionary = null;
+                }
+                catch (Exception ex)
+                {
+                    _firmwareDictionary = null;
+                    _tc.TrackException(ex);
                 }
             }
         }

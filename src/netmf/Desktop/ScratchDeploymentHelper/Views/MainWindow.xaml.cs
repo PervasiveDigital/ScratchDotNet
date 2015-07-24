@@ -57,8 +57,16 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Views
         async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             var fwmgr = App.Kernel.Get<FirmwareManager>();
-            await fwmgr.UpdateFirmwareDictionary();
-            this.Navigate(new DevicesPage());
+            try
+            {
+                await fwmgr.UpdateFirmwareDictionary();
+                this.Navigate(new DevicesPage());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Startup Error", "The program is unable to start. The error is : '" + ex.Message + "'. The application must now exit.", MessageBoxButton.OK);
+                this.Close();
+            }
         }
 
         private MainWindowViewModel ViewModel { get { return (MainWindowViewModel)this.DataContext; } }

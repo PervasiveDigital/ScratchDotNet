@@ -1,4 +1,5 @@
-﻿//-------------------------------------------------------------------------
+﻿using Microsoft.ApplicationInsights;
+//-------------------------------------------------------------------------
 //  (c) 2015 Pervasive Digital LLC
 //
 //  This file is part of Scratch for .Net Micro Framework
@@ -28,16 +29,20 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
+using Ninject;
+
 namespace PervasiveDigital.Scratch.Common
 {
     public class LibraryManager
     {
+        private readonly TelemetryClient _tc;
         private string _s4nPath;
         private string _fwPath;
         private string _libPath;
 
-        public LibraryManager()
+        public LibraryManager(TelemetryClient tc)
         {
+            _tc = tc;
             EnsureDirectoryStructure();
         }
 
@@ -84,6 +89,10 @@ namespace PervasiveDigital.Scratch.Common
             catch (Exception ex)
             {
                 mh(string.Format("ERROR: failed to download or extract the code library due to an exception : {0}",ex.Message));
+                _tc.TrackException(ex, new Dictionary<string,string>() 
+                    {
+                        { "libraryId", id.ToString() }
+                    });
                 return null;
             }
         }

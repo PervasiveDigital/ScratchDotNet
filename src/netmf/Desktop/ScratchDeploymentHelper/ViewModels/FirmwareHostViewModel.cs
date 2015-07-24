@@ -83,16 +83,18 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
         {
             var fwmgr = App.Kernel.Get<FirmwareManager>();
             var data = await fwmgr.GetImageForBoard(this.ViewSource.Id);
-
-            await this.Dispatcher.InvokeAsync(() =>
-                {
-                    BitmapImage biImg = new BitmapImage();
-                    MemoryStream ms = new MemoryStream(data);
-                    biImg.BeginInit();
-                    biImg.StreamSource = ms;
-                    biImg.EndInit();
-                    this.Image = (ImageSource)biImg;
-                });
+            if (data != null)
+            {
+                await this.Dispatcher.InvokeAsync(() =>
+                    {
+                        BitmapImage biImg = new BitmapImage();
+                        MemoryStream ms = new MemoryStream(data);
+                        biImg.BeginInit();
+                        biImg.StreamSource = ms;
+                        biImg.EndInit();
+                        this.Image = (ImageSource)biImg;
+                    });
+            }
         }
     }
 }

@@ -25,6 +25,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scratch.Common", "Desktop\S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FirmwareDictionaryTool", "Desktop\FirmwareDictionaryTool\FirmwareDictionaryTool.csproj", "{89FF1850-1D31-4E3B-B463-94F3A88DF459}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Cloud", "Cloud", "{53D999DC-318F-4405-B792-2BD0CBEF1082}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dictionaries", "Dictionaries", "{4042A435-4DE7-471F-877F-7C6F2F3D9C5C}"
+	ProjectSection(SolutionItems) = preProject
+		Desktop\CloudResources\Dictionaries\firmware-1.0.json = Desktop\CloudResources\Dictionaries\firmware-1.0.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -116,5 +123,6 @@ Global
 		{86FDF73E-9063-41E1-ABC0-44426E670E28} = {486FFAE6-69E5-48D6-A464-8105F3F75D07}
 		{82F5725D-CCF9-4501-A0C5-9EA6725FAF00} = {F1ADC331-FEF4-4048-8210-F710E348C043}
 		{89FF1850-1D31-4E3B-B463-94F3A88DF459} = {F1ADC331-FEF4-4048-8210-F710E348C043}
+		{4042A435-4DE7-471F-877F-7C6F2F3D9C5C} = {53D999DC-318F-4405-B792-2BD0CBEF1082}
 	EndGlobalSection
 EndGlobal

@@ -42,7 +42,7 @@
     <Compile Include="USB.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="GHI.Hardware, Version=4.3.7.8, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="GHI.Hardware, Version=4.3.7.9, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.SPOT.Hardware" />
     <Reference Include="Microsoft.SPOT.Hardware.PWM" />
     <Reference Include="Microsoft.SPOT.Hardware.SerialPort" />
