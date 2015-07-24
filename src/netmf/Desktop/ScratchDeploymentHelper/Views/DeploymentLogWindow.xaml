@@ -7,7 +7,7 @@
             <Button HorizontalAlignment="Right" Padding="10,5,10,5" Margin="10" Click="Close_Click">Close</Button>
         </Grid>
         <Border BorderBrush="LightGray" BorderThickness="0,0,0,1">
-            <TextBox x:Name="logText" Margin="10,0,10,0" IsReadOnly="True" />
+            <TextBox x:Name="logText" Margin="10,0,10,0" IsReadOnly="True" AcceptsReturn="True" />
         </Border>
     </DockPanel>
 </Window>

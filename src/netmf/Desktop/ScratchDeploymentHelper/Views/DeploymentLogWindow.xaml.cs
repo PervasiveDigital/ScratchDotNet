@@ -52,8 +52,8 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Views
 
         public void WriteLine(string msg)
         {
-            if (msg.EndsWith("\r\n"))
-                msg += "\r\n";
+            if (!msg.EndsWith(Environment.NewLine))
+                msg += Environment.NewLine;
             logText.AppendText(msg);
         }
 

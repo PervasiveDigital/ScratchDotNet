@@ -153,7 +153,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
             {
                 _fNeedToUpdate[transportIndex] = false;
 
-                // This call is painfully slow
+                // This call is painfully slow for TCP
                 var portlist = _deploy.EnumPorts(transportType);
 
                 // Add new items
