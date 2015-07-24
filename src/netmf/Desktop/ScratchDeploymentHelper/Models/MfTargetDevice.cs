@@ -46,7 +46,6 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
         private MFPortDefinition _port;
         private MFDevice _device;
         private readonly TelemetryClient _tc;
-        private Guid _deviceId = Guid.Empty;
         private byte[] _configBytes;
         private Version _oemVersion;
         private string _oemString;
@@ -244,8 +243,8 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
             return candidates;
         }
 
-        // from : https://github.com/NETMF/netmf-interpreter/blob/43e9082ed1b7a34b5d2b1b00687d5e75749b2c16/Framework/CorDebug/VsProjectFlavorCfg.cs
-        public async Task Deploy(Guid imageId, Action<string> messageHandler)
+        // Based on code found at : https://github.com/NETMF/netmf-interpreter/blob/43e9082ed1b7a34b5d2b1b00687d5e75749b2c16/Framework/CorDebug/VsProjectFlavorCfg.cs
+        public async Task Deploy(Guid boardId, Guid imageId, Action<string> messageHandler)
         {
             var deploymentSerialNumber = Guid.NewGuid();
             try
@@ -253,8 +252,8 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
                 _tc.TrackEvent("StartDeploy", new Dictionary<string, string>()
                 {
                     { "deploymentId", deploymentSerialNumber.ToString() },
+                    { "boardId", boardId.ToString() },
                     { "imageId", imageId.ToString() },
-                    { "deviceId", _deviceId.ToString() },
                     { "portName", _port.Name },
                     { "transport", _port.Transport.ToString() },
                     { "targetFrameworkVersion", _deviceInfo.TargetFrameworkVersion.ToString() },

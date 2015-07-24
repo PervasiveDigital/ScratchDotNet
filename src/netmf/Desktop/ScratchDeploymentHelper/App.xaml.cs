@@ -102,7 +102,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper
             var tc = _kernel.Get<TelemetryClient>();
             if (tc != null)
             {
-                tc.TrackException(e.Exception);
+                tc.TrackException(e.Exception, new Dictionary<string,string>() {{"type");
             }
         }
 
@@ -111,6 +111,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper
             var tc = _kernel.Get<TelemetryClient>();
             if (tc!=null)
             {
+                tc.TrackEvent("Application Exit");
                 tc.Flush();
             }
 
