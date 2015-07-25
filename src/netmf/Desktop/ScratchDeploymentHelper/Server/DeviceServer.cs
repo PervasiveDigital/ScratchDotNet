@@ -1,4 +1,5 @@
-﻿//-------------------------------------------------------------------------
+﻿using PervasiveDigital.Scratch.DeploymentHelper.Server.UrlReservations;
+//-------------------------------------------------------------------------
 //  (c) 2015 Pervasive Digital LLC
 //
 //  This file is part of Scratch for .Net Micro Framework
@@ -21,11 +22,16 @@
 //-------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Security.Principal;
 using System.ServiceModel;
 using System.ServiceModel.Description;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper.Server
 {
@@ -37,6 +43,8 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Server
 
         public void Open()
         {
+            VerifyAcl();
+
             Uri baseAddress = new Uri("http://localhost:31076/");
             _apiHost = new ServiceHost(typeof(DeviceService), baseAddress);
             ServiceEndpoint se = _apiHost.AddServiceEndpoint(typeof(IDeviceService), new WebHttpBinding(), baseAddress);
@@ -47,7 +55,77 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Server
 
         public void Close()
         {
-            _apiHost.Close();
+            if (_apiHost!=null)
+                _apiHost.Close();
+        }
+
+        private void VerifyAcl()
+        {
+            if (!AclExists())
+            {
+                CreateAcl();
+            }
+        }
+
+        private bool AclExists()
+        {
+            var reservations = UrlReservationMgr.GetAll();
+
+            var thisUser = string.Format(@"{0}\{1}", Environment.UserDomainName, Environment.UserName);
+
+            foreach (var reservation in reservations)
+            {
+                if (reservation.Url.Contains(":31076"))
+                {
+                    foreach (var user in reservation.Users)
+                    {
+                        if (string.Equals(user, thisUser, StringComparison.InvariantCultureIgnoreCase))
+                            return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        private void CreateAcl()
+        {
+            var thisUser = string.Format(@"{0}\{1}", Environment.UserDomainName, Environment.UserName);
+            try
+            {
+                var acct = new NTAccount(thisUser);
+                SecurityIdentifier sid = (SecurityIdentifier)acct.Translate(typeof(SecurityIdentifier));
+
+                var url = new UrlReservation("http://+:31076/", new List<SecurityIdentifier>() { sid });
+                url.Create();
+            }
+            catch (Win32Exception ex)
+            {
+                if ((uint)ex.HResult==(uint)0x80004005)
+                {
+                    var result = MessageBox.Show("The Scratch Gateway program needs to reserve an http address on your machine. Scratch connects to this address to talk to your board. Adding this reservation requires administrator priveleges. You will now be asked to allow admin access.", "Elevation Required", MessageBoxButton.OKCancel);
+                    if (result == MessageBoxResult.Cancel)
+                        throw;
+
+                    // Requires elevation, and apparently, we're not so we will shell out to netsh
+                    AddAddress("http://+:31076/", Environment.UserDomainName, Environment.UserName);
+                }
+                else
+                    throw;
+            }
+        }
+
+        public static void AddAddress(string address, string domain, string user)
+        {
+            string args = string.Format(@"http add urlacl url={0} user={1}\{2}", address, domain, user);
+
+            var psi = new ProcessStartInfo("netsh", args);
+            psi.Verb = "runas";
+            psi.CreateNoWindow = true;
+            psi.WindowStyle = ProcessWindowStyle.Hidden;
+            psi.UseShellExecute = true;
+
+            Process.Start(psi).WaitForExit();
         }
     }
 }

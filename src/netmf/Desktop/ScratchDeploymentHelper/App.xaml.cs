@@ -35,6 +35,7 @@ using System.Deployment.Application;
 using System.Reflection;
 using PervasiveDigital.Scratch.DeploymentHelper.Views;
 using Microsoft.ApplicationInsights;
+using System.Threading;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper
 {
@@ -54,8 +55,10 @@ namespace PervasiveDigital.Scratch.DeploymentHelper
             var telemetryClient = new TelemetryClient();
             telemetryClient.InstrumentationKey = "2a8f2947-dfe9-48ef-8c8d-13184f9e46f9";
             telemetryClient.Context.Session.Id = Guid.NewGuid().ToString();
-            //telemetryClient.Context.User.AccountId = Username;
-            //telemetryClient.Context.Component.Version = Settings.Default.Version;
+            telemetryClient.Context.Device.Language = Thread.CurrentThread.CurrentUICulture.Name;
+            telemetryClient.Context.Device.OperatingSystem = Environment.OSVersion.VersionString;
+            telemetryClient.Context.Device.ScreenResolution = string.Format("{0}x{1}", SystemParameters.PrimaryScreenWidth, SystemParameters.PrimaryScreenHeight);
+            telemetryClient.Context.Component.Version = typeof(App).Assembly.GetName().Version.ToString();
             telemetryClient.TrackEvent("Application Start");
             _kernel.Bind<TelemetryClient>().ToConstant(telemetryClient).InSingletonScope();
         }
@@ -103,6 +106,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper
             if (tc != null)
             {
                 tc.TrackException(e.Exception, new Dictionary<string,string>() {{"type", "DispatcherUnhandledException"}});
+                tc.Flush();
             }
         }
 
@@ -135,9 +139,21 @@ namespace PervasiveDigital.Scratch.DeploymentHelper
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            var host = App.Kernel.Get<DeviceServer>();
-            if (host != null)
+            try
+            {
+                var host = App.Kernel.Get<DeviceServer>();
                 host.Open();
+            }
+            catch (Exception ex)
+            {
+                var tc = App.Kernel.Get<TelemetryClient>();
+                if (tc != null)
+                {
+                    tc.TrackException(ex);
+                }
+                MessageBox.Show("The Scratch Gateway was unable to configure or open the http port that Scratch needs to use to communicate with your device. The app will have to exit now. Please check the scratch4.net web site for help.","Fatal startup error", MessageBoxButton.OK);
+                Application.Current.Shutdown();
+            }
 
             new Views.MainWindow().Show();
         }
@@ -147,7 +163,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper
             get
             {
                 if (ApplicationDeployment.IsNetworkDeployed)
-                    return "ND " + ApplicationDeployment.CurrentDeployment.CurrentVersion.ToString();
+                    return ApplicationDeployment.CurrentDeployment.CurrentVersion.ToString();
                 else
                 {
                     return "LD " + typeof(App).Assembly.GetName().Version.ToString();
