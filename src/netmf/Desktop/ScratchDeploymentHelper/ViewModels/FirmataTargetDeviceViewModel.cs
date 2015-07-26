@@ -124,6 +124,29 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
                     return "";
             }
         }
+
+        private bool _isConnected;
+        public bool IsConnected
+        {
+            get { return _isConnected; }
+            set 
+            { 
+                SetProperty(ref _isConnected, value);
+                OnPropertyChanged("ConnectText");
+            }
+        }
+
+        public string ConnectText
+        {
+            get 
+            {
+                if (this.IsConnected)
+                    return "Connected";
+                else
+                    return "Connect"; 
+            }
+        }
+
         protected override void OnViewSourceChanged()
         {
             base.OnViewSourceChanged();

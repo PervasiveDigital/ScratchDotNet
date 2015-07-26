@@ -54,13 +54,13 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Views
 
         private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (e.AddedItems != null && e.AddedItems.Count > 0)
-            {
-                if (e.AddedItems[0] is DeviceViewModel)
-                    this.ViewModel.DeviceSelected((DeviceViewModel)e.AddedItems[0]);
-            }
-            else
-                this.ViewModel.DeviceSelected(null);
+            //if (e.AddedItems != null && e.AddedItems.Count > 0)
+            //{
+            //    if (e.AddedItems[0] is DeviceViewModel)
+            //        this.ViewModel.DeviceSelected((DeviceViewModel)e.AddedItems[0]);
+            //}
+            //else
+            //    this.ViewModel.DeviceSelected(null);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -81,15 +81,24 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Views
             }
         }
 
+        private void btnConfigure_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btnSelect_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is FrameworkElement)
+            {
+                var dc = ((FrameworkElement)sender).DataContext;
+                this.ViewModel.SelectFirmataTarget((FirmataTargetDeviceViewModel)dc);
+            }
+        }
+
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
             Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
             e.Handled = true;
-        }
-
-        private void btnConfigure_Click(object sender, RoutedEventArgs e)
-        {
-
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿//-------------------------------------------------------------------------
+﻿using PervasiveDigital.Scratch.DeploymentHelper.Models;
+//-------------------------------------------------------------------------
 //  (c) 2015 Pervasive Digital LLC
 //
 //  This file is part of Scratch for .Net Micro Framework
@@ -27,6 +28,8 @@ using System.ServiceModel.Web;
 using System.Text;
 using System.Threading.Tasks;
 
+using Ninject;
+
 namespace PervasiveDigital.Scratch.DeploymentHelper.Server
 {
     public class DeviceService : IDeviceService
@@ -34,13 +37,27 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Server
         public Stream Poll()
         {
             WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
-            return ResultAsString("_problem The BrainPad board is not connected\r\n");
+            if (this.DeviceModel.FirmataTarget == null)
+                return ResultAsString("_problem No .Net Micro Framework board is connected\r\n");
+            else
+                return ResultAsString("temperature 25");
         }
 
         public static Stream ResultAsString(string returnValue)
         {
             byte[] resultBytes = Encoding.UTF8.GetBytes(returnValue);
             return new MemoryStream(resultBytes);
+        }
+
+        private DeviceModel _dm;
+        private DeviceModel DeviceModel
+        {
+            get
+            {
+                if (_dm == null)
+                    _dm = App.Kernel.Get<DeviceModel>();
+                return _dm;
+            }
         }
     }
 }

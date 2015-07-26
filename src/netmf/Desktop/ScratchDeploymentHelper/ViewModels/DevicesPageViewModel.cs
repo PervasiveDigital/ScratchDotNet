@@ -41,7 +41,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
         private readonly ObservableViewCollection<TargetDevice, DeviceViewModel> _devices;
         private bool _fInitialized = false;
 
-        private RelayCommand _connectCommand;
+        //private RelayCommand _connectCommand;
 
         private DeviceViewModel _selectedDevice = null;
 
@@ -53,29 +53,66 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
             _devices = new ObservableViewCollection<TargetDevice, DeviceViewModel>(_view.Dispatcher);
             _devices.ViewMap.Add(typeof(MfTargetDevice), typeof(MfTargetDeviceViewModel));
             _devices.ViewMap.Add(typeof(FirmataTargetDevice), typeof(FirmataTargetDeviceViewModel));
+            _devices.CollectionChanged += _devices_CollectionChanged;
         }
 
-        public ICommand ConnectCommand
+        void _devices_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            get
+            // Ensure that at least one Firmata device is selected
+            bool found = false;
+            foreach (var item in _devices)
             {
-                if (_connectCommand == null)
+                if (item is FirmataTargetDeviceViewModel)
                 {
-                    _connectCommand = new RelayCommand(ConnectCommand_Executed, ConnectCommand_CanExecute);
+                    var candidate = (FirmataTargetDeviceViewModel)item;
+                    if (candidate.IsConnected)
+                    {
+                        found = true;
+                        break;
+                    }
                 }
-                return _connectCommand;
             }
+
+            if (!found)
+            {
+                foreach (var item in _devices)
+                {
+                    if (item is FirmataTargetDeviceViewModel)
+                    {
+                        var candidate = (FirmataTargetDeviceViewModel)item;
+                        candidate.IsConnected = true;
+                        _dm.SetFirmataTarget(candidate.Source);
+                        found = true;
+                    }
+                }
+            }
+
+            // There are no firmata targets - may sure we are not referencing one that was deleted
+            if (!found)
+                _dm.SetFirmataTarget(null);
         }
 
-        private void ConnectCommand_Executed(object obj)
-        {
-            Connect(_selectedDevice);
-        }
+        //public ICommand ConnectCommand
+        //{
+        //    get
+        //    {
+        //        if (_connectCommand == null)
+        //        {
+        //            _connectCommand = new RelayCommand(ConnectCommand_Executed, ConnectCommand_CanExecute);
+        //        }
+        //        return _connectCommand;
+        //    }
+        //}
 
-        private bool ConnectCommand_CanExecute(object obj)
-        {
-            return _selectedDevice != null;
-        }
+        //private void ConnectCommand_Executed(object obj)
+        //{
+        //    Connect(_selectedDevice);
+        //}
+
+        //private bool ConnectCommand_CanExecute(object obj)
+        //{
+        //    return _selectedDevice != null;
+        //}
 
         public ObservableViewCollection<TargetDevice, DeviceViewModel> Devices
         {
@@ -98,15 +135,26 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
             }
         }
 
-        public void DeviceSelected(DeviceViewModel selected)
-        {
-            _selectedDevice = selected;
-            ((RelayCommand)this.ConnectCommand).RaiseCanExecuteChanged();
-        }
+        //public void DeviceSelected(DeviceViewModel selected)
+        //{
+        //    _selectedDevice = selected;
+        //    ((RelayCommand)this.ConnectCommand).RaiseCanExecuteChanged();
+        //}
 
-        private void Connect(DeviceViewModel device)
+        public void SelectFirmataTarget(FirmataTargetDeviceViewModel ftdvm)
         {
-            _view.NavigationService.Navigate(new DevicePage(device));
+            foreach (var item in _devices)
+            {
+                if (item is FirmataTargetDeviceViewModel)
+                {
+                    var candidate = (FirmataTargetDeviceViewModel)item;
+                    candidate.IsConnected = (item == ftdvm);
+                    if (candidate.IsConnected)
+                    {
+                        _dm.SetFirmataTarget(candidate.Source);
+                    }
+                }
+            }
         }
 
         public void Deploy()

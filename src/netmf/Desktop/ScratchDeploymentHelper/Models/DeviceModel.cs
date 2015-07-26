@@ -37,8 +37,10 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
 {
     public class DeviceModel : IDisposable
     {
-        private MFDeploy _deploy;
+        private readonly AsyncLock _firmataDeviceListLock = new AsyncLock();
         private readonly ObservableCollection<TargetDevice> _devices = new ObservableCollection<TargetDevice>();
+        private MFDeploy _deploy;
+        private FirmataTargetDevice _selectedFirmataTarget;
 
         public DeviceModel()
         {
@@ -59,6 +61,16 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
             _deploy = null;
         }
 
+        public void SetFirmataTarget(FirmataTargetDevice target)
+        {
+            _selectedFirmataTarget = target;
+        }
+
+        public FirmataTargetDevice FirmataTarget
+        {
+            get { return _selectedFirmataTarget;  }
+        }
+
         public ObservableCollection<TargetDevice> Devices { get { return _devices; } }
 
         private void UpdateDeviceList()
@@ -68,8 +80,6 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
             // We do this separately, and in the background because it is incredibly slow
             //UpdateNetmfDeviceList(TransportType.TCPIP);
         }
-
-        private AsyncLock _firmataDeviceListLock = new AsyncLock();
 
         private async void UpdateFirmataDeviceList()
         {

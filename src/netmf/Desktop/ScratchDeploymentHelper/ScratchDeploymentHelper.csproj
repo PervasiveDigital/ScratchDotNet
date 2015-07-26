@@ -179,7 +179,6 @@
     <Compile Include="Server\DeviceService.cs" />
     <Compile Include="Server\DeviceServer.cs" />
     <Compile Include="Server\IDeviceService.cs" />
-    <Compile Include="ViewModels\DevicePageViewModel.cs" />
     <Compile Include="ViewModels\DevicesPageViewModel.cs" />
     <Compile Include="ViewModels\DeviceViewModel.cs" />
     <Compile Include="ViewModels\FirmataTargetDeviceViewModel.cs" />
@@ -191,10 +190,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\DeploymentLogWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\DevicePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -215,9 +210,6 @@
     <Compile Include="ViewModels\MfTargetDeviceViewModel.cs" />
     <Compile Include="Views\DeploymentLogWindow.xaml.cs">
       <DependentUpon>DeploymentLogWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\DevicePage.xaml.cs">
-      <DependentUpon>DevicePage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\DevicesPage.xaml.cs">
       <DependentUpon>DevicesPage.xaml</DependentUpon>
