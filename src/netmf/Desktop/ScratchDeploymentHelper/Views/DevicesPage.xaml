@@ -78,6 +78,7 @@
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
                                         <!--<RowDefinition Height="10" />
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />-->
@@ -89,6 +90,8 @@
                                     <TextBlock Grid.Row="1" Grid.Column="1" Margin="0,0,10,0" Style="{StaticResource DeviceValueStyle}" Visibility="{Binding Path=IsFirmataInstalled, Mode=OneWay,Converter={StaticResource BooleanToVisibilityConverter}}" Text="{Binding FirmataAppName}" />
                                     <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,0,10,0" Style="{StaticResource DeviceTitleStyle}" Visibility="{Binding Path=IsFirmataInstalled, Mode=OneWay,Converter={StaticResource BooleanToVisibilityConverter}}">Firmware Version:</TextBlock>
                                     <TextBlock Grid.Row="2" Grid.Column="1" Margin="0,0,10,0" Style="{StaticResource DeviceValueStyle}" Visibility="{Binding Path=IsFirmataInstalled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" Text="{Binding FirmataAppVersion}" />
+                                    <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,0,10,0" Style="{StaticResource DeviceTitleStyle}" Visibility="{Binding Path=IsFirmataInstalled, Mode=OneWay,Converter={StaticResource BooleanToVisibilityConverter}}">Use Scratch Extension:</TextBlock>
+                                    <TextBlock Grid.Row="3" Grid.Column="1" Margin="0,0,10,0" Style="{StaticResource DeviceValueStyle}" Visibility="{Binding Path=IsFirmataInstalled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" Text="{Binding ScratchExtensionName}" />
                                     <!--<TextBlock Grid.Row="4" Grid.Column="0" Margin="0,0,10,0" Style="{StaticResource DeviceTitleStyle}" Visibility="{Binding Path=IsImageRecognized, Mode=OneWay,Converter={StaticResource BooleanToVisibilityConverter}}">By:</TextBlock>
                                     <TextBlock Grid.Row="4" Grid.Column="1" Margin="0,0,10,0" Style="{StaticResource DeviceValueStyle}" Visibility="{Binding Path=IsImageRecognized, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" Text="{Binding ImageCreatedBy}" />
                                     <TextBlock Grid.Row="5" Grid.Column="0" Margin="0,0,10,0" Style="{StaticResource DeviceTitleStyle}" Visibility="{Binding Path=IsImageRecognized, Mode=OneWay,Converter={StaticResource BooleanToVisibilityConverter}}">Support:</TextBlock>

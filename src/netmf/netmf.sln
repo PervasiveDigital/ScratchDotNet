@@ -54,6 +54,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AddIns", "AddIns", "{C74AF6
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GadgeteerConfigAddIn", "Desktop\Extensibility\AddIns\GadgeteerConfigAddIn\GadgeteerConfigAddIn.csproj", "{42237208-6E42-42C9-8068-208D0EA4669C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScratchExtensions", "ScratchExtensions", "{BF59F43D-8F8F-4410-8DA5-BF99592DB4C0}"
+	ProjectSection(SolutionItems) = preProject
+		Desktop\CloudResources\ScratchExtensions\BrainPad.s2e = Desktop\CloudResources\ScratchExtensions\BrainPad.s2e
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -204,5 +209,6 @@ Global
 		{8F80EB2D-9FB9-49C9-AC1C-85C754CCE382} = {7D7E20EA-8A4B-4CA2-A88A-7CA9DCFA0A23}
 		{C74AF6C4-2DF1-4364-85D6-F89D7BE72218} = {7D7E20EA-8A4B-4CA2-A88A-7CA9DCFA0A23}
 		{42237208-6E42-42C9-8068-208D0EA4669C} = {C74AF6C4-2DF1-4364-85D6-F89D7BE72218}
+		{BF59F43D-8F8F-4410-8DA5-BF99592DB4C0} = {53D999DC-318F-4405-B792-2BD0CBEF1082}
 	EndGlobalSection
 EndGlobal

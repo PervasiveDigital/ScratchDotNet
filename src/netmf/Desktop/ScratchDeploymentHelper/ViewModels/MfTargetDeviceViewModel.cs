@@ -128,6 +128,16 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
                 this.SelectedFirmware = _images.FirstOrDefault(x => x.Id == originallySelected);
         }
 
+        public string ScratchExtensionName
+        {
+            get
+            {
+                if (this.SelectedBoard != null && this.SelectedFirmware != null && this.SelectedFirmware.IsInstalled &&
+                    !string.IsNullOrEmpty(this.SelectedFirmware.ScratchExtensionName))
+                    return this.SelectedFirmware.ScratchExtensionName;
+                return null;
+            }
+        }
         public bool ConfigurationIsAvailable
         {
             get
@@ -204,6 +214,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
                 OnPropertyChanged("SupportUrl");
                 OnPropertyChanged("SupportText");
                 OnPropertyChanged("BoardSupportIsAvailable");
+                OnPropertyChanged("ScratchExtensionName");
             }
         }
 
@@ -217,6 +228,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
                 OnPropertyChanged("FwSupportUrl");
                 OnPropertyChanged("FwSupportText");
                 OnPropertyChanged("FirmwareSupportIsAvailable");
+                OnPropertyChanged("ScratchExtensionName");
             }
         }
 

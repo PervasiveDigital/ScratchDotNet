@@ -31,6 +31,7 @@ using PervasiveDigital.Scratch.DeploymentHelper.Common;
 using PervasiveDigital.Scratch.DeploymentHelper.Firmata;
 using System.IO.Ports;
 using System.Diagnostics;
+using PervasiveDigital.Scratch.Common;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper.Models
 {

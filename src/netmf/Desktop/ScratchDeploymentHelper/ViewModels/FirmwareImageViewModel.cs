@@ -76,6 +76,11 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
             get { return _source.ConfigurationExtensionName; }
         }
 
+        public string ScratchExtensionName
+        {
+            get { return _source.ScratchExtension; }
+        }
+
         private bool _fIsInstalled;
         public bool IsInstalled
         {

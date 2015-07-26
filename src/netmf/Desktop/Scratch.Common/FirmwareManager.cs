@@ -34,6 +34,7 @@ using PervasiveDigital.Scratch.Common;
 using System.Threading;
 using Microsoft.ApplicationInsights;
 
+
 namespace PervasiveDigital.Scratch.Common
 {
     public class FirmwareManager
@@ -43,6 +44,7 @@ namespace PervasiveDigital.Scratch.Common
 
         private readonly TelemetryClient _tc;
         private readonly LibraryManager _libmgr;
+        private readonly ScratchContentManager _scm;
 
         private string _s4nPath;
         private string _fwPath;
@@ -50,13 +52,18 @@ namespace PervasiveDigital.Scratch.Common
         private string _fwDictFileName;
 
         private FirmwareDictionary _firmwareDictionary;
-        private object _fwDictLock = new object();
+        private readonly AsyncLock _fwDictLock = new AsyncLock();
 
-        public FirmwareManager(TelemetryClient tc, LibraryManager libmgr)
+        public FirmwareManager(TelemetryClient tc, LibraryManager libmgr, ScratchContentManager scm)
         {
             _tc = tc;
             _libmgr = libmgr;
-            EnsureDirectoryStructure();
+            _scm = scm;
+        }
+
+        public async Task Initialize()
+        {
+            await EnsureDirectoryStructure();
         }
 
         public FirmwareImage GetImage(Guid imageId)
@@ -159,7 +166,7 @@ namespace PervasiveDigital.Scratch.Common
             }
         }
 
-        private void EnsureDirectoryStructure()
+        private async Task EnsureDirectoryStructure()
         {
             var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             _s4nPath = Path.Combine(appDataPath, "ScratchForDotNet");
@@ -171,7 +178,9 @@ namespace PervasiveDigital.Scratch.Common
             var imagePath = Path.Combine(_s4nPath, "images");
             if (!Directory.Exists(imagePath))
                 Directory.CreateDirectory(imagePath);
-            ReadFirmwareDictionary();
+            await ReadFirmwareDictionary(false);
+            if (_firmwareDictionary != null)
+                await UpdateScratchDocuments();
         }
 
         public async Task UpdateFirmwareDictionary()
@@ -194,7 +203,7 @@ namespace PervasiveDigital.Scratch.Common
                     var client = new WebClient();
                     client.DownloadFile(uri, tempFile);
                     File.Copy(tempFile, destPath, true);
-                    ReadFirmwareDictionary();
+                    await ReadFirmwareDictionary(true);
                 }
                 catch (Exception ex)
                 {
@@ -218,7 +227,7 @@ namespace PervasiveDigital.Scratch.Common
                             File.WriteAllText(destPath, body);
                         }
                     }
-                    ReadFirmwareDictionary();
+                    await ReadFirmwareDictionary(true);
                 }
                 catch (WebException wex)
                 {
@@ -328,15 +337,18 @@ namespace PervasiveDigital.Scratch.Common
             return result;
         }
 
-        private void ReadFirmwareDictionary()
+        private async Task ReadFirmwareDictionary(bool fDownloadScratchDocuments)
         {
-            lock (_fwDictLock)
+            using (var releaser = await _fwDictLock.LockAsync())
             {
                 try
                 {
                     var content = File.ReadAllText(GetFirmwareDictionaryPath());
 
                     _firmwareDictionary = JsonConvert.DeserializeObject<FirmwareDictionary>(content);
+
+                    if (fDownloadScratchDocuments)
+                        await UpdateScratchDocuments();
                 }
                 catch (FileNotFoundException fnfex)
                 {
@@ -348,6 +360,20 @@ namespace PervasiveDigital.Scratch.Common
                     _tc.TrackException(ex);
                 }
             }
+        }
+
+        private async Task UpdateScratchDocuments()
+        {
+            var files = new HashSet<string>();
+            foreach (var item in _firmwareDictionary.Images)
+            {
+                if (!string.IsNullOrEmpty(item.ScratchExtension) &&
+                    !files.Contains(item.ScratchExtension))
+                {
+                    files.Add(item.ScratchExtension);
+                }
+            }
+            await _scm.UpdateScratchContent(files);
         }
 
         private string GetFirmwareDictionaryFileName()

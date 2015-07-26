@@ -35,6 +35,7 @@ namespace PervasiveDigital.Scratch.Common
         {
             this.Bind<FirmwareManager>().ToSelf().InSingletonScope();
             this.Bind<LibraryManager>().ToSelf().InSingletonScope();
+            this.Bind<ScratchContentManager>().ToSelf().InSingletonScope();
         }
     }
 }

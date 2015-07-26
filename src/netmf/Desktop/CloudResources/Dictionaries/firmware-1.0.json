@@ -27,7 +27,8 @@
             "ImageCreatedBy": "Pervasive Digital LLC",
             "SupportUrl": "https://github.com/PervasiveDigital/ScratchDotNet/wiki/BrainPad-Firmware",
             "ConfigurationExtensionSource": null,
-            "ConfigurationExtensionName" :  null,
+            "ConfigurationExtensionName": null,
+            "ScratchExtension": "BrainPad.s2e",
             "AppVersion": {
                 "Major": 1,
                 "Minor": 0,

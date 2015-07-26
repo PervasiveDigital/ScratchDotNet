@@ -37,6 +37,7 @@ using PervasiveDigital.Scratch.DeploymentHelper.Views;
 using Microsoft.ApplicationInsights;
 using System.Threading;
 using PervasiveDigital.Scratch.DeploymentHelper.Extensions;
+using PervasiveDigital.Scratch.Common;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper
 {
@@ -138,7 +139,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper
             }
         }
 
-        private void Application_Startup(object sender, StartupEventArgs e)
+        private async void Application_Startup(object sender, StartupEventArgs e)
         {
             try
             {
@@ -156,9 +157,14 @@ namespace PervasiveDigital.Scratch.DeploymentHelper
                 Application.Current.Shutdown();
             }
 
+            //TODO: show a splash screen
+
             // Initialize the extensibility pipeline
             var xmgr = App.Kernel.Get<ExtensionManager>();
             xmgr.Initialize();
+
+            var fwmgr = App.Kernel.Get<FirmwareManager>();
+            await fwmgr.Initialize();
 
             new Views.MainWindow().Show();
         }

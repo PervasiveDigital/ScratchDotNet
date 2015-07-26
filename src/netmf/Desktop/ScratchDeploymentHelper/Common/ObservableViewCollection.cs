@@ -1,4 +1,5 @@
-﻿//-------------------------------------------------------------------------
+﻿using PervasiveDigital.Scratch.Common;
+//-------------------------------------------------------------------------
 //  (c) 2015 Pervasive Digital LLC
 //
 //  This file is part of Scratch for .Net Micro Framework

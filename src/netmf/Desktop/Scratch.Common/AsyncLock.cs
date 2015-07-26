@@ -30,7 +30,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PervasiveDigital.Scratch.DeploymentHelper.Common
+namespace PervasiveDigital.Scratch.Common
 {
     public class AsyncLock
     {
