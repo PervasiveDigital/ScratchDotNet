@@ -10,6 +10,7 @@ using Microsoft.ApplicationInsights;
 using System.IO;
 using System.AddIn.Hosting;
 using System.Reflection;
+using System.Deployment.Application;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper.Extensions
 {
@@ -65,8 +66,13 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensions
             if (!Directory.Exists(destination))
                 Directory.CreateDirectory(destination);
 
-            var installDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            var source = Path.Combine(installDir, @"Assets\Files", assetDir);
+            string dataDir;
+            if (ApplicationDeployment.IsNetworkDeployed)
+                dataDir = ApplicationDeployment.CurrentDeployment.DataDirectory;
+            else
+                dataDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+            var source = Path.Combine(dataDir, @"Assets\Files", assetDir);
 
             var files = Directory.GetFiles(source);
             foreach (var file in files)

@@ -63,6 +63,27 @@ namespace PervasiveDigital.Scratch.Common
                         }
                     }
                 }
+                catch (WebException wex)
+                {
+                    if (wex.Response != null)
+                    {
+                        var status = ((HttpWebResponse)wex.Response).StatusCode;
+                        if (status == HttpStatusCode.NotModified)
+                        {
+                            // no big deal - we have the latest copy
+                        }
+                        else
+                        {
+                            // error - file not updated
+                            _tc.TrackException(wex);
+                        }
+                    }
+                    else
+                    {
+                        // error - file not updated
+                        _tc.TrackException(wex);
+                    }
+                }
                 catch (Exception ex)
                 {
                     // log it, but keep going
