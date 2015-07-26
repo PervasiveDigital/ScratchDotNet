@@ -45,6 +45,16 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
         {
         }
 
+        public string SupportUrl
+        {
+            get { return _source.SupportUrl; }
+        }
+
+        public string SupportText
+        {
+            get { return string.Format("{0} firmware support", _source.Name); }
+        }
+
         private bool _fIsInstalled;
         public bool IsInstalled
         {

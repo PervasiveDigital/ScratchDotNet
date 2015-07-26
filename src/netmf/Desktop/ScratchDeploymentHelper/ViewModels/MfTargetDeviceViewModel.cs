@@ -128,18 +128,84 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
                 this.SelectedFirmware = _images.FirstOrDefault(x => x.Id == originallySelected);
         }
 
+        public string SupportUrl
+        {
+            get
+            {
+                if (this.SelectedBoard != null)
+                    return this.SelectedBoard.SupportUrl;
+                else
+                    return "";
+            }
+        }
+
+        public string SupportText
+        {
+            get
+            {
+                if (this.SelectedBoard != null)
+                    return this.SelectedBoard.SupportText;
+                else
+                    return null;
+            }
+        }
+
+        public bool BoardSupportIsAvailable
+        {
+            get { return !(string.IsNullOrEmpty(this.SupportText) || string.IsNullOrEmpty(this.SupportUrl)); }
+        }
+
+        public string FwSupportUrl
+        {
+            get
+            {
+                if (this.SelectedFirmware != null)
+                    return this.SelectedFirmware.SupportUrl;
+                else
+                    return "";
+            }
+        }
+
+        public string FwSupportText
+        {
+            get
+            {
+                if (this.SelectedFirmware != null)
+                    return this.SelectedFirmware.SupportText;
+                else
+                    return null;
+            }
+        }
+
+        public bool FirmwareSupportIsAvailable
+        {
+            get { return !(string.IsNullOrEmpty(this.SupportText) || string.IsNullOrEmpty(this.SupportUrl)); }
+        }
+
         private FirmwareHostViewModel _selectedBoard;
         public FirmwareHostViewModel SelectedBoard
         {
             get { return _selectedBoard; }
-            set { SetProperty(ref _selectedBoard, value); }
+            set 
+            { 
+                SetProperty(ref _selectedBoard, value);
+                OnPropertyChanged("SupportUrl");
+                OnPropertyChanged("SupportText");
+                OnPropertyChanged("BoardSupportIsAvailable");
+            }
         }
 
         private FirmwareImageViewModel _selectedFirmware;
         public FirmwareImageViewModel SelectedFirmware
         {
             get { return _selectedFirmware; }
-            set { SetProperty(ref _selectedFirmware, value); }
+            set 
+            { 
+                SetProperty(ref _selectedFirmware, value);
+                OnPropertyChanged("FwSupportUrl");
+                OnPropertyChanged("FwSupportText");
+                OnPropertyChanged("FirmwareSupportIsAvailable");
+            }
         }
 
         public string FirmataAppVersion 

@@ -57,6 +57,16 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
             }
         }
 
+        public string SupportUrl
+        {
+            get { return _source.SupportUrl; }
+        }
+
+        public string SupportText
+        {
+            get { return string.Format("{0} support", this.Name); }
+        }
+
         private ImageSource _imgSource;
         public ImageSource Image
         {

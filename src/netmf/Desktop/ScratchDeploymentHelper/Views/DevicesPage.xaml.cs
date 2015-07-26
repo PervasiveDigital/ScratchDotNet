@@ -38,6 +38,7 @@ using Ninject;
 using Ninject.Parameters;
 
 using PervasiveDigital.Scratch.DeploymentHelper.ViewModels;
+using System.Diagnostics;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper.Views
 {
@@ -78,6 +79,12 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Views
                 var dc = ((FrameworkElement)sender).DataContext;
                 ((MfTargetDeviceViewModel)dc).PopulateImages();
             }
+        }
+
+        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
+            e.Handled = true;
         }
     }
 }

@@ -41,20 +41,29 @@
                         </Grid.ColumnDefinitions>
                         <!-- Image Panel -->
                         <Grid Grid.Column="0" Width="200">
-                            <ComboBox Margin="10" HorizontalAlignment="Center"
+                            <StackPanel Orientation="Vertical">
+                                <ComboBox Margin="10" HorizontalAlignment="Left"
                                           ItemsSource="{Binding Boards}" 
                                           SelectedItem="{Binding SelectedBoard, Mode=TwoWay}">
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <Border BorderBrush="LightGray" BorderThickness="1">
-                                            <StackPanel>
-                                                <Image Width="128" Stretch="Uniform" Source="{Binding Image}" />
-                                                <TextBlock Text="{Binding Name}" />
-                                            </StackPanel>
-                                        </Border>
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                            </ComboBox>
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border BorderBrush="LightGray" BorderThickness="1">
+                                                <StackPanel>
+                                                    <Image Width="128" Stretch="Uniform" Source="{Binding Image}" />
+                                                    <TextBlock Text="{Binding Name}" />
+                                                </StackPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                                <TextBlock Margin="10,0,10,10" 
+                                           TextWrapping="Wrap"
+                                           Visibility="{Binding Path=BoardSupportIsAvailable, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <Hyperlink NavigateUri="{Binding SupportUrl}" RequestNavigate="Hyperlink_RequestNavigate">
+                                        <TextBlock Text="{Binding SupportText}" />
+                                    </Hyperlink> 
+                                </TextBlock>
+                            </StackPanel>
                         </Grid>
                         <!-- Description Panel -->
                         <Grid Grid.Column="1" Margin="0,10,10,10">
@@ -100,6 +109,13 @@
                                         </DataTemplate>
                                     </ComboBox.ItemTemplate>
                                 </ComboBox>
+                                <TextBlock Margin="10,0,10,10" 
+                                           TextWrapping="Wrap"
+                                           Visibility="{Binding Path=FirmwareSupportIsAvailable, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <Hyperlink NavigateUri="{Binding FwSupportUrl}" RequestNavigate="Hyperlink_RequestNavigate">
+                                        <TextBlock Text="{Binding FwSupportText}" />
+                                    </Hyperlink> 
+                                </TextBlock>
                                 <Button Margin="10,7,10,10" Click="Button_Click" HorizontalAlignment="Stretch" Height="30">Deploy</Button>
                             </StackPanel>
                         </Grid>
