@@ -80,8 +80,7 @@ namespace BrainPadFirmataApp
 
                 var port = new SerialPort("COM2", 115200, Parity.None, 8, StopBits.One);
 
-                //TODO: Set name based on a config value
-                _firmata = new FirmataService("BrainPad", 1, 0);
+                _firmata = new FirmataService("BrainPad", "b335f01176044984941833c9ce00d3ae", 1, 0);
                 _board = new BrainPadBoard(_firmata);
                 _firmata.Open(_board, new SerialCommunicationChannel(port));
                 while (true)

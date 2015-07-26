@@ -32,7 +32,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
             BugFix = 3
         }
 
-        private const int MaxInputSize = 64;
+        private const int MaxInputSize = 128;
 
         // message command bytes (128-255/0x80-0xFF)
         private enum CommandCode : byte

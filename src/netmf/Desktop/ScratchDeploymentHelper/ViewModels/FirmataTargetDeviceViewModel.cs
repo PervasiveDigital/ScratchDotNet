@@ -26,8 +26,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 
+using Ninject;
+
 using PervasiveDigital.Scratch.DeploymentHelper.Common;
 using PervasiveDigital.Scratch.DeploymentHelper.Models;
+using PervasiveDigital.Scratch.Common;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
 {
@@ -40,8 +43,66 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
 
         public FirmataTargetDevice Source { get { return (FirmataTargetDevice)this.ViewSource; } }
 
-        public string AppName { get { return this.Source.AppName; } }
+        public string AppName 
+        { 
+            get 
+            {
+                var name = this.Source.AppName;
+                var open = name.IndexOf('(');
+                var close = name.IndexOf(')');
+                if (open!=-1 && close!=-1)
+                {
+                    name = name.Substring(0, open);
+                }
+                return name;
+            } 
+        }
 
+        private Guid ImageId
+        {
+            get
+            {
+                var result = Guid.Empty;
+
+                var value = this.Source.AppName;
+                var open = value.IndexOf('(');
+                var close = value.IndexOf(')');
+                if (open != -1 && close != -1)
+                {
+                    value = value.Substring(open+1, close - open -1);
+                    if (!Guid.TryParse(value, out result))
+                        result = Guid.Empty;
+                }
+
+                return result;
+            }
+        }
+
+        private FirmwareImage FirmwareImage
+        {
+            get
+            {
+                FirmwareImage result = null;
+                if (this.ImageId != Guid.Empty)
+                {
+                    var fwmgr = App.Kernel.Get<FirmwareManager>();
+                    var image = fwmgr.GetImage(this.ImageId);
+                    result = image;
+                }
+                return result;
+            }
+        }
+
+        public string ScratchExtension
+        {
+            get
+            {
+                if (this.FirmwareImage == null)
+                    return "";
+                else
+                    return this.FirmwareImage.ScratchExtension;
+            }
+        }
         public string AppVersion 
         { 
             get 

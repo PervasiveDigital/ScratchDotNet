@@ -91,6 +91,7 @@ namespace PervasiveDigital.Firmata.Runtime
         };
         private const int TOTAL_PIN_MODES = 11;
 
+        private readonly string _imageId;
         private IBoardDefinition _board;
         private ICommunicationChannel[] _channels;
         private CircularBuffer _input = new CircularBuffer(256, 1, 256);
@@ -100,9 +101,10 @@ namespace PervasiveDigital.Firmata.Runtime
         private byte[] _versionBuffer = null;
 
 
-        public FirmataService(string appName, int appMajorVersion, int appMinorVersion)
+        public FirmataService(string appName, string imageId, int appMajorVersion, int appMinorVersion)
         {
             this.AppName = appName;
+            _imageId = imageId;
             this.AppMajorVersion = appMajorVersion;
             this.AppMinorVersion = appMinorVersion;
         }
@@ -429,7 +431,7 @@ namespace PervasiveDigital.Firmata.Runtime
             if (_versionBuffer == null)
             {
                 // I would prefer to do this directly into 'buffer', but the output length is difficult to predict for strings with foreign chars
-                var name = Encoding.UTF8.GetBytes(this.AppName);
+                var name = Encoding.UTF8.GetBytes(this.AppName + "(" + _imageId + ")");
 
                 // beginsysex + command + fwmsjor + fwminor + appmajor + appminor + name + zero + endsysex
                 var len = 8 + 2 * name.Length;

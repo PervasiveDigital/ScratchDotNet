@@ -14,6 +14,9 @@
                 <TextBlock Margin="0,0,10,0">Version:</TextBlock>
                 <TextBlock Text="{Binding AppVersion}" />
             </StackPanel>
+            <TextBlock HorizontalAlignment="Right" Padding="10,5,10,5" Margin="10">
+                <Hyperlink NavigateUri="http://www.scratch4.net" RequestNavigate="Hyperlink_RequestNavigate">Scratch4.net</Hyperlink>
+            </TextBlock>
             <!--<Button HorizontalAlignment="Right" Padding="10,5,10,5" Margin="10" Command="{Binding ConnectCommand}">Connect</Button>-->
         </Grid>
 
@@ -155,6 +158,7 @@
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
                                     <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,0,10,0" Style="{StaticResource DeviceTitleStyle}">Name:</TextBlock>
                                     <TextBlock Grid.Row="0" Grid.Column="1" Margin="0,0,10,0" Style="{StaticResource DeviceValueStyle}" Text="{Binding Name}" />
@@ -164,6 +168,8 @@
                                     <TextBlock Grid.Row="2" Grid.Column="1" Margin="0,0,10,0" Style="{StaticResource DeviceValueStyle}" Text="{Binding AppVersion}" />
                                     <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,0,10,0" Style="{StaticResource DeviceTitleStyle}">Firmata protocol version:</TextBlock>
                                     <TextBlock Grid.Row="3" Grid.Column="1" Margin="0,0,10,0" Style="{StaticResource DeviceValueStyle}" Text="{Binding ProtocolVersion}" />
+                                    <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,0,10,0" Style="{StaticResource DeviceTitleStyle}">Use Scratch Extension:</TextBlock>
+                                    <TextBlock Grid.Row="4" Grid.Column="1" Margin="0,0,10,0" Style="{StaticResource DeviceValueStyle}" Text="{Binding ScratchExtension}" />
                                 </Grid>
                             </StackPanel>
                         </Grid>
@@ -175,7 +181,5 @@
                 </DataTemplate>
             </ListView.Resources>
         </ListView>
-
-
     </DockPanel>
 </Page>
