@@ -94,6 +94,12 @@
                                     <TextBlock Grid.Row="5" Grid.Column="0" Margin="0,0,10,0" Style="{StaticResource DeviceTitleStyle}" Visibility="{Binding Path=IsImageRecognized, Mode=OneWay,Converter={StaticResource BooleanToVisibilityConverter}}">Support:</TextBlock>
                                     <TextBlock Grid.Row="5" Grid.Column="1" Margin="0,0,10,0" Style="{StaticResource DeviceValueStyle}" Visibility="{Binding Path=IsImageRecognized, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" Text="{Binding ImageSupportUrl}" />-->
                                 </Grid>
+                                <Button x:Name="btnConfigure" Margin="0,10,10,10" 
+                                        Click="btnConfigure_Click" 
+                                        HorizontalAlignment="Left" Height="30" Width="100"
+                                        Visibility="{Binding Path=ConfigurationIsAvailable, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    Configure
+                                </Button>
                             </StackPanel>
                         </Grid>
                         <!-- Action Panel -->

@@ -53,7 +53,8 @@ namespace PervasiveDigital.Scratch.Common
         public string ImageCreatedBy { get; set; }
         public string SupportUrl { get; set; }
 
-        public string ConfigurationExtension { get; set; }
+        public string ConfigurationExtensionSource { get; set; }
+        public string ConfigurationExtensionName { get; set; }
 
         public Version AppVersion
         {

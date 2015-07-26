@@ -26,7 +26,8 @@
             "Description": "This firmware unlocks all of the features of the GHI Electronics BrainPad",
             "ImageCreatedBy": "Pervasive Digital LLC",
             "SupportUrl": "https://github.com/PervasiveDigital/ScratchDotNet/wiki/BrainPad-Firmware",
-            "ConfigurationExtension": null,
+            "ConfigurationExtensionSource": null,
+            "ConfigurationExtensionName" :  null,
             "AppVersion": {
                 "Major": 1,
                 "Minor": 0,

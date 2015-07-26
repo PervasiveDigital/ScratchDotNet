@@ -45,6 +45,17 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
         {
         }
 
+        public string DisplayName
+        {
+            get
+            {
+                var result = _source.Name;
+                if (this.IsInstalled)
+                    result += " (installed)";
+                return result;
+            }
+        }
+
         public string SupportUrl
         {
             get { return _source.SupportUrl; }
@@ -55,22 +66,21 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
             get { return string.Format("{0} firmware support", _source.Name); }
         }
 
+        public string ConfigurationExtensionSource
+        {
+            get { return _source.ConfigurationExtensionSource; }
+        }
+
+        public string ConfigurationExtenstionName
+        {
+            get { return _source.ConfigurationExtensionName; }
+        }
+
         private bool _fIsInstalled;
         public bool IsInstalled
         {
             get { return _fIsInstalled; }
             set { SetProperty(ref _fIsInstalled, value); }
-        }
-
-        public string DisplayName 
-        { 
-            get 
-            { 
-                var result = _source.Name;
-                if (this.IsInstalled)
-                    result += " (installed)";
-                return result;
-            } 
         }
 
         public Guid Id { get { return _source.Id; } }

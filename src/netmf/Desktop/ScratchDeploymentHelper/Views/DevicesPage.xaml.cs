@@ -86,5 +86,10 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Views
             Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
             e.Handled = true;
         }
+
+        private void btnConfigure_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

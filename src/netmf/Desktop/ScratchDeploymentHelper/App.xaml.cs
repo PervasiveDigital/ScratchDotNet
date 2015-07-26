@@ -36,6 +36,7 @@ using System.Reflection;
 using PervasiveDigital.Scratch.DeploymentHelper.Views;
 using Microsoft.ApplicationInsights;
 using System.Threading;
+using PervasiveDigital.Scratch.DeploymentHelper.Extensions;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper
 {
@@ -154,6 +155,10 @@ namespace PervasiveDigital.Scratch.DeploymentHelper
                 MessageBox.Show("The Scratch Gateway was unable to configure or open the http port that Scratch needs to use to communicate with your device. The app will have to exit now. Please check the scratch4.net web site for help.","Fatal startup error", MessageBoxButton.OK);
                 Application.Current.Shutdown();
             }
+
+            // Initialize the extensibility pipeline
+            var xmgr = App.Kernel.Get<ExtensionManager>();
+            xmgr.Initialize();
 
             new Views.MainWindow().Show();
         }

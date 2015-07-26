@@ -128,6 +128,18 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
                 this.SelectedFirmware = _images.FirstOrDefault(x => x.Id == originallySelected);
         }
 
+        public bool ConfigurationIsAvailable
+        {
+            get
+            {
+                if (this.SelectedBoard != null && this.SelectedFirmware != null && this.SelectedFirmware.IsInstalled &&
+                    !string.IsNullOrEmpty(this.SelectedFirmware.ConfigurationExtensionSource) &&
+                    !string.IsNullOrEmpty(this.SelectedFirmware.ConfigurationExtenstionName))
+                    return true;
+                return false;
+            }
+        }
+
         public string SupportUrl
         {
             get

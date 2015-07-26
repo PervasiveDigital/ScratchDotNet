@@ -68,6 +68,8 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>
+    </NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
@@ -79,6 +81,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>3178</NoWarn>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>7AFAF5ACD944206520A76E2906D295F3D740BBE4</ManifestCertificateThumbprint>
@@ -110,6 +113,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.AddIn" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
     <Reference Include="System.Runtime.Serialization" />
@@ -142,6 +146,7 @@
     <Compile Include="Common\ObservableViewCollection.cs" />
     <Compile Include="Common\RelayCommand.cs" />
     <Compile Include="Common\TaskExtensions.cs" />
+    <Compile Include="Extensions\ExtensionManager.cs" />
     <Compile Include="Firmata\CircularBuffer.cs" />
     <Compile Include="Firmata\Exceptions.cs" />
     <Compile Include="Firmata\FirmataEngine.cs" />
@@ -261,9 +266,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Assets\Deployments\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
       <Visible>False</Visible>
@@ -282,6 +285,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Extensibility\HostViewAdapters\HostViewAdapters.csproj">
+      <Project>{6664aebb-6761-4fd8-b720-1f65bb4e24a8}</Project>
+      <Name>HostViewAdapters</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Scratch.Common\Scratch.Common.csproj">
       <Project>{82f5725d-ccf9-4501-a0c5-9ea6725faf00}</Project>
       <Name>Scratch.Common</Name>
@@ -289,6 +296,32 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\Images\Scratch4DotNetLogo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <PublishFile Include="HostViewAdapters">
+      <Visible>False</Visible>
+      <Group>
+      </Group>
+      <TargetPath>
+      </TargetPath>
+      <PublishState>Exclude</PublishState>
+      <IncludeHash>True</IncludeHash>
+      <FileType>Assembly</FileType>
+    </PublishFile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Files\AddInSideAdapters\AddinSideAdapters.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\Files\AddInViews\Views.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\Files\Contracts\Contracts.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\Files\HostSideAdapters\HostSideAdapters.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
