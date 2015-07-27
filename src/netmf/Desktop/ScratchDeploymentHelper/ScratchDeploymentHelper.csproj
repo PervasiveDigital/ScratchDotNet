@@ -322,10 +322,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Extensibility\HostViewAdapters\HostViewAdapters.csproj">
-      <Project>{6664aebb-6761-4fd8-b720-1f65bb4e24a8}</Project>
-      <Name>HostViewAdapters</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Scratch.Common\Scratch.Common.csproj">
       <Project>{82f5725d-ccf9-4501-a0c5-9ea6725faf00}</Project>
       <Name>Scratch.Common</Name>
