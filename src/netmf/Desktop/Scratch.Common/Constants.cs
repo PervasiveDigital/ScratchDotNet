@@ -27,7 +27,7 @@ using System.Threading.Tasks;
 
 namespace PervasiveDigital.Scratch.Common
 {
-    internal class Constants
+    public class Constants
     {
         public const string S4NHost = "https://s4netus.blob.core.windows.net/";
         public const string FirmwarePath = "firmware/";

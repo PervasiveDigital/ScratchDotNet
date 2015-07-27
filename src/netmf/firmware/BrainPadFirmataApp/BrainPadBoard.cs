@@ -116,6 +116,9 @@ namespace BrainPadFirmataApp
             CheckDigitalInputs();
         }
 
+        public double Temperature { get; set; }
+        public double LightLevel { get; set; }
+
         private int ReadDigitalInputs()
         {
             int value = 0;

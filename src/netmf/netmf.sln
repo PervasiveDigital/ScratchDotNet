@@ -59,6 +59,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScratchExtensions", "Scratc
 		Desktop\CloudResources\ScratchExtensions\BrainPad.s2e = Desktop\CloudResources\ScratchExtensions\BrainPad.s2e
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrainPadDriver", "BrainPadDriver\BrainPadDriver.csproj", "{5B68944E-E1FC-450D-B6A4-11F7D784B788}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -189,6 +191,16 @@ Global
 		{42237208-6E42-42C9-8068-208D0EA4669C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{42237208-6E42-42C9-8068-208D0EA4669C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{42237208-6E42-42C9-8068-208D0EA4669C}.Release|x86.ActiveCfg = Release|Any CPU
+		{5B68944E-E1FC-450D-B6A4-11F7D784B788}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B68944E-E1FC-450D-B6A4-11F7D784B788}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B68944E-E1FC-450D-B6A4-11F7D784B788}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{5B68944E-E1FC-450D-B6A4-11F7D784B788}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{5B68944E-E1FC-450D-B6A4-11F7D784B788}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5B68944E-E1FC-450D-B6A4-11F7D784B788}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B68944E-E1FC-450D-B6A4-11F7D784B788}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B68944E-E1FC-450D-B6A4-11F7D784B788}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{5B68944E-E1FC-450D-B6A4-11F7D784B788}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{5B68944E-E1FC-450D-B6A4-11F7D784B788}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -210,5 +222,6 @@ Global
 		{C74AF6C4-2DF1-4364-85D6-F89D7BE72218} = {7D7E20EA-8A4B-4CA2-A88A-7CA9DCFA0A23}
 		{42237208-6E42-42C9-8068-208D0EA4669C} = {C74AF6C4-2DF1-4364-85D6-F89D7BE72218}
 		{BF59F43D-8F8F-4410-8DA5-BF99592DB4C0} = {53D999DC-318F-4405-B792-2BD0CBEF1082}
+		{5B68944E-E1FC-450D-B6A4-11F7D784B788} = {C74AF6C4-2DF1-4364-85D6-F89D7BE72218}
 	EndGlobalSection
 EndGlobal

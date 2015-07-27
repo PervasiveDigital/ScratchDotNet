@@ -54,8 +54,8 @@ namespace PervasiveDigital.Scratch.Common
         public string SupportUrl { get; set; }
 
         public string ConfigurationExtensionSource { get; set; }
-        public string ConfigurationExtensionName { get; set; }
         public string ScratchExtension { get; set; }
+        public string DriverSource { get; set; }
 
         public Version AppVersion
         {

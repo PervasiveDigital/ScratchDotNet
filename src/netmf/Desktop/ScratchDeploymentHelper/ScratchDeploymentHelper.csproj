@@ -116,6 +116,8 @@
     <Reference Include="System.AddIn" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.ServiceModel.Web" />
@@ -145,7 +147,7 @@
     <Compile Include="Common\ObservableViewCollection.cs" />
     <Compile Include="Common\RelayCommand.cs" />
     <Compile Include="Common\TaskExtensions.cs" />
-    <Compile Include="Extensions\ExtensionManager.cs" />
+    <Compile Include="Models\ExtensionManager.cs" />
     <Compile Include="Firmata\CircularBuffer.cs" />
     <Compile Include="Firmata\Exceptions.cs" />
     <Compile Include="Firmata\FirmataEngine.cs" />
@@ -169,7 +171,10 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Models\FirmataTargetDevice.cs" />
+    <Compile Include="Models\FirmwareManager.cs" />
+    <Compile Include="Models\LibraryManager.cs" />
     <Compile Include="Models\MfTargetDevice.cs" />
+    <Compile Include="Models\ScratchContentManager.cs" />
     <Compile Include="Models\ViewModelBase.cs" />
     <Compile Include="Server\UrlReservations\HttpApiConstants.cs" />
     <Compile Include="Server\UrlReservations\HttpApiNative.cs" />

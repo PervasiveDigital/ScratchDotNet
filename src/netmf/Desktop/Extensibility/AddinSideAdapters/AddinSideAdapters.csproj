@@ -41,6 +41,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DriverViewToContractAddInSideAdapter.cs" />
+    <Compile Include="FirmataEngineViewToContractAddInSideAdapter.cs" />
     <Compile Include="FirmwareConfigurationViewToContractAddInSideAdapter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

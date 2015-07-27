@@ -23,21 +23,21 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Deployment.Application;
 using System.Linq;
+using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using Microsoft.ApplicationInsights;
 
 using Ninject;
+
+using PervasiveDigital.Scratch.Common;
 using PervasiveDigital.Scratch.DeploymentHelper;
 using PervasiveDigital.Scratch.DeploymentHelper.Models;
 using PervasiveDigital.Scratch.DeploymentHelper.Server;
-using System.Deployment.Application;
-using System.Reflection;
 using PervasiveDigital.Scratch.DeploymentHelper.Views;
-using Microsoft.ApplicationInsights;
-using System.Threading;
-using PervasiveDigital.Scratch.DeploymentHelper.Extensions;
-using PervasiveDigital.Scratch.Common;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper
 {
@@ -52,7 +52,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper
         public App()
         {
             this.DispatcherUnhandledException += App_DispatcherUnhandledException;
-            _kernel = new StandardKernel(new AppModule(), new Scratch.Common.Module());
+            _kernel = new StandardKernel(new Scratch.Common.Module(), new AppModule());
 
             var telemetryClient = new TelemetryClient();
             telemetryClient.InstrumentationKey = "2a8f2947-dfe9-48ef-8c8d-13184f9e46f9";
@@ -161,7 +161,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper
 
             // Initialize the extensibility pipeline
             var xmgr = App.Kernel.Get<ExtensionManager>();
-            xmgr.Initialize();
+            await xmgr.Initialize();
 
             var fwmgr = App.Kernel.Get<FirmwareManager>();
             await fwmgr.Initialize();

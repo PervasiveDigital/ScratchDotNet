@@ -31,7 +31,9 @@ using System.Threading.Tasks;
 
 using Ninject;
 
-namespace PervasiveDigital.Scratch.Common
+using PervasiveDigital.Scratch.Common;
+
+namespace PervasiveDigital.Scratch.DeploymentHelper.Models
 {
     public class LibraryManager
     {

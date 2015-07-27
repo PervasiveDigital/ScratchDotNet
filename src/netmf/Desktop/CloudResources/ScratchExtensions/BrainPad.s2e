@@ -5,23 +5,38 @@
 	"blockSpecs": [
 		["h",".Net Program","runDotNet"],
 		
-		["B", "read digital pin %n","getDigital","9"],
+        [ "-" ],
+		["b", "touch pad %d.pads touched","getTouch","LEFT"],
+  		["w", "set traffic light to %d.traffic", "setTraffic", "OFF"],
+		["w", "play note %d.notes beat %d.beats","playTone", "C4","Half"],
+
+		["R", "temperature","bpTemperature"],
+		["R", "light level","bpLightLevel"],
+		["R", "tilt in the %d.dir direction","bpAngle"],
 		
-		["R", "read analog pin (A)%n","getAnalog","0"],
+		["w", "set servo angle as %d.servovalue","setServo", 90],
+		["w", "set motor speed as %d","setMotor", 0],
+
+        [ "w", "clear display", "clearDisplay" ],
+        [ "w", "move pen to %d, %d", "setPenPosition", 0, 0 ],
+        [ "w", "select %d.colors ink", "setPenColor", 0, 0 ],
+        [ "w", "select %d.size letters", "setFontSize", "SMALL" ],
+
+		["w", "print %s at %d, %d, in %d.size letters","print", "", 0, 0, "SMALL"],
 		
-		["w", "set digital pin %n output as %d.digital","runDigital", "9", "HIGH"],
+        [ "-" ],
+		["b", "read digital pin %n","bpDigital","9"],
+		["R", "read analog pin (A)%n","bpAnalog","0"],
+		["w", "set digital pin %n output as %d.digital","runDigital", "9", "HIGH"],		
+		["w", "set pwm pin %n output as %d.pwmvalue","runPwm", "5", 0]
 		
-		["w", "set pwm pin %n output as %d.pwmvalue","runPwm", "5", 0],
-		
-		["w", "play tone pin %n on note %d.notes beat %d.beats","runTone", "9", "C4","Half"],
-		
-		["w", "set servo pin %n angle as %d.servovalue","runServo", "9", 90],
-		
-		["R", "timer","getTimer", "0"],
-		
-		["w", "reset timer","resetTimer", "0"]
 	],
 	"menus": {
+		"size":["SMALL","BIG"],
+		"dir":["X","Y"],
+		"pads":["LEFT","MIDDLE","RIGHT"],
+		"buttons":["UP","DOWN","LEFT","RIGHT"],
+		"traffic":["OFF","GREEN","YELLOW","RED"],
 		"beats":["500","250","125","1000","2000","0"],
 		"servovalue":["0","45","90","135","180"],
 		"pwmvalue":["0","50","100","150","255"],

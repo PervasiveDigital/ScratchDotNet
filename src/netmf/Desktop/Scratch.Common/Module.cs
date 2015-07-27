@@ -33,9 +33,6 @@ namespace PervasiveDigital.Scratch.Common
     {
         public override void Load()
         {
-            this.Bind<FirmwareManager>().ToSelf().InSingletonScope();
-            this.Bind<LibraryManager>().ToSelf().InSingletonScope();
-            this.Bind<ScratchContentManager>().ToSelf().InSingletonScope();
         }
     }
 }

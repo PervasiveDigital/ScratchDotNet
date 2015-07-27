@@ -35,6 +35,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
     {
         private string _name;
         private FirmataEngine _firmata;
+        private bool _isInitialized = false;
 
         public FirmataTargetDevice(string name, FirmataEngine firmata)
         {
@@ -95,5 +96,31 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
                     throw new Exception("This device is already bound to a firmata engine");
             }
         }
+
+        #region Device Service Support
+
+        public void Enable(bool fSelected)
+        {
+            _isInitialized = false;
+        }
+
+        public void Initialize()
+        {
+            if (!_isInitialized)
+            {
+                // Set up port queries
+
+                _isInitialized = true;
+            }
+        }
+
+        public Dictionary<string, string> GetSensorValues()
+        {
+            var result = new Dictionary<string, string>();
+
+            return result;
+        }
+
+        #endregion
     }
 }

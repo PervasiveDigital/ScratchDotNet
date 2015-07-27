@@ -59,11 +59,8 @@
     <Compile Include="FirmwareDictionary.cs" />
     <Compile Include="FirmwareHost.cs" />
     <Compile Include="FirmwareImage.cs" />
-    <Compile Include="FirmwareManager.cs" />
-    <Compile Include="LibraryManager.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ScratchContentManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

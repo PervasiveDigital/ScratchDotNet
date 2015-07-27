@@ -143,8 +143,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
             get
             {
                 if (this.SelectedBoard != null && this.SelectedFirmware != null && this.SelectedFirmware.IsInstalled &&
-                    !string.IsNullOrEmpty(this.SelectedFirmware.ConfigurationExtensionSource) &&
-                    !string.IsNullOrEmpty(this.SelectedFirmware.ConfigurationExtenstionName))
+                    !string.IsNullOrEmpty(this.SelectedFirmware.ConfigurationExtensionSource))
                     return true;
                 return false;
             }

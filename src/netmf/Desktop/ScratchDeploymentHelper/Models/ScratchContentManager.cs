@@ -28,7 +28,9 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PervasiveDigital.Scratch.Common
+using PervasiveDigital.Scratch.Common;
+
+namespace PervasiveDigital.Scratch.DeploymentHelper.Models
 {
     public class ScratchContentManager
     {

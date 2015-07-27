@@ -71,9 +71,9 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
             get { return _source.ConfigurationExtensionSource; }
         }
 
-        public string ConfigurationExtenstionName
+        public string DriverSource
         {
-            get { return _source.ConfigurationExtensionName; }
+            get { return _source.DriverSource; }
         }
 
         public string ScratchExtensionName

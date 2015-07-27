@@ -40,7 +40,40 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Server
             if (this.DeviceModel.FirmataTarget == null)
                 return ResultAsString("_problem No .Net Micro Framework board is connected\r\n");
             else
-                return ResultAsString("temperature 25");
+            {
+                var sensorDict = this.DeviceModel.FirmataTarget.GetSensorValues();
+                var sb = new StringBuilder();
+            }
+            return ResultAsString("temperature 25");
+        }
+
+        public Stream RunDotNet()
+        {
+            WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
+            if (this.DeviceModel.FirmataTarget == null)
+            {
+                this.DeviceModel.FirmataTarget.Initialize();
+            }
+
+            return ResultAsString("ok\r\n");
+        }
+
+        public Stream RunDigital(string id, string pin, string value)
+        {
+            WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
+            return ResultAsString("ok\r\n");
+        }
+
+        public Stream RunPwm(string id, string port, string value)
+        {
+            WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
+            return ResultAsString("ok\r\n");
+        }
+
+        public Stream RunTone(string id, string note, string beat)
+        {
+            WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
+            return ResultAsString("ok\r\n");
         }
 
         public static Stream ResultAsString(string returnValue)

@@ -35,5 +35,17 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Server
     {
         [OperationContract, WebGet(UriTemplate = "/poll")]
         Stream Poll();
+
+        [OperationContract, WebGet(UriTemplate = "/runDotNet")]
+        Stream RunDotNet();
+
+        [OperationContract, WebGet(UriTemplate = "/runDigital/{id}/{pin}/{value}")]
+        Stream RunDigital(string id, string pin, string value);
+
+        [OperationContract, WebGet(UriTemplate = "/runPwm/{id}/{port}/{value}")]
+        Stream RunPwm(string id, string port, string value);
+
+        [OperationContract, WebGet(UriTemplate = "/runTone/{id}/{note}/{beat}")]
+        Stream RunTone(string id, string note, string beat);
     }
 }

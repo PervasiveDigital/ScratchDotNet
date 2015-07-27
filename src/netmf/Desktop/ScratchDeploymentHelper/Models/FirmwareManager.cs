@@ -21,21 +21,21 @@
 //-------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.ApplicationInsights;
 
 using Newtonsoft.Json;
 
 using PervasiveDigital.Scratch.Common;
-using System.Threading;
-using Microsoft.ApplicationInsights;
 
-
-namespace PervasiveDigital.Scratch.Common
+namespace PervasiveDigital.Scratch.DeploymentHelper.Models
 {
     public class FirmwareManager
     {
@@ -110,6 +110,14 @@ namespace PervasiveDigital.Scratch.Common
                 }
             }
             return result;
+        }
+
+        public ReadOnlyCollection<FirmwareImage> Images
+        {
+            get
+            {
+                return new ReadOnlyCollection<FirmwareImage>(_firmwareDictionary.Images);
+            }
         }
 
         public async Task<byte[]> GetImageForBoard(Guid id)

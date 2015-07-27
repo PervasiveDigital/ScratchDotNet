@@ -29,7 +29,6 @@ using Ninject.Modules;
 using PervasiveDigital.Scratch.DeploymentHelper.Common;
 using PervasiveDigital.Scratch.DeploymentHelper.Server;
 using PervasiveDigital.Scratch.DeploymentHelper.Models;
-using PervasiveDigital.Scratch.DeploymentHelper.Extensions;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper
 {
@@ -38,8 +37,12 @@ namespace PervasiveDigital.Scratch.DeploymentHelper
         public override void Load()
         {
             this.Bind<ILogger>().To<Logger>().InSingletonScope();
+            this.Bind<FirmwareManager>().ToSelf().InSingletonScope();
+            this.Bind<LibraryManager>().ToSelf().InSingletonScope();
             this.Bind<ExtensionManager>().ToSelf().InSingletonScope();
             this.Bind<Models.DeviceModel>().ToSelf().InSingletonScope();
+
+            this.Bind<ScratchContentManager>().ToSelf().InSingletonScope();
 
             // The device server
             this.Bind<DeviceServer>().ToSelf().InSingletonScope();
