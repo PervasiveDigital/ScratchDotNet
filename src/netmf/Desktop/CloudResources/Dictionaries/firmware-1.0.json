@@ -28,6 +28,7 @@
             "SupportUrl": "https://github.com/PervasiveDigital/ScratchDotNet/wiki/BrainPad-Firmware",
             "ConfigurationExtensionSource": null,
             "DriverSource": "BrainPadDriver.zip",
+            "DriverName":  "BrainPad Driver",
             "ScratchExtension": "BrainPad.s2e",
             "AppVersion": {
                 "Major": 1,

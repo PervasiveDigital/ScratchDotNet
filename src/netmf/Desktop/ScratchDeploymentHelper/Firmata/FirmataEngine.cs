@@ -19,10 +19,11 @@ using System.Threading.Tasks;
 
 using PervasiveDigital.Scratch.DeploymentHelper.Common;
 using System.Diagnostics;
+using PervasiveDigital.Scratch.DeploymentHelper.Extensibility;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
 {
-    public class FirmataEngine : IDisposable
+    public class FirmataEngine : IFirmataEngine, IDisposable
     {
         // we intend to maintain compatibility with the main protocol implementation found at : https://github.com/firmata
         private enum FirmataProtocolVersion

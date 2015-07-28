@@ -58,49 +58,14 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
             } 
         }
 
-        private Guid ImageId
-        {
-            get
-            {
-                var result = Guid.Empty;
-
-                var value = this.Source.AppName;
-                var open = value.IndexOf('(');
-                var close = value.IndexOf(')');
-                if (open != -1 && close != -1)
-                {
-                    value = value.Substring(open+1, close - open -1);
-                    if (!Guid.TryParse(value, out result))
-                        result = Guid.Empty;
-                }
-
-                return result;
-            }
-        }
-
-        private FirmwareImage FirmwareImage
-        {
-            get
-            {
-                FirmwareImage result = null;
-                if (this.ImageId != Guid.Empty)
-                {
-                    var fwmgr = App.Kernel.Get<FirmwareManager>();
-                    var image = fwmgr.GetImage(this.ImageId);
-                    result = image;
-                }
-                return result;
-            }
-        }
-
         public string ScratchExtension
         {
             get
             {
-                if (this.FirmwareImage == null)
+                if (this.Source.FirmwareImage == null)
                     return "";
                 else
-                    return this.FirmwareImage.ScratchExtension;
+                    return this.Source.FirmwareImage.ScratchExtension;
             }
         }
         public string AppVersion 

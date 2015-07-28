@@ -45,17 +45,6 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Generated Files\IDriverContractToViewHostAdapter.g.cs" />
-    <Compile Include="Generated Files\IDriverHostAdapter.g.cs" />
-    <Compile Include="Generated Files\IDriverViewToContractHostAdapter.g.cs" />
-    <Compile Include="Generated Files\IFirmataEngineContractToViewHostAdapter.g.cs" />
-    <Compile Include="Generated Files\IFirmataEngineHostAdapter.g.cs" />
-    <Compile Include="Generated Files\IFirmataEngineViewToContractHostAdapter.g.cs" />
-    <Compile Include="Generated Files\IFirmwareConfigurationContractToViewHostAdapter.g.cs" />
-    <Compile Include="Generated Files\IFirmwareConfigurationHostAdapter.g.cs" />
-    <Compile Include="Generated Files\IFirmwareConfigurationViewToContractHostAdapter.g.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Contracts\Contracts.csproj">
       <Project>{19EDD3B5-E003-4076-BF35-2157A3E5BCD0}</Project>
       <Name>Contracts</Name>
@@ -66,6 +55,17 @@
       <Name>HostView</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Generated Files\IDriverContractToViewHostAdapter.g.cs" />
+    <Compile Include="Generated Files\IDriverHostAdapter.g.cs" />
+    <Compile Include="Generated Files\IDriverViewToContractHostAdapter.g.cs" />
+    <Compile Include="Generated Files\IFirmataEngineContractToViewHostAdapter.g.cs" />
+    <Compile Include="Generated Files\IFirmataEngineHostAdapter.g.cs" />
+    <Compile Include="Generated Files\IFirmataEngineViewToContractHostAdapter.g.cs" />
+    <Compile Include="Generated Files\IFirmwareConfigurationContractToViewHostAdapter.g.cs" />
+    <Compile Include="Generated Files\IFirmwareConfigurationHostAdapter.g.cs" />
+    <Compile Include="Generated Files\IFirmwareConfigurationViewToContractHostAdapter.g.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

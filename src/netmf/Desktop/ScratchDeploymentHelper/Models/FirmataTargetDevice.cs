@@ -26,8 +26,13 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Microsoft.NetMicroFramework.Tools.MFDeployTool.Engine;
+
+using Ninject;
+
 using PervasiveDigital.Scratch.DeploymentHelper.Firmata;
 using PervasiveDigital.Scratch.DeploymentHelper.Common;
+using PervasiveDigital.Scratch.DeploymentHelper.Extensibility;
+using PervasiveDigital.Scratch.Common;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper.Models
 {
@@ -35,7 +40,6 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
     {
         private string _name;
         private FirmataEngine _firmata;
-        private bool _isInitialized = false;
 
         public FirmataTargetDevice(string name, FirmataEngine firmata)
         {
@@ -97,21 +101,75 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
             }
         }
 
-        #region Device Service Support
-
-        public void Enable(bool fSelected)
+        public Guid ImageId
         {
-            _isInitialized = false;
+            get
+            {
+                var result = Guid.Empty;
+
+                var value = this.AppName;
+                var open = value.IndexOf('(');
+                var close = value.IndexOf(')');
+                if (open != -1 && close != -1)
+                {
+                    value = value.Substring(open + 1, close - open - 1);
+                    if (!Guid.TryParse(value, out result))
+                        result = Guid.Empty;
+                }
+
+                return result;
+            }
         }
 
-        public void Initialize()
+        public FirmwareImage FirmwareImage
         {
-            if (!_isInitialized)
+            get
             {
-                // Set up port queries
-
-                _isInitialized = true;
+                FirmwareImage result = null;
+                if (this.ImageId != Guid.Empty)
+                {
+                    var fwmgr = App.Kernel.Get<FirmwareManager>();
+                    var image = fwmgr.GetImage(this.ImageId);
+                    result = image;
+                }
+                return result;
             }
+        }
+
+        #region Device Service Support
+
+        private IDriver _driver;
+        public IDriver Driver
+        {
+            get
+            {
+                if (_driver == null)
+                {
+                    var xmgr = App.Kernel.Get<ExtensionManager>();
+                    _driver = xmgr.GetDriverForImage(this.FirmwareImage);
+                }
+                return _driver;
+            }
+        }
+
+        private bool _isEnabled = false;
+        public void Enable(bool enable)
+        {
+            if (enable!=_isEnabled && this.Driver!=null)
+            {
+                if (enable)
+                    this.Driver.Start(_firmata);
+                else
+                    this.Driver.Stop();
+
+                _isEnabled = enable;
+            }
+        }
+
+        public void StartOfProgram()
+        {
+            if (this.Driver != null)
+                this.Driver.StartOfProgram();
         }
 
         public Dictionary<string, string> GetSensorValues()

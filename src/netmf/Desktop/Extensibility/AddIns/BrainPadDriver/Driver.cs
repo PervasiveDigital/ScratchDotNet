@@ -12,17 +12,26 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
     {
         public void Start(IFirmataEngine firmataEngine)
         {
-            throw new NotImplementedException();
         }
 
         public void Stop()
         {
-            throw new NotImplementedException();
+        }
+
+        public void StartOfProgram()
+        {
+        }
+
+        public void ExecuteCommand(string verb, string id, IList<string> args)
+        {
         }
 
         public Dictionary<string, string> GetSensorValues()
         {
-            throw new NotImplementedException();
+            var result = new Dictionary<string, string>();
+
+            return result;
         }
+
     }
 }

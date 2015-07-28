@@ -14,4 +14,5 @@ $destination = $SolutionDir + "Desktop\CloudResources\AddIns\" + $ProjectName + 
 
 Write-Verbose "$source => $destination"
 
+if (test-path $destination) { ri -fo $destination }
 [io.compression.zipfile]::CreateFromDirectory($source, $destination)

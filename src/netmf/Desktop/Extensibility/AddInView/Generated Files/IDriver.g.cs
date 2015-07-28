@@ -16,6 +16,8 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
     {
         void Start(IFirmataEngine firmataEngine);
         void Stop();
+        void StartOfProgram();
+        void ExecuteCommand(string verb, string id, System.Collections.Generic.IList<string> args);
         System.Collections.Generic.Dictionary<string, string> GetSensorValues();
     }
 }

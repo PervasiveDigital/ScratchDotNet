@@ -154,7 +154,23 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
         {
             var warnings = AddInStore.Update(_addInRoot);
             var tokens = AddInStore.FindAddIns(typeof(IFirmwareConfiguration), _addInRoot);
-            tokens = AddInStore.FindAddIns(typeof(IDriver), _addInRoot);
+        }
+
+        public IDriver GetDriverForImage(FirmwareImage image)
+        {
+            IDriver result = null;
+
+            if (image != null)
+            {
+                var tokens = AddInStore.FindAddIns(typeof(IDriver), _addInRoot);
+                var driverToken = tokens.FirstOrDefault(x => x.Name == image.DriverName);
+                if (driverToken != null)
+                {
+                    result = driverToken.Activate<IDriver>(AddInSecurityLevel.FullTrust);
+                    // use AddInController.GetAddInController(result) to manage/unload/etc
+                }
+            }
+            return result;
         }
 
         private void EnsureDirectoryStructure()

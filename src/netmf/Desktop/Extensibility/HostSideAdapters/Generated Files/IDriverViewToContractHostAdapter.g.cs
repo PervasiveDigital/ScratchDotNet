@@ -26,6 +26,14 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility.HostSideAdapte
         {
             _view.Stop();
         }
+        public virtual void StartOfProgram()
+        {
+            _view.StartOfProgram();
+        }
+        public virtual void ExecuteCommand(string verb, string id, System.AddIn.Contract.IListContract<string> args)
+        {
+            _view.ExecuteCommand(verb, id, System.AddIn.Pipeline.CollectionAdapters.ToIList<string>(args));
+        }
         public virtual System.Collections.Generic.Dictionary<string, string> GetSensorValues()
         {
             return _view.GetSensorValues();

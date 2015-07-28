@@ -45,17 +45,6 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Generated Files\IDriverAddInAdapter.g.cs" />
-    <Compile Include="Generated Files\IDriverContractToViewAddInAdapter.g.cs" />
-    <Compile Include="Generated Files\IDriverViewToContractAddInAdapter.g.cs" />
-    <Compile Include="Generated Files\IFirmataEngineAddInAdapter.g.cs" />
-    <Compile Include="Generated Files\IFirmataEngineContractToViewAddInAdapter.g.cs" />
-    <Compile Include="Generated Files\IFirmataEngineViewToContractAddInAdapter.g.cs" />
-    <Compile Include="Generated Files\IFirmwareConfigurationAddInAdapter.g.cs" />
-    <Compile Include="Generated Files\IFirmwareConfigurationContractToViewAddInAdapter.g.cs" />
-    <Compile Include="Generated Files\IFirmwareConfigurationViewToContractAddInAdapter.g.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\AddInView\AddInView.csproj">
       <Project>{692BAA4C-2D0B-4315-A01F-5F9D9F2C7777}</Project>
       <Name>AddInView</Name>
@@ -66,6 +55,17 @@
       <Name>Contracts</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Generated Files\IDriverAddInAdapter.g.cs" />
+    <Compile Include="Generated Files\IDriverContractToViewAddInAdapter.g.cs" />
+    <Compile Include="Generated Files\IDriverViewToContractAddInAdapter.g.cs" />
+    <Compile Include="Generated Files\IFirmataEngineAddInAdapter.g.cs" />
+    <Compile Include="Generated Files\IFirmataEngineContractToViewAddInAdapter.g.cs" />
+    <Compile Include="Generated Files\IFirmataEngineViewToContractAddInAdapter.g.cs" />
+    <Compile Include="Generated Files\IFirmwareConfigurationAddInAdapter.g.cs" />
+    <Compile Include="Generated Files\IFirmwareConfigurationContractToViewAddInAdapter.g.cs" />
+    <Compile Include="Generated Files\IFirmwareConfigurationViewToContractAddInAdapter.g.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

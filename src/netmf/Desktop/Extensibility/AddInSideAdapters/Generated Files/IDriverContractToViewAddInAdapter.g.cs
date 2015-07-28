@@ -31,6 +31,14 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility.AddInSideAdapt
         {
             _contract.Stop();
         }
+        public void StartOfProgram()
+        {
+            _contract.StartOfProgram();
+        }
+        public void ExecuteCommand(string verb, string id, System.Collections.Generic.IList<string> args)
+        {
+            _contract.ExecuteCommand(verb, id, System.AddIn.Pipeline.CollectionAdapters.ToIListContract<string>(args));
+        }
         public System.Collections.Generic.Dictionary<string, string> GetSensorValues()
         {
             return _contract.GetSensorValues();

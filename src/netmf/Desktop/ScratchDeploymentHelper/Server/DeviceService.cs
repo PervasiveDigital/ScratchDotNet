@@ -52,7 +52,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Server
             WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
             if (this.DeviceModel.FirmataTarget == null)
             {
-                this.DeviceModel.FirmataTarget.Initialize();
+                this.DeviceModel.FirmataTarget.StartOfProgram();
             }
 
             return ResultAsString("ok\r\n");
