@@ -339,7 +339,9 @@
     <Content Include="Assets\Files\AddInSideAdapters\AddinSideAdapters.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Files\AddInViews\AddInView.dll" />
+    <Content Include="Assets\Files\AddInViews\AddInView.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\Files\Contracts\Contracts.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

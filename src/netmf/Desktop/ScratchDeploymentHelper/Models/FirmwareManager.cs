@@ -31,6 +31,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
 
+using Ninject;
+
 using Newtonsoft.Json;
 
 using PervasiveDigital.Scratch.Common;
@@ -116,7 +118,10 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
         {
             get
             {
-                return new ReadOnlyCollection<FirmwareImage>(_firmwareDictionary.Images);
+                if (_firmwareDictionary == null)
+                    return null;
+                else
+                    return new ReadOnlyCollection<FirmwareImage>(_firmwareDictionary.Images);
             }
         }
 
@@ -188,7 +193,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
                 Directory.CreateDirectory(imagePath);
             await ReadFirmwareDictionary(false);
             if (_firmwareDictionary != null)
-                await UpdateScratchDocuments();
+                await UpdateDownloadableAssets();
         }
 
         public async Task UpdateFirmwareDictionary()
@@ -356,7 +361,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
                     _firmwareDictionary = JsonConvert.DeserializeObject<FirmwareDictionary>(content);
 
                     if (fDownloadScratchDocuments)
-                        await UpdateScratchDocuments();
+                        await UpdateDownloadableAssets();
                 }
                 catch (FileNotFoundException fnfex)
                 {
@@ -370,7 +375,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
             }
         }
 
-        private async Task UpdateScratchDocuments()
+        private async Task UpdateDownloadableAssets()
         {
             var files = new HashSet<string>();
             foreach (var item in _firmwareDictionary.Images)
@@ -382,6 +387,9 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
                 }
             }
             await _scm.UpdateScratchContent(files);
+
+            var xmgr = App.Kernel.Get<ExtensionManager>();
+            await xmgr.UpdatePlugins();
         }
 
         private string GetFirmwareDictionaryFileName()

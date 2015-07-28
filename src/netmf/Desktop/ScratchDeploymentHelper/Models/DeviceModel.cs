@@ -66,7 +66,8 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
             if (_selectedFirmataTarget != null && _selectedFirmataTarget != target)
                 _selectedFirmataTarget.Enable(false);
             _selectedFirmataTarget = target;
-            _selectedFirmataTarget.Enable(true);
+            if (_selectedFirmataTarget!=null)
+                _selectedFirmataTarget.Enable(true);
         }
 
         public FirmataTargetDevice FirmataTarget

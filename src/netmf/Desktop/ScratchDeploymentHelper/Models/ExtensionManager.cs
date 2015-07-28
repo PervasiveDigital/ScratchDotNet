@@ -39,58 +39,88 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
             _addInRoot = Path.Combine(s4nPath, "Extensibility");
             _cacheRoot = Path.Combine(s4nPath, "Cache");
             _addInsDirectory = Path.Combine(_addInRoot, "AddIns");
+
+            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+        }
+
+        Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            if (string.IsNullOrEmpty(_addInRoot))
+                return null;
+
+            return null;
         }
 
         public async Task Initialize()
         {
             EnsureDirectoryStructure();
             await UpdatePlugins();
-            UpdatePipeline();
         }
 
-        private Task UpdatePlugins()
+        public async Task UpdatePlugins()
         {
             var files = new HashSet<string>();
-            foreach (var item in _fwmgr.Images)
+            if (_fwmgr.Images != null)
             {
-                if (!string.IsNullOrEmpty(item.DriverSource) &&
-                    !files.Contains(item.DriverSource))
+                foreach (var item in _fwmgr.Images)
                 {
-                    files.Add(item.DriverSource);
+                    if (!string.IsNullOrEmpty(item.DriverSource) &&
+                        !files.Contains(item.DriverSource))
+                    {
+                        files.Add(item.DriverSource);
+                    }
+                    if (!string.IsNullOrEmpty(item.ConfigurationExtensionSource) &&
+                        !files.Contains(item.ConfigurationExtensionSource))
+                    {
+                        files.Add(item.ConfigurationExtensionSource);
+                    }
                 }
-                if (!string.IsNullOrEmpty(item.ConfigurationExtensionSource) &&
-                    !files.Contains(item.ConfigurationExtensionSource))
-                {
-                    files.Add(item.ConfigurationExtensionSource);
-                }
+                await this.UpdatePlugins(files);
+                UpdatePipeline();
             }
-            return this.UpdatePlugins(files);
         }
 
         public async Task UpdatePlugins(IEnumerable<string> fileNames)
         {
             foreach (var file in fileNames)
             {
+                string cachePath = null;
                 try
                 {
-                    var cachePath = Path.Combine(_cacheRoot, file);
+                    cachePath = Path.Combine(_cacheRoot, file);
                     var lastWrite = File.GetLastWriteTimeUtc(cachePath);
 
                     var source = Constants.S4NHost + Constants.ScratchExtensionsPath + file;
 
                     var req = (HttpWebRequest)WebRequest.Create(source);
                     req.IfModifiedSince = lastWrite;
+                    var buffer = new byte[4096];
                     using (var response = (HttpWebResponse)await req.GetResponseAsync())
                     {
-                        using (var sr = new StreamReader(response.GetResponseStream()))
+                        var output = new FileStream(cachePath, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None);
+                        using (var stream = response.GetResponseStream())
                         {
-                            var body = sr.ReadToEnd();
-                            File.WriteAllText(cachePath, body);
-
-                            ZipFile.ExtractToDirectory(cachePath, _addInsDirectory);
-
+                            int count = 0;
+                            do
+                            {
+                                count = await stream.ReadAsync(buffer, 0, buffer.Length);
+                                if (count > 0)
+                                    output.Write(buffer, 0, count);
+                            } while (count > 0);
                         }
+                        output.Close();
                     }
+
+                    // Unzip into the correct location
+                    var dest = Path.Combine(_addInsDirectory, Path.GetFileNameWithoutExtension(file));
+                    if (Directory.Exists(dest))
+                    {
+                        Directory.Delete(dest, true);
+                    }
+                    Directory.CreateDirectory(dest);
+
+                    ZipFile.ExtractToDirectory(cachePath, dest);
+
                 }
                 catch (WebException wex)
                 {
@@ -117,6 +147,15 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
                 {
                     // log it, but keep going
                     _tc.TrackException(ex);
+                    // Make sure we don't retain a cached copy of something that did not install
+                    if (!string.IsNullOrEmpty(cachePath))
+                    {
+                        try
+                        {
+                            File.Delete(cachePath);
+                        }
+                        catch { }
+                    }
                 }
             }
         }
@@ -125,6 +164,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
         {
             var warnings = AddInStore.Update(_addInRoot);
             var tokens = AddInStore.FindAddIns(typeof(IFirmwareConfiguration), _addInRoot);
+            tokens = AddInStore.FindAddIns(typeof(IDriver), _addInRoot);
         }
 
         private void EnsureDirectoryStructure()
