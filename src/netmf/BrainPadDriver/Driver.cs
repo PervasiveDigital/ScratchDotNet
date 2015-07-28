@@ -1,12 +1,28 @@
 ﻿using System;
+using System.AddIn;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PervasigeDigital.Scratch.AddIn.BrainPadDriver
+namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
 {
-    public class Driver
+    [AddIn("BrainPad Driver", Version = "1.0.0.0")]
+    public class Driver : IDriver
     {
+        public void Start(IFirmataEngine firmataEngine)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Stop()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Dictionary<string, string> GetSensorValues()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

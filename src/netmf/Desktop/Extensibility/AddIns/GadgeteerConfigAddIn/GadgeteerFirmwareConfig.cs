@@ -5,9 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using PervasiveDigital.Scratch.DeploymentHelper.Extensibility.AddInViews;
-
-namespace PervasigeDigital.Scratch.AddIn.GadgeteerConfigAddIn
+namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
 {
     [AddIn("Gadgeteer Configuration AddIn", Version = "1.0.0.0")]
     public class GadgeteerFirmwareConfig : IFirmwareConfiguration

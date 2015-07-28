@@ -43,6 +43,13 @@
     <Compile Include="Driver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Desktop\Extensibility\AddInView\AddInView.csproj">
+      <Project>{692baa4c-2d0b-4315-a01f-5f9d9f2c7777}</Project>
+      <Name>AddInView</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

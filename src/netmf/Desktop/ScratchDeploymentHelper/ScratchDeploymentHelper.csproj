@@ -273,7 +273,7 @@
       <IncludeHash>True</IncludeHash>
       <FileType>File</FileType>
     </PublishFile>
-    <PublishFile Include="Assets\Files\AddInViews\Views.dll">
+    <PublishFile Include="Assets\Files\AddInViews\AddInView.dll">
       <Visible>False</Visible>
       <Group>
       </Group>
@@ -322,6 +322,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Extensibility\HostView\HostView.csproj">
+      <Project>{69a17b3d-872a-4cb1-8e09-4336571452e0}</Project>
+      <Name>HostView</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Scratch.Common\Scratch.Common.csproj">
       <Project>{82f5725d-ccf9-4501-a0c5-9ea6725faf00}</Project>
       <Name>Scratch.Common</Name>
@@ -335,9 +339,7 @@
     <Content Include="Assets\Files\AddInSideAdapters\AddinSideAdapters.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Files\AddInViews\Views.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Assets\Files\AddInViews\AddInView.dll" />
     <Content Include="Assets\Files\Contracts\Contracts.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -346,6 +348,9 @@
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>xcopy /sehrkidycz $(SolutionDir)Desktop\Extensibility\output\* $(SolutionDir)Desktop\ScratchDeploymentHelper\Assets\Files</PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

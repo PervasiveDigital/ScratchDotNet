@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 using Microsoft.ApplicationInsights;
 
-using PervasiveDigital.Scratch.DeploymentHelper.Extensibility.HostViewAdapters;
+using PervasiveDigital.Scratch.DeploymentHelper.Extensibility;
 using PervasiveDigital.Scratch.DeploymentHelper.Common;
 using PervasiveDigital.Scratch.Common;
 using System.Net;
