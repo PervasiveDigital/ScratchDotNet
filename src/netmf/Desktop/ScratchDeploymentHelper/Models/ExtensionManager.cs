@@ -39,16 +39,6 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
             _addInRoot = Path.Combine(s4nPath, "Extensibility");
             _cacheRoot = Path.Combine(s4nPath, "Cache");
             _addInsDirectory = Path.Combine(_addInRoot, "AddIns");
-
-            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
-        }
-
-        Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
-        {
-            if (string.IsNullOrEmpty(_addInRoot))
-                return null;
-
-            return null;
         }
 
         public async Task Initialize()
