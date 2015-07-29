@@ -64,7 +64,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Startup Error", "The program is unable to start. The error is : '" + ex.Message + "'. The application must now exit.", MessageBoxButton.OK);
+                MessageBox.Show("The program is unable to start. The error is : '" + ex.Message + "'. The application must now exit.", "Startup Error", MessageBoxButton.OK);
                 this.Close();
             }
         }

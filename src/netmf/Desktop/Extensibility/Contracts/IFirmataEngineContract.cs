@@ -11,5 +11,6 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility.Contracts
     [AddInContract]
     public interface IFirmataEngineContract : IContract
     {
+        void ReportDigital(byte port, int value);
     }
 }

@@ -272,5 +272,19 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
             var config = new MFConfigHelper(device);
             config.WriteConfig("S4NID", buffer);
         }
+
+        // Callbacks from Firmata
+        public void ProcessDigitalMessage(int port, int value)
+        {
+            if (_selectedFirmataTarget != null)
+                _selectedFirmataTarget.ProcessDigitalMessage(port, value);
+        }
+
+        public void ProcessAnalogMessage(int port, int value)
+        {
+            if (_selectedFirmataTarget != null)
+                _selectedFirmataTarget.ProcessAnalogMessage(port, value);
+        }
+
     }
 }

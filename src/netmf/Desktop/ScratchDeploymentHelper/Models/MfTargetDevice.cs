@@ -76,7 +76,21 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
                 _oemString = oemMonitorInfo.OemString;
                 _oemVersion = oemMonitorInfo.Version;
             }
-            _deviceInfo = _device.MFDeviceInfo;
+            int retries = 3;
+            do
+            {
+                try
+                {
+                    _deviceInfo = _device.MFDeviceInfo;
+                }
+                catch
+                {
+                    _deviceInfo = null;
+                    System.Threading.Thread.Sleep(500);
+                }
+            } while (--retries > 0 && _deviceInfo == null);
+            if (retries == 0 && _deviceInfo == null)
+                throw new Exception("Failed to initialize board");
             _configBytes = ReadConfiguration();
             OnPropertyChanged("IsFirmataInstalled");
             OnPropertyChanged("FirmataAppVersion");

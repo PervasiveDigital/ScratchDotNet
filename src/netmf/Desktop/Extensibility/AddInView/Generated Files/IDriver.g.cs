@@ -19,6 +19,8 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
         void StartOfProgram();
         void ExecuteCommand(string verb, string id, System.Collections.Generic.IList<string> args);
         System.Collections.Generic.Dictionary<string, string> GetSensorValues();
+        void ProcessDigitalMessage(int port, int value);
+        void ProcessAnalogMessage(int port, int value);
     }
 }
 

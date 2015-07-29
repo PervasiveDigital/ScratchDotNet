@@ -172,11 +172,42 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
                 this.Driver.StartOfProgram();
         }
 
+        public void ExecuteCommand(string verb, string id, IList<string> args)
+        {
+            if (this.Driver != null)
+                this.Driver.ExecuteCommand(verb, id, args);
+        }
+
         public Dictionary<string, string> GetSensorValues()
         {
-            var result = new Dictionary<string, string>();
+            Dictionary<string,string> result;
+
+            if (this.Driver != null)
+                result = this.Driver.GetSensorValues();
+            else
+                result = new Dictionary<string, string>();
 
             return result;
+        }
+
+        #endregion
+
+        #region Firmata callbacks
+
+        public void ProcessDigitalMessage(int port, int value)
+        {
+            if (this.Driver != null)
+            {
+                this.Driver.ProcessDigitalMessage(port, value);
+            }
+        }
+
+        public void ProcessAnalogMessage(int port, int value)
+        {
+            if (this.Driver != null)
+            {
+                this.Driver.ProcessAnalogMessage(port, value);
+            }
         }
 
         #endregion

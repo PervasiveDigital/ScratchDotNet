@@ -14,6 +14,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
     [System.AddIn.Pipeline.AddInBaseAttribute()]
     public interface IFirmataEngine
     {
+        void ReportDigital(byte port, int value);
     }
 }
 

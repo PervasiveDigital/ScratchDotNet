@@ -79,6 +79,33 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
             }
         }
 
+        public string DeployableVersion
+        {
+            get
+            {
+                if (this.Source.FirmwareImage != null)
+                    return this.Source.FirmwareImage.AppVersion.ToString();
+                else
+                    return null;
+            }
+        }
+
+        public bool UpdateRequired
+        {
+            get
+            {
+                if (this.Source.FirmwareImage!=null)
+                {
+                    // Only major/minor updates indicate breaking changes
+                    if (this.Source.FirmwareImage.AppVersion.Major > this.Source.AppVersion.Major ||
+                        (this.Source.FirmwareImage.AppVersion.Major == this.Source.AppVersion.Major &&
+                        this.Source.FirmwareImage.AppVersion.Minor > this.Source.AppVersion.Minor))
+                        return true;
+                }
+                return false;
+            }
+        }
+
         public string ProtocolVersion
         {
             get

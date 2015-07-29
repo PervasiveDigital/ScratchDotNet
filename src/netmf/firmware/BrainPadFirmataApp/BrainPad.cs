@@ -644,47 +644,47 @@ public static class BrainPad
         }
     }
 
-    /// <summary>
-    /// Controls the Light Sensor on the BrainPad.
-    /// </summary>
-    public static class LightSensor
-    {
-        private static AnalogInput _ain = new AnalogInput((Cpu.AnalogChannel)9);
+    ///// <summary>
+    ///// Controls the Light Sensor on the BrainPad.
+    ///// </summary>
+    //public static class LightSensor
+    //{
+    //    private static AnalogInput _ain = new AnalogInput((Cpu.AnalogChannel)9);
 
-        /// <summary>
-        /// Get the level of brightness.
-        /// </summary>
-        /// <returns>A value respresenting the level of brightness.</returns>
-        public static double GetLevel()
-        {
-            return _ain.Read();
-        }
-    }
+    //    /// <summary>
+    //    /// Get the level of brightness.
+    //    /// </summary>
+    //    /// <returns>A value respresenting the level of brightness.</returns>
+    //    public static double GetLevel()
+    //    {
+    //        return _ain.Read();
+    //    }
+    //}
 
-    /// <summary>
-    /// Controls the Temperature Sensor on the BrainPad.
-    /// </summary>
-    public static class TemperatureSensor
-    {
-        private static AnalogInput _ain = new AnalogInput((Cpu.AnalogChannel)8);
+    ///// <summary>
+    ///// Controls the Temperature Sensor on the BrainPad.
+    ///// </summary>
+    //public static class TemperatureSensor
+    //{
+    //    private static AnalogInput _ain = new AnalogInput((Cpu.AnalogChannel)8);
 
-        /// <summary>
-        /// Read the temperature.
-        /// </summary>
-        /// <returns>The temperature in Celsius.</returns>
-        public static double ReadTemperature()
-        {
-            double sum = 0;
-            for (int i = 0; i < 10; i++)
-                sum += _ain.Read();
-            double avg = sum / 10;
+    //    /// <summary>
+    //    /// Read the temperature.
+    //    /// </summary>
+    //    /// <returns>The temperature in Celsius.</returns>
+    //    public static double ReadTemperature()
+    //    {
+    //        double sum = 0;
+    //        for (int i = 0; i < 10; i++)
+    //            sum += _ain.Read();
+    //        double avg = sum / 10;
 
-            double mVout = avg * 1000 * 3.3;
-            double tempC = (mVout - 450.0) / 19.5;
+    //        double mVout = avg * 1000 * 3.3;
+    //        double tempC = (mVout - 450.0) / 19.5;
 
-            return tempC;
-        }
-    }
+    //        return tempC;
+    //    }
+    //}
 
     /// <summary>
     /// Controls the Accelerometer on the BrainPad.

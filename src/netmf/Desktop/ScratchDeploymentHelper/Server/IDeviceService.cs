@@ -39,13 +39,22 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Server
         [OperationContract, WebGet(UriTemplate = "/runDotNet")]
         Stream RunDotNet();
 
-        [OperationContract, WebGet(UriTemplate = "/runDigital/{id}/{pin}/{value}")]
-        Stream RunDigital(string id, string pin, string value);
+        [OperationContract, WebGet(UriTemplate = "/setDigital/{id}/{pin}/{value}")]
+        Stream SetDigital(string id, string pin, string value);
 
-        [OperationContract, WebGet(UriTemplate = "/runPwm/{id}/{port}/{value}")]
-        Stream RunPwm(string id, string port, string value);
+        [OperationContract, WebGet(UriTemplate = "/setTraffic/{id}/{color}")]
+        Stream SetTraffic(string id, string color);
 
-        [OperationContract, WebGet(UriTemplate = "/runTone/{id}/{note}/{beat}")]
-        Stream RunTone(string id, string note, string beat);
+        [OperationContract, WebGet(UriTemplate = "/setServo/{id}/{angle}")]
+        Stream SetServo(string id, string angle);
+
+        [OperationContract, WebGet(UriTemplate = "/setMotor/{id}/{speed}")]
+        Stream SetMotor(string id, string speed);
+
+        [OperationContract, WebGet(UriTemplate = "/setPwm/{id}/{port}/{value}")]
+        Stream SetPwm(string id, string port, string value);
+
+        [OperationContract, WebGet(UriTemplate = "/playTone/{id}/{note}/{beat}")]
+        Stream PlayTone(string id, string note, string beat);
     }
 }

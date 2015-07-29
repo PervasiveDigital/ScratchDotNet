@@ -30,5 +30,9 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility.Contracts
         void ExecuteCommand(string verb, string id, IListContract<string> args);
 
         Dictionary<string, string> GetSensorValues();
+
+        void ProcessDigitalMessage(int port, int value);
+
+        void ProcessAnalogMessage(int port, int value);
     }
 }

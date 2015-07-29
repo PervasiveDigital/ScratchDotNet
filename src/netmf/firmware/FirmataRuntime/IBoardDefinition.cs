@@ -28,6 +28,7 @@ namespace PervasiveDigital.Firmata.Runtime
     {
         void VersionIndicatorLed(bool on);
 
+        int TotalPortCount { get; }
         int TotalPinCount { get; }
 
         void ProcessAnalogMessage(int port, int value);

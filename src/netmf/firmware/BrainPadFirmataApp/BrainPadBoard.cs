@@ -28,25 +28,33 @@ namespace BrainPadFirmataApp
 {
     public class BrainPadBoard : IBoardDefinition
     {
-        // This is a fairly restrictive board definition, because most ports and pins are not reconfigurable
+        private const int NumberOfDigitalPorts = 8;
+        private const int NumberOfSyntheticPorts = 1;
+        private const int TotalNumberOfPorts = NumberOfDigitalPorts + NumberOfSyntheticPorts;
+        private const int PinsPerPort = 8;
+        private const int NumberOfPins = TotalNumberOfPorts * PinsPerPort;
 
         private readonly FirmataService _firmata;
 
-        // There are only eight input pins
-        private byte _reportPins; // pins to report back on - 1 bit indicates a pin to report on
-        private byte _prevReportedValue; // previous value sent back
+        // pins to report back on - 1 bit indicates a pin to report on
+        private byte[] _reportPins = new byte[TotalNumberOfPorts];
+        // previous value reported
+        private byte[] _prevReportedValue = new byte[TotalNumberOfPorts];
 
-        private InputPort[] _digitalInputs = new InputPort[]
-        {
-            new InputPort((Cpu.Pin)15, true, Port.ResistorMode.PullUp),
-            new InputPort((Cpu.Pin)45, true, Port.ResistorMode.PullUp),
-            new InputPort((Cpu.Pin)26, true, Port.ResistorMode.PullUp),
-            new InputPort((Cpu.Pin)5, true, Port.ResistorMode.PullUp),
-        };
+        private InputPort[] _digitalInputs = new InputPort[TotalNumberOfPorts * NumberOfPins];
+
+        private static AnalogInput _lightSensor = new AnalogInput((Cpu.AnalogChannel)8);
+        private static AnalogInput _tempSensor = new AnalogInput((Cpu.AnalogChannel)9);
+        // temp, light, left, middle, right, X, Y Z
+        private int[] _analogValues = new int[8];
 
         public BrainPadBoard(FirmataService firmata)
         {
             _firmata = firmata;
+
+            BrainPad.TouchPad.SetThreshold(BrainPad.TouchPad.Pad.Left, 170);
+            BrainPad.TouchPad.SetThreshold(BrainPad.TouchPad.Pad.Middle, 170);
+            BrainPad.TouchPad.SetThreshold(BrainPad.TouchPad.Pad.Right, 170);
         }
 
         public void VersionIndicatorLed(bool on)
@@ -54,9 +62,14 @@ namespace BrainPadFirmataApp
             // don't do anything here - we have a display
         }
 
+        public int TotalPortCount
+        {
+            get { return TotalNumberOfPorts; }
+        }
+
         public int TotalPinCount
         {
-            get {  return 0; }
+            get { return NumberOfPins; }
         }
 
         public void Reset()
@@ -81,14 +94,31 @@ namespace BrainPadFirmataApp
 
         public void ReportDigital(byte port, int value)
         {
-            if (port==0)
+            if (port < TotalNumberOfPorts)
             {
-                _reportPins = (byte)value;
-                if (value!=0)
+                _reportPins[port] = (byte)value;
+
+                if (port < NumberOfDigitalPorts) // a real digital port - not a synthetic port
                 {
-                    int data = ReadDigitalInputs();
-                    _firmata.SendDigitalPort(0, value);
-                    _prevReportedValue = (byte)value;
+                    for (int i = 0; i < PinsPerPort; ++i)
+                    {
+                        var iInput = port * PinsPerPort + i;
+                        if ((value & (1 << i)) == 0)
+                        {
+                            if (_digitalInputs[iInput] != null)
+                            {
+                                _digitalInputs[iInput].Dispose();
+                                _digitalInputs[iInput] = null;
+                            }
+                        }
+                        else
+                        {
+                            if (_digitalInputs[iInput] == null)
+                            {
+                                _digitalInputs[iInput] = new InputPort((Cpu.Pin)iInput, true, Port.ResistorMode.PullUp);
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -114,46 +144,83 @@ namespace BrainPadFirmataApp
             //}
 
             CheckDigitalInputs();
+
+            // light, temp, left, middle, right, X, Y, Z
+
+            //var value = _lightSensor.ReadRaw();
+            //if (value != _analogValues[0])
+            //    _firmata.SendAnalogValue(0, value);
+
+            //value = _tempSensor.ReadRaw();
+            //if (value != _analogValues[1])
+            //    _firmata.SendAnalogValue(1, value);
+
+            //value = (int)(BrainPad.TouchPad.RawRead(BrainPad.TouchPad.Pad.Left) & 0x7fff);
+            //if (value != _analogValues[2])
+            //    _firmata.SendAnalogValue(2, value);
+
+            //value = (int)(BrainPad.TouchPad.RawRead(BrainPad.TouchPad.Pad.Middle) & 0x7fff);
+            //if (value != _analogValues[3])
+            //    _firmata.SendAnalogValue(3, value);
+
+            //value = (int)(BrainPad.TouchPad.RawRead(BrainPad.TouchPad.Pad.Right) & 0x7fff);
+            //if (value != _analogValues[4])
+            //    _firmata.SendAnalogValue(4, value);
+
+            //value = (int)BrainPad.Accelerometer.ReadX();
+            //if (value != _analogValues[5])
+            //    _firmata.SendAnalogValue(5, value);
+
+            //value = (int)BrainPad.Accelerometer.ReadY();
+            //if (value != _analogValues[6])
+            //    _firmata.SendAnalogValue(6, value);
+
+            //value = (int)BrainPad.Accelerometer.ReadZ();
+            //if (value != _analogValues[7])
+            //    _firmata.SendAnalogValue(7, value);
+
         }
 
         public double Temperature { get; set; }
         public double LightLevel { get; set; }
 
-        private int ReadDigitalInputs()
-        {
-            int value = 0;
-            if (_reportPins != 0)
-            {
-                int iPin = 0;
-                int dilen = _digitalInputs.Length; // perf optimization - don't call length property in a tight loop
-
-                // read the report pins
-                for (iPin = 0; iPin < dilen; ++iPin)
-                {
-                    if ((_reportPins & (1 << iPin)) != 0)
-                        value = ((value << 1) | (_digitalInputs[iPin].Read() ? 1 : 0));
-                    else
-                        value <<= 1;
-                }
-
-                // Read the touch pads
-                for (int i = 0; i < 3; ++i)
-                {
-                    iPin = i + dilen;
-                    if ((_reportPins & (1 << iPin)) != 0)
-                        value = ((value << 1) | (BrainPad.TouchPad.IsTouched(BrainPad.TouchPad.Pad.Left + i) ? 1 : 0));
-                }
-            }
-            return value;
-        }
-
         private void CheckDigitalInputs()
         {
-            int value = ReadDigitalInputs();
-            if ((value & _prevReportedValue)!=0)
+            for (var iPort = 0; iPort < TotalNumberOfPorts; ++iPort)
             {
-                _firmata.SendDigitalPort(0, value);
-                _prevReportedValue = (byte)value;
+                int value = 0;
+
+                // read the digital pins
+                if (iPort < NumberOfDigitalPorts)
+                {
+                    for (int iPin = PinsPerPort-1; iPin >= 0; --iPin)
+                    {
+                        var iInput = iPort * PinsPerPort + iPin;
+                        if ((_reportPins[iPort] & (1 << iPin)) != 0)
+                            value = ((value << 1) | (_digitalInputs[iInput].Read() ? 1 : 0));
+                        else
+                            value <<= 1;
+                    }
+                }
+                else // Read synthetic digital ports
+                {
+                    //int iSynthPort = iPort - NumberOfDigitalPorts;
+
+                    // Read the touch pads
+                    for (int iPin = 0; iPin < 3; ++iPin)
+                    {
+                        if ((_reportPins[iPort] & (1 << iPin)) != 0)
+                            value = ((value << 1) | (BrainPad.TouchPad.IsTouched(BrainPad.TouchPad.Pad.Left + iPin) ? 1 : 0));
+                        else
+                            value <<= 1;
+                    }
+                }
+
+                if ((value ^ _prevReportedValue[iPort]) != 0)
+                {
+                    _firmata.SendDigitalPort((byte)iPort, value);
+                    _prevReportedValue[iPort] = (byte)value;
+                }
             }
         }
     }

@@ -79,5 +79,11 @@ namespace CerbuinoNetFirmataApp
         public void ProcessExtendedMessage(byte[] message, int len)
         {
         }
+
+
+        public int TotalPortCount
+        {
+            get { throw new NotImplementedException(); }
+        }
     }
 }

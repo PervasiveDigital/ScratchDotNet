@@ -38,6 +38,14 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility.HostSideAdapte
         {
             return _view.GetSensorValues();
         }
+        public virtual void ProcessDigitalMessage(int port, int value)
+        {
+            _view.ProcessDigitalMessage(port, value);
+        }
+        public virtual void ProcessAnalogMessage(int port, int value)
+        {
+            _view.ProcessAnalogMessage(port, value);
+        }
         internal PervasiveDigital.Scratch.DeploymentHelper.Extensibility.IDriver GetSourceView()
         {
             return _view;

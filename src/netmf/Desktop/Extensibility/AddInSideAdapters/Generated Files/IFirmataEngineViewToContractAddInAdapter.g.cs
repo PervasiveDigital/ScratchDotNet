@@ -19,6 +19,10 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility.AddInSideAdapt
         {
             _view = view;
         }
+        public virtual void ReportDigital(byte port, int value)
+        {
+            _view.ReportDigital(port, value);
+        }
         internal PervasiveDigital.Scratch.DeploymentHelper.Extensibility.IFirmataEngine GetSourceView()
         {
             return _view;

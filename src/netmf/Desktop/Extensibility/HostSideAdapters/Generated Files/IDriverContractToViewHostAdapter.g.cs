@@ -44,6 +44,14 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility.HostSideAdapte
         {
             return _contract.GetSensorValues();
         }
+        public void ProcessDigitalMessage(int port, int value)
+        {
+            _contract.ProcessDigitalMessage(port, value);
+        }
+        public void ProcessAnalogMessage(int port, int value)
+        {
+            _contract.ProcessAnalogMessage(port, value);
+        }
         internal PervasiveDigital.Scratch.DeploymentHelper.Extensibility.Contracts.IDriverContract GetSourceContract()
         {
             return _contract;

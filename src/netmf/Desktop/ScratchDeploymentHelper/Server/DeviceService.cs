@@ -43,14 +43,18 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Server
             {
                 var sensorDict = this.DeviceModel.FirmataTarget.GetSensorValues();
                 var sb = new StringBuilder();
+                foreach (var item in sensorDict)
+                {
+                    sb.Append(string.Format("{0} {1}\n", item.Key, item.Value));
+                }
+                return ResultAsString(sb.ToString());
             }
-            return ResultAsString("temperature 25");
         }
 
         public Stream RunDotNet()
         {
             WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
-            if (this.DeviceModel.FirmataTarget == null)
+            if (this.DeviceModel.FirmataTarget != null)
             {
                 this.DeviceModel.FirmataTarget.StartOfProgram();
             }
@@ -58,21 +62,75 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Server
             return ResultAsString("ok\r\n");
         }
 
-        public Stream RunDigital(string id, string pin, string value)
+        public Stream SetDigital(string id, string pin, string value)
         {
             WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
+
+            if (this.DeviceModel.FirmataTarget != null)
+            {
+                this.DeviceModel.FirmataTarget.ExecuteCommand("setDigital", id, new List<string>() { pin, value });
+            }
+
             return ResultAsString("ok\r\n");
         }
 
-        public Stream RunPwm(string id, string port, string value)
+        public Stream SetPwm(string id, string port, string value)
         {
             WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
+
+            if (this.DeviceModel.FirmataTarget != null)
+            {
+                this.DeviceModel.FirmataTarget.ExecuteCommand("setPwm", id, new List<string>() { port, value });
+            }
+
             return ResultAsString("ok\r\n");
         }
 
-        public Stream RunTone(string id, string note, string beat)
+        public Stream PlayTone(string id, string note, string beat)
         {
             WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
+
+            if (this.DeviceModel.FirmataTarget != null)
+            {
+                this.DeviceModel.FirmataTarget.ExecuteCommand("playTone", id, new List<string>() { note, beat });
+            }
+
+            return ResultAsString("ok\r\n");
+        }
+
+        public Stream SetTraffic(string id, string color)
+        {
+            WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
+
+            if (this.DeviceModel.FirmataTarget != null)
+            {
+                this.DeviceModel.FirmataTarget.ExecuteCommand("setTraffic", id, new List<string>() { color });
+            }
+
+            return ResultAsString("ok\r\n");
+        }
+
+        public Stream SetServo(string id, string angle)
+        {
+            WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
+
+            if (this.DeviceModel.FirmataTarget != null)
+            {
+                this.DeviceModel.FirmataTarget.ExecuteCommand("setServo", id, new List<string>() { angle });
+            }
+
+            return ResultAsString("ok\r\n");
+        }
+
+        public Stream SetMotor(string id, string speed)
+        {
+            WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
+
+            if (this.DeviceModel.FirmataTarget != null)
+            {
+                this.DeviceModel.FirmataTarget.ExecuteCommand("setMotor", id, new List<string>() { speed });
+            }
+
             return ResultAsString("ok\r\n");
         }
 

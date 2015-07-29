@@ -11,15 +11,18 @@
 // 
 
 using System;
+using System.Diagnostics;
 using System.IO.Ports;
 using System.Threading;
 using System.Text;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+using Ninject;
+
 using PervasiveDigital.Scratch.DeploymentHelper.Common;
-using System.Diagnostics;
 using PervasiveDigital.Scratch.DeploymentHelper.Extensibility;
+using PervasiveDigital.Scratch.DeploymentHelper.Models;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
 {
@@ -126,10 +129,12 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
         }
 
         private readonly Dictionary<int, List<TaskRecord>> _taskTable = new Dictionary<int, List<TaskRecord>>();
+        private readonly DeviceModel _dm;
 
         public FirmataEngine(string portName)
         {
             _portName = portName;
+            _dm = App.Kernel.Get<DeviceModel>();
         }
 
         public bool Open(int baud = 115200)
@@ -375,10 +380,10 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
                             switch (multiByteCommand)
                             {
                                 case (byte)CommandCode.ANALOG_MESSAGE:
-                                    //_board.ProcessAnalogMessage(multiByteChannel, _inputMessage[0] << 7 | _inputMessage[1]);
+                                    _dm.ProcessAnalogMessage(multiByteChannel, _inputMessage[0] << 7 | _inputMessage[1]);
                                     break;
                                 case (byte)CommandCode.DIGITAL_MESSAGE:
-                                    //_board.ProcessDigitalMessage(multiByteChannel, _inputMessage[0] << 7 | _inputMessage[1]);
+                                    _dm.ProcessDigitalMessage(multiByteChannel, _inputMessage[0] << 7 | _inputMessage[1]);
                                     break;
                                 case (byte)CommandCode.SET_PIN_MODE:
                                     //_board.SetPinMode(_inputMessage[1], _inputMessage[0]);
@@ -646,6 +651,15 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
             Encoding.UTF8.GetDecoder().Convert(byteArray, 0, len, chars, 0, len, false, out bytesUsed, out charsUsed, out completed);
             return new string(chars, 0, charsUsed);
         }
+
+        #region IFirmataEngine
+
+        public void ReportDigital(byte port, int value)
+        {
+            this.SendCodeChannelAndValue((byte)CommandCode.REPORT_DIGITAL, port, value);
+        }
+
+        #endregion
     }
 
     public class FirmwareVersion

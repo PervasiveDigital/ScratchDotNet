@@ -24,6 +24,10 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility.HostSideAdapte
             _contract = contract;
             _handle = new System.AddIn.Pipeline.ContractHandle(contract);
         }
+        public void ReportDigital(byte port, int value)
+        {
+            _contract.ReportDigital(port, value);
+        }
         internal PervasiveDigital.Scratch.DeploymentHelper.Extensibility.Contracts.IFirmataEngineContract GetSourceContract()
         {
             return _contract;

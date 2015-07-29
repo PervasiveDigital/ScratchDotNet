@@ -310,10 +310,10 @@ namespace PervasiveDigital.Firmata.Runtime
                                     _board.SetPinMode(_inputMessage[1], _inputMessage[0]);
                                     break;
                                 case (byte)CommandCode.REPORT_ANALOG:
-                                    _board.ReportAnalog(multiByteChannel, _inputMessage[0]);
+                                    _board.ReportAnalog(multiByteChannel, _inputMessage[0] << 7 | _inputMessage[1]);
                                     break;
                                 case (byte)CommandCode.REPORT_DIGITAL:
-                                    _board.ReportDigital(multiByteChannel, _inputMessage[0]);
+                                    _board.ReportDigital(multiByteChannel, _inputMessage[0] << 7 | _inputMessage[1]);
                                     break;
                             }
                         }
@@ -334,12 +334,9 @@ namespace PervasiveDigital.Firmata.Runtime
                         case (byte)CommandCode.ANALOG_MESSAGE:
                         case (byte)CommandCode.DIGITAL_MESSAGE:
                         case (byte)CommandCode.SET_PIN_MODE:
-                            dataNeeded = 2;
-                            multiByteCommand = command;
-                            break;
                         case (byte)CommandCode.REPORT_ANALOG:
                         case (byte)CommandCode.REPORT_DIGITAL:
-                            dataNeeded = 1;
+                            dataNeeded = 2;
                             multiByteCommand = command;
                             break;
                         case (byte)CommandCode.START_SYSEX:

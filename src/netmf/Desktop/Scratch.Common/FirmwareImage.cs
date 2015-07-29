@@ -58,27 +58,8 @@ namespace PervasiveDigital.Scratch.Common
         public string DriverSource { get; set; }
         public string DriverName { get; set; }
 
-        public Version AppVersion
-        {
-            get
-            {
-                if (_version == null)
-                    _version = new Version(1, 0, 0, 0);
-                return _version;
-            }
-            set { _version = value; }
-        }
-
-        public Version TargetFrameworkVersion
-        {
-            get
-            {
-                if (_targetFrameworkVersion == null)
-                    _targetFrameworkVersion = new Version(4, 3, 1, 0);
-                return _targetFrameworkVersion;
-            }
-            set { _targetFrameworkVersion = value; }
-        }
+        public Version AppVersion { get; set; }
+        public Version TargetFrameworkVersion { get; set;}
 
         public List<Guid> RequiredAssemblies
         {

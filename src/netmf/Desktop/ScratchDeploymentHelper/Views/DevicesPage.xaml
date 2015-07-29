@@ -159,6 +159,7 @@
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="10" />
                                         <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
                                     <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,0,10,0" Style="{StaticResource DeviceTitleStyle}">Name:</TextBlock>
@@ -167,10 +168,15 @@
                                     <TextBlock Grid.Row="1" Grid.Column="1" Margin="0,0,10,0" Style="{StaticResource DeviceValueStyle}" Text="{Binding AppName}" />
                                     <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,0,10,0" Style="{StaticResource DeviceTitleStyle}">Firmware Version:</TextBlock>
                                     <TextBlock Grid.Row="2" Grid.Column="1" Margin="0,0,10,0" Style="{StaticResource DeviceValueStyle}" Text="{Binding AppVersion}" />
-                                    <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,0,10,0" Style="{StaticResource DeviceTitleStyle}">Firmata protocol version:</TextBlock>
-                                    <TextBlock Grid.Row="3" Grid.Column="1" Margin="0,0,10,0" Style="{StaticResource DeviceValueStyle}" Text="{Binding ProtocolVersion}" />
-                                    <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,0,10,0" Style="{StaticResource DeviceTitleStyle}">Use Scratch Extension:</TextBlock>
-                                    <TextBlock Grid.Row="4" Grid.Column="1" Margin="0,0,10,0" Style="{StaticResource DeviceValueStyle}" Text="{Binding ScratchExtension}" />
+                                    <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,0,10,0" Style="{StaticResource DeviceTitleStyle}">Use Scratch Extension:</TextBlock>
+                                    <TextBlock Grid.Row="3" Grid.Column="1" Margin="0,0,10,0" Style="{StaticResource DeviceValueStyle}" Text="{Binding ScratchExtension}" />
+                                    <TextBlock Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,10,0" 
+                                               TextWrapping="Wrap" Style="{StaticResource DeviceTitleStyle}" 
+                                               Foreground="Red" MaxWidth="300"
+                                               Visibility="{Binding Path=UpdateRequired, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                        An update to firmware version <Run Text="{Binding DeployableVersion, Mode=OneWay}"/> is available for this device. This device many
+                                        not operate correctly until you deploy the latest version of the firmware.
+                                    </TextBlock>
                                 </Grid>
                             </StackPanel>
                         </Grid>

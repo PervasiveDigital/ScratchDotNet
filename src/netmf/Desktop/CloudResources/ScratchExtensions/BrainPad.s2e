@@ -6,37 +6,23 @@
 		["h",".Net Program","runDotNet"],
 		
         [ "-" ],
-		["b", "touch pad %d.pads touched","getTouch","LEFT"],
-  		["w", "set traffic light to %d.traffic", "setTraffic", "OFF"],
-		["w", "play note %d.notes beat %d.beats","playTone", "C4","Half"],
+        [ "b", "button %d.buttons pressed", "s4nButton", "left" ],
+        [ "w", "set traffic light to %d.traffic", "setTraffic", "OFF" ],
 
-		["R", "temperature","bpTemperature"],
-		["R", "light level","bpLightLevel"],
-		["R", "tilt in the %d.dir direction","bpAngle"],
-		
-		["w", "set servo angle as %d.servovalue","setServo", 90],
-		["w", "set motor speed as %d","setMotor", 0],
+        [ "R", "temperature", "s4nTemp" ],
+        [ "R", "light level", "s4nLight" ],
+        [ "R", "tilt in the %d.dir direction", "s4nTilt" ],
+        [ "R", "touch value on the %d.pads pad", "s4nTouch", "left" ],
 
-        [ "w", "clear display", "clearDisplay" ],
-        [ "w", "move pen to %d, %d", "setPenPosition", 0, 0 ],
-        [ "w", "select %d.colors ink", "setPenColor", 0, 0 ],
-        [ "w", "select %d.size letters", "setFontSize", "SMALL" ],
-
-		["w", "print %s at %d, %d, in %d.size letters","print", "", 0, 0, "SMALL"],
-		
-        [ "-" ],
-		["b", "read digital pin %n","bpDigital","9"],
-		["R", "read analog pin (A)%n","bpAnalog","0"],
-		["w", "set digital pin %n output as %d.digital","runDigital", "9", "HIGH"],		
-		["w", "set pwm pin %n output as %d.pwmvalue","runPwm", "5", 0]
-		
+        [ "w", "set servo angle as %d.servovalue", "setServo", 90 ],
+        [ "w", "set motor speed as %d", "setMotor", 0 ],		
 	],
 	"menus": {
 		"size":["SMALL","BIG"],
-		"dir":["X","Y"],
-		"pads":["LEFT","MIDDLE","RIGHT"],
-		"buttons":["UP","DOWN","LEFT","RIGHT"],
-		"traffic":["OFF","GREEN","YELLOW","RED"],
+		"dir":["x","y","z"],
+		"pads":["left","middle","right"],
+		"buttons":["up","down","left","right"],
+		"traffic":["off","green","yellow","red"],
 		"beats":["500","250","125","1000","2000","0"],
 		"servovalue":["0","45","90","135","180"],
 		"pwmvalue":["0","50","100","150","255"],
@@ -63,39 +49,5 @@
 			"C7":2093,"D7":2349,"E7":2637,"F7":2794,"G7":3136,"A7":3520,"B7":3951,
 			"C8":4186,"D8":4699,
 		"Half":500,"Quater":250,"Eighth":125,"Whole":1000,"Double":2000,"Zero":0
-	},
-	"translators":{
-		"zh_CN":{
-			"HIGH":"高电平",
-			"LOW":"低电平",
-			"play tone pin %n on note %d.notes beat %d.beats":"播放引脚 %n 音调为 %d.notes 节拍为 %d.beats",
-			"read digital pin %n":"数字口 %n",
-			"read analog pin (A)%n":"模拟口 (A)%n",
-			"set digital pin %n output as %d.digital":"设置 数字口 %n 输出为 %d.digital",
-			"set pwm pin %n output as %d.pwmvalue":"设置 PWM %n 输出为 %d.pwmvalue",
-			"set servo pin %n angle as %d.servovalue":"设置舵机引脚 %n 输出角度为 %d.servovalue",
-			"play tone pin %n on note %d.notes beat %d.beats":"播放引脚 %n 音调为 %d.notes 节拍为 %d.beats"
-		},
-		"zh_TW":{
-			"HIGH":"高電位",
-			"LOW":"低電位",
-			"play tone pin %n on note %d.notes beat %d.beats":"播放腳位 %n 音調為 %d.notes 節拍為 %d.beats",
-			"read digital pin %n":"數位腳位 %n",
-			"read analog pin (A)%n":"模擬腳位 (A)%n",
-			"set digital pin %n output as %d.digital":"設置 數位腳位 %n 輸出為 %d.digital",
-			"set pwm pin %n output as %d.pwmvalue":"設置 PWM %n 輸出為 %d.pwmvalue",
-			"set servo pin %n angle as %d.servovalue":"設置舵機腳位 %n 輸出角度為 %d.servovalue",
-			"play tone pin %n on note %d.notes beat %d.beats":"播放腳位 %n 音調為 %d.notes 節拍為 %d.beats"
-		},
-		"fr_FR":{
-			"HIGH":"haut",
-			"LOW":"bas",
-			"play tone pin %n on note %d.notes beat %d.beats":"jouer un son sur la broche %n : note %d.notes fréquence %d.beats",
-			"read digital pin %n":"lire l'état logique de la broche %n",
-			"read analog pin (A)%n":"lire la valeur sur la broche Analogique %n",
-			"set digital pin %n output as %d.digital":"mettre l'état logique de la broche %n à %d.digital",
-			"set pwm pin %n output as %d.pwmvalue":"envoyer sur la broche PWM~ %n la valeur %d.pwmvalue",
-			"set servo pin %n angle as %d.servovalue":"orienter le servo-moteur de la broche %n à un angle de %d.servovalue °"
-		}
 	}
 }

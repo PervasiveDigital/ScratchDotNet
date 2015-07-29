@@ -32,11 +32,14 @@ namespace BrainPadFirmataApp
 {
     public class Program
     {
+        private static Version _appVersion;
         private static BrainPadBoard _board;
         private static FirmataService _firmata;
 
         public static void Main()
         {
+            _appVersion = typeof(Program).Assembly.GetName().Version;
+
             DisplayTitlePage();
 
             // Wait for 5 seconds to see if the user wants debug mode
@@ -62,7 +65,7 @@ namespace BrainPadFirmataApp
             left = null;
 
             ClearStatus();
-            BrainPad.Display.DrawFillRect(65, 100, 75, 110, BrainPad.Color.Palette.Black);
+            BrainPad.Display.DrawFillRect(65, 100, 10, 10, BrainPad.Color.Palette.Black);
 
             if (fDebugMode)
             {
@@ -80,7 +83,7 @@ namespace BrainPadFirmataApp
 
                 var port = new SerialPort("COM2", 115200, Parity.None, 8, StopBits.One);
 
-                _firmata = new FirmataService("BrainPad", "b335f01176044984941833c9ce00d3ae", 1, 0);
+                _firmata = new FirmataService("BrainPad", "b335f01176044984941833c9ce00d3ae", _appVersion.Major, _appVersion.Minor);
                 _board = new BrainPadBoard(_firmata);
                 _firmata.Open(_board, new SerialCommunicationChannel(port));
                 while (true)
@@ -93,10 +96,9 @@ namespace BrainPadFirmataApp
         private static void DisplayTitlePage()
         {
             BrainPad.Display.Clear();
-            var appVersion = typeof(Program).Assembly.GetName().Version.ToString();
             BrainPad.Display.DrawString(0, 0, "Scratch4.Net Firmata Server", BrainPad.Color.Palette.Aqua);
             BrainPad.Display.DrawString(0, 10, "by Pervasive Digital LLC", BrainPad.Color.Palette.Aqua);
-            BrainPad.Display.DrawString(0, 20, "Server v" + appVersion, BrainPad.Color.Palette.Aqua);
+            BrainPad.Display.DrawString(0, 20, "Server v" + _appVersion.ToString(), BrainPad.Color.Palette.Aqua);
             BrainPad.Display.DrawString(0, 30, "Protocol v" + 
                 FirmataService.FirmataProtocolVersion.Major + "." + 
                 FirmataService.FirmataProtocolVersion.Minor + "." +

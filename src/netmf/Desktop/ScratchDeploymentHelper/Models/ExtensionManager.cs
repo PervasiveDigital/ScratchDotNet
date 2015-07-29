@@ -82,12 +82,14 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
 
                     var source = Constants.S4NHost + Constants.ScratchExtensionsPath + file;
 
+                    var tempFile = Path.GetTempFileName();
+
                     var req = (HttpWebRequest)WebRequest.Create(source);
                     req.IfModifiedSince = lastWrite;
                     var buffer = new byte[4096];
                     using (var response = (HttpWebResponse)await req.GetResponseAsync())
                     {
-                        var output = new FileStream(cachePath, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None);
+                        var output = new FileStream(tempFile, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
                         using (var stream = response.GetResponseStream())
                         {
                             int count = 0;
@@ -100,6 +102,10 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
                         }
                         output.Close();
                     }
+
+                    if (File.Exists(cachePath))
+                        File.Delete(cachePath);
+                    File.Move(tempFile, cachePath);
 
                     // Unzip into the correct location
                     var dest = Path.Combine(_addInsDirectory, Path.GetFileNameWithoutExtension(file));
