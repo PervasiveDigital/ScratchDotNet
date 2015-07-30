@@ -45,11 +45,19 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Server
         {
             VerifyAcl();
 
-            Uri baseAddress = new Uri("http://localhost:31076/");
-            _apiHost = new ServiceHost(typeof(DeviceService), baseAddress);
-            ServiceEndpoint se = _apiHost.AddServiceEndpoint(typeof(IDeviceService), new WebHttpBinding(), baseAddress);
-            se.Behaviors.Add(new WebHttpBehavior());
-            _apiHost.Open();
+            try
+            {
+                Uri baseAddress = new Uri("http://localhost:31076/");
+                _apiHost = new ServiceHost(typeof(DeviceService), baseAddress);
+                ServiceEndpoint se = _apiHost.AddServiceEndpoint(typeof(IDeviceService), new WebHttpBinding(), baseAddress);
+                se.Behaviors.Add(new WebHttpBehavior());
+                _apiHost.Open();
+            }
+            catch
+            {
+                _apiHost = null;
+                throw;
+            }
 
         }
 

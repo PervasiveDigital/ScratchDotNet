@@ -146,39 +146,38 @@ namespace BrainPadFirmataApp
             CheckDigitalInputs();
 
             // light, temp, left, middle, right, X, Y, Z
+            var value = _lightSensor.ReadRaw();
+            SendAnalogValue(0, value);
 
-            //var value = _lightSensor.ReadRaw();
-            //if (value != _analogValues[0])
-            //    _firmata.SendAnalogValue(0, value);
+            value = _tempSensor.ReadRaw();
+            SendAnalogValue(1, value);
 
-            //value = _tempSensor.ReadRaw();
-            //if (value != _analogValues[1])
-            //    _firmata.SendAnalogValue(1, value);
+            value = (int)(BrainPad.TouchPad.RawRead(BrainPad.TouchPad.Pad.Left) & 0x7fff);
+            SendAnalogValue(2, value);
 
-            //value = (int)(BrainPad.TouchPad.RawRead(BrainPad.TouchPad.Pad.Left) & 0x7fff);
-            //if (value != _analogValues[2])
-            //    _firmata.SendAnalogValue(2, value);
+            value = (int)(BrainPad.TouchPad.RawRead(BrainPad.TouchPad.Pad.Middle) & 0x7fff);
+            SendAnalogValue(3, value);
 
-            //value = (int)(BrainPad.TouchPad.RawRead(BrainPad.TouchPad.Pad.Middle) & 0x7fff);
-            //if (value != _analogValues[3])
-            //    _firmata.SendAnalogValue(3, value);
+            value = (int)(BrainPad.TouchPad.RawRead(BrainPad.TouchPad.Pad.Right) & 0x7fff);
+            SendAnalogValue(4, value);
 
-            //value = (int)(BrainPad.TouchPad.RawRead(BrainPad.TouchPad.Pad.Right) & 0x7fff);
-            //if (value != _analogValues[4])
-            //    _firmata.SendAnalogValue(4, value);
+            value = (int)BrainPad.Accelerometer.ReadX();
+            SendAnalogValue(5, value);
 
-            //value = (int)BrainPad.Accelerometer.ReadX();
-            //if (value != _analogValues[5])
-            //    _firmata.SendAnalogValue(5, value);
+            value = (int)BrainPad.Accelerometer.ReadY();
+            SendAnalogValue(6, value);
 
-            //value = (int)BrainPad.Accelerometer.ReadY();
-            //if (value != _analogValues[6])
-            //    _firmata.SendAnalogValue(6, value);
+            value = (int)BrainPad.Accelerometer.ReadZ();
+            SendAnalogValue(7, value);
+        }
 
-            //value = (int)BrainPad.Accelerometer.ReadZ();
-            //if (value != _analogValues[7])
-            //    _firmata.SendAnalogValue(7, value);
-
+        private void SendAnalogValue(byte pin, int value)
+        {
+            if (value != _analogValues[pin])
+            {
+                _firmata.SendAnalogValue(pin, value);
+                _analogValues[pin] = value;
+            }
         }
 
         public double Temperature { get; set; }

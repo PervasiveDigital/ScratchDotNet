@@ -28,7 +28,7 @@ using System.Windows.Threading;
 
 using PervasiveDigital.Scratch.DeploymentHelper.Common;
 
-namespace PervasiveDigital.Scratch.DeploymentHelper.Models
+namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
 {
     public abstract class ViewModelBase : BindableBase
     {

@@ -226,6 +226,8 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
             }
             catch
             {
+                App.ShowDeploymentLogWindow();
+                App.AppendToLogWindow("Failed to connect to device. You may need to reset your board or restart this program.");
                 result = null;
             }
             return result;

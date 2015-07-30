@@ -24,6 +24,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Deployment.Application;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -38,6 +39,7 @@ using PervasiveDigital.Scratch.DeploymentHelper;
 using PervasiveDigital.Scratch.DeploymentHelper.Models;
 using PervasiveDigital.Scratch.DeploymentHelper.Server;
 using PervasiveDigital.Scratch.DeploymentHelper.Views;
+using System.ServiceModel;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper
 {
@@ -47,6 +49,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper
     public partial class App : Application
     {
         private static DeploymentLogWindow _logWindow;
+        private static ScratchSplashScreen _splashScreen;
         private static IKernel _kernel;
 
         public App()
@@ -98,6 +101,40 @@ namespace PervasiveDigital.Scratch.DeploymentHelper
             }
         }
 
+        private static void ShowSplashScreen()
+        {
+            if (_splashScreen == null)
+            {
+                _splashScreen = new ScratchSplashScreen();
+                _splashScreen.Closed += _splashScreen_Closed;
+            }
+            _splashScreen.Show();
+            _splashScreen.BringIntoView();
+        }
+
+        private static void HideSplashScreen()
+        {
+            if (_splashScreen != null)
+            {
+                _splashScreen.Hide();
+                _splashScreen.Close();
+            }
+        }
+
+        static void _splashScreen_Closed(object sender, EventArgs e)
+        {
+            _splashScreen.Closed -= _splashScreen_Closed;
+            _splashScreen = null;
+        }
+
+        public static void SetCurrentActivity(string msg)
+        {
+            if (_splashScreen != null)
+            {
+                _splashScreen.SetCurrentActivity(msg);
+            }
+        }
+
         private void Application_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e)
         {
         }
@@ -132,7 +169,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper
                 {
                     dm.Dispose();
                 }
-                catch 
+                catch
                 {
                     // bugs in MFDeploy code can cause this to throw
                 }
@@ -141,32 +178,94 @@ namespace PervasiveDigital.Scratch.DeploymentHelper
 
         private async void Application_Startup(object sender, StartupEventArgs e)
         {
-            try
+            var startTime = DateTime.UtcNow;
+            ShowSplashScreen();
+            SetCurrentActivity("Initializing...");
+
+            await InitializeAsync();
+
+            var endTime = DateTime.UtcNow;
+            if (endTime - startTime < TimeSpan.FromSeconds(4))
             {
-                var host = App.Kernel.Get<DeviceServer>();
-                host.Open();
+                // Does it seem cruel to force startup to take four seconds?
+                // Well, otherwise, in a best-case startup scenario, the splash screen is visible
+                //   for too short a time to fully perceive and the user may think they missed something
+                //   important when it flashes by
+                SetCurrentActivity("Initializing...");
+                Thread.Sleep(endTime - startTime);
             }
-            catch (Exception ex)
+
+            var mainWindow = new Views.MainWindow();
+            this.MainWindow = mainWindow;
+
+            HideSplashScreen();
+
+            mainWindow.Show();
+        }
+
+        private async Task InitializeAsync()
+        {
+            var host = App.Kernel.Get<DeviceServer>();
+
+            var retries = 3;
+            bool success = false;
+            do
             {
-                var tc = App.Kernel.Get<TelemetryClient>();
-                if (tc != null)
+                try
                 {
-                    tc.TrackException(ex);
+                    SetCurrentActivity("Creating http server for Scratch...");
+                    host.Open();
+                    success = true;
                 }
-                MessageBox.Show("The Scratch Gateway was unable to configure or open the http port that Scratch needs to use to communicate with your device. The app will have to exit now. Please check the scratch4.net web site for help.","Fatal startup error", MessageBoxButton.OK);
+                catch (AddressAlreadyInUseException aaiue)
+                {
+                    // somebody else (and maybe another copy of this program) is holding the port we want
+                    Thread.Sleep(5000);
+                }
+                catch (Exception ex)
+                {
+                    var tc = App.Kernel.Get<TelemetryClient>();
+                    if (tc != null)
+                    {
+                        tc.TrackException(ex);
+                    }
+                    MessageBox.Show("The Scratch Gateway was unable to configure or open the http port that Scratch needs to use to communicate with your device. The app will have to exit now. Please check the scratch4.net web site for help.", "Fatal startup error", MessageBoxButton.OK);
+                    Application.Current.Shutdown();
+                    return;
+                }
+            } while (--retries>0 && !success);
+
+            if (!success)
+            {
+                if (FoundMyTwin())
+                {
+                    MessageBox.Show("Another copy of the gateway is running. You must exit any other copies of the gateway and wait for them to fully exit before starting it again.", "Scratch Gateway already running", MessageBoxButton.OK);
+                }
+                else
+                {
+                    MessageBox.Show("The Scratch Gateway was unable to open the http port that Scratch needs to use to communicate with your device. The port (31076) is in use by another program. The app will have to exit now.", "HTTP port in use", MessageBoxButton.OK);
+                }
                 Application.Current.Shutdown();
+                return;
             }
 
             //TODO: show a splash screen
 
             // Initialize the extensibility pipeline
+            SetCurrentActivity("Updating drivers and plugins...");
             var xmgr = App.Kernel.Get<ExtensionManager>();
             await xmgr.Initialize();
 
+            SetCurrentActivity("Updating firmware and templates...");
             var fwmgr = App.Kernel.Get<FirmwareManager>();
-            await fwmgr.Initialize();
+            await fwmgr.Initialize();        
+        }
 
-            new Views.MainWindow().Show();
+        private bool FoundMyTwin()
+        {
+            var appname = System.IO.Path.GetFileNameWithoutExtension(typeof(App).Assembly.Location);
+            var processes = Process.GetProcessesByName(appname);
+            return processes != null && processes.Length > 0;
         }
 
         public static string Version
