@@ -217,7 +217,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper
                     host.Open();
                     success = true;
                 }
-                catch (AddressAlreadyInUseException aaiue)
+                catch (AddressAlreadyInUseException)
                 {
                     // somebody else (and maybe another copy of this program) is holding the port we want
                     Thread.Sleep(5000);

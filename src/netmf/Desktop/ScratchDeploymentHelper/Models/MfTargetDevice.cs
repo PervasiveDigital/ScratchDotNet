@@ -261,23 +261,26 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
         public async Task Deploy(Guid boardId, Guid imageId, Action<string> messageHandler)
         {
             var deploymentSerialNumber = Guid.NewGuid();
+
             try
             {
-                _tc.TrackEvent("StartDeploy", new Dictionary<string, string>()
+                var fwmgr = App.Kernel.Get<FirmwareManager>();
+                var image = fwmgr.GetImage(imageId);
+
+                _tc.TrackEvent("DeploymentStarted", new Dictionary<string, string>()
                 {
                     { "deploymentId", deploymentSerialNumber.ToString() },
                     { "boardId", boardId.ToString() },
                     { "imageId", imageId.ToString() },
+                    { "imageVer", image.AppVersion.ToString() },
                     { "portName", _port.Name },
                     { "transport", _port.Transport.ToString() },
                     { "targetFrameworkVersion", _deviceInfo.TargetFrameworkVersion.ToString() },
                     { "halBuildInfo", _deviceInfo.HalBuildInfo },
                 });
 
-                var fwmgr = App.Kernel.Get<FirmwareManager>();
                 var engine = _device.DbgEngine;
 
-                var image = fwmgr.GetImage(imageId);
                 messageHandler(string.Format("Deploying {0} to {1}", image.Name, this.Name));
                 messageHandler("");
 
