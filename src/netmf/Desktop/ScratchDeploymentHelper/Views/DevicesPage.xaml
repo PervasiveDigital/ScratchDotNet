@@ -143,7 +143,7 @@
                         </Grid.ColumnDefinitions>
                         <!-- Image Panel -->
                         <Grid Grid.Column="0" Width="200" >
-                            <Image Width="128" HorizontalAlignment="Center" Stretch="Uniform" Source="/ScratchDeploymentHelper;component/Assets/Images/Scratch4DotNetLogo.png" />
+                            <Image Width="128" HorizontalAlignment="Center" Stretch="Uniform" Source="/ScratchDeploymentHelper;component/Assets/Images/S4NLogo-240.png" />
                         </Grid>
                         <!-- Description Panel -->
                         <Grid Grid.Column="1" Margin="0,10,10,10">

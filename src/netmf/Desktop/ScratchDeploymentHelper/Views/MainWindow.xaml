@@ -2,6 +2,6 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:PervasiveDigital.Scratch.DeploymentHelper.ViewModels"
-        Title="Scratch Gateway" Height="500" Width="700" Icon="/ScratchDeploymentHelper;component/Assets/Images/Scratch4DotNetLogo.png">
+        Title="Scratch Gateway" Height="500" Width="700" Icon="/ScratchDeploymentHelper;component/Assets/Images/S4NLogo-240.png">
 
 </NavigationWindow>

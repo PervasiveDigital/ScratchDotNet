@@ -339,9 +339,6 @@
       <Name>Scratch.Common</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Assets\Images\Scratch4DotNetLogo.png" />
-  </ItemGroup>
   <ItemGroup />
   <ItemGroup>
     <Content Include="Assets\Files\AddInSideAdapters\AddinSideAdapters.dll">
@@ -356,6 +353,8 @@
     <Content Include="Assets\Files\HostSideAdapters\HostSideAdapters.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Assets\Images\S4NLogo-240.png" />
+    <Resource Include="Assets\Images\S4NLogo-480.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
