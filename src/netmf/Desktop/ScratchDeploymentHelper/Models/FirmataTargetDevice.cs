@@ -74,14 +74,24 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
         public string AppName
         {
             get { return _appName; }
-            set { SetProperty(ref _appName, value); }
+            set 
+            {
+                SetProperty(ref _appName, value); 
+            }
         }
 
         private Version _appVersion;
         public Version AppVersion
         {
             get { return _appVersion; }
-            set { SetProperty(ref _appVersion, value); }
+            set 
+            { 
+                SetProperty(ref _appVersion, value); 
+                // This name change only occurs when the device reports in for the first time with ready firmware
+                // Re-init the driver
+                if (_isEnabled)
+                    EnableDriver(true);
+            }
         }
 
         private Version _protocolVersion;
@@ -157,13 +167,17 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
         {
             if (enable!=_isEnabled && this.Driver!=null)
             {
-                if (enable)
-                    this.Driver.Start(_firmata);
-                else
-                    this.Driver.Stop();
-
-                _isEnabled = enable;
+                EnableDriver(enable);
             }
+            _isEnabled = enable;
+        }
+
+        private void EnableDriver(bool enable)
+        {
+            if (enable)
+                this.Driver.Start(_firmata);
+            else
+                this.Driver.Stop();
         }
 
         public void StartOfProgram()
