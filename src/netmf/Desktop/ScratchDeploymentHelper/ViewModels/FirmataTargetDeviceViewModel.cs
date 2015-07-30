@@ -125,7 +125,14 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
             { 
                 SetProperty(ref _isConnected, value);
                 OnPropertyChanged("ConnectText");
+                OnPropertyChanged("IsNotConnected");
             }
+        }
+
+        // property inversion for XAML's use
+        public bool IsNotConnected
+        {
+            get { return !IsConnected; }
         }
 
         public string ConnectText
