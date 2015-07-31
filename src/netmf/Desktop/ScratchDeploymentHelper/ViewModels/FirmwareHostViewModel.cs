@@ -92,7 +92,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
         private async Task GetImage()
         {
             var fwmgr = App.Kernel.Get<FirmwareManager>();
-            var data = await fwmgr.GetImageForBoard(this.ViewSource.Id);
+            var data = await fwmgr.GetPhotoForBoard(this.ViewSource.Id);
             if (data != null)
             {
                 await this.Dispatcher.InvokeAsync(() =>

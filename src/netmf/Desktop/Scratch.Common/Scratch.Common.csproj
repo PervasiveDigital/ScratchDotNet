@@ -54,7 +54,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AsyncLock.cs" />
-    <Compile Include="Constants.cs" />
     <Compile Include="FirmwareAssembly.cs" />
     <Compile Include="FirmwareDictionary.cs" />
     <Compile Include="FirmwareHost.cs" />

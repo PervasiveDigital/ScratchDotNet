@@ -25,11 +25,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PervasiveDigital.Scratch.Common
+namespace PervasiveDigital.Scratch
 {
     public class Constants
     {
+#if STAGING
+        public const string S4NHost = "https://s4netstaging.blob.core.windows.net/";
+#else
         public const string S4NHost = "https://s4netus.blob.core.windows.net/";
+#endif
         public const string FirmwarePath = "firmware/";
         public const string ImagePath = "s4netproductimages/";
         public const string ScratchExtensionsPath = "scratchextensions/";

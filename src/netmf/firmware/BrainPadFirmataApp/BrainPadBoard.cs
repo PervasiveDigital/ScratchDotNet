@@ -43,8 +43,8 @@ namespace BrainPadFirmataApp
 
         private InputPort[] _digitalInputs = new InputPort[TotalNumberOfPorts * NumberOfPins];
 
-        private static AnalogInput _lightSensor = new AnalogInput((Cpu.AnalogChannel)8);
-        private static AnalogInput _tempSensor = new AnalogInput((Cpu.AnalogChannel)9);
+        private static AnalogInput _tempSensor = new AnalogInput((Cpu.AnalogChannel)8);
+        private static AnalogInput _lightSensor = new AnalogInput((Cpu.AnalogChannel)9);
         // temp, light, left, middle, right, X, Y Z
         private int[] _analogValues = new int[8];
 
@@ -146,10 +146,16 @@ namespace BrainPadFirmataApp
             CheckDigitalInputs();
 
             // light, temp, left, middle, right, X, Y, Z
-            var value = _lightSensor.ReadRaw();
+            // Reported in 10ths of a percent of full range
+            var value = (int)(_lightSensor.Read() * 1000.0);
             SendAnalogValue(0, value);
 
-            value = _tempSensor.ReadRaw();
+            // Reported in mV
+            double sum = 0;
+            for (int i = 0; i < 10; i++)
+                sum += _tempSensor.Read();
+            double avg = sum / 10;
+            value = (int)(avg * 3300.0);
             SendAnalogValue(1, value);
 
             value = (int)(BrainPad.TouchPad.RawRead(BrainPad.TouchPad.Pad.Left) & 0x7fff);
@@ -161,13 +167,13 @@ namespace BrainPadFirmataApp
             value = (int)(BrainPad.TouchPad.RawRead(BrainPad.TouchPad.Pad.Right) & 0x7fff);
             SendAnalogValue(4, value);
 
-            value = (int)BrainPad.Accelerometer.ReadX();
+            value = (int)(BrainPad.Accelerometer.ReadX() * 1000.0);
             SendAnalogValue(5, value);
 
-            value = (int)BrainPad.Accelerometer.ReadY();
+            value = (int)(BrainPad.Accelerometer.ReadY() * 1000.0);
             SendAnalogValue(6, value);
 
-            value = (int)BrainPad.Accelerometer.ReadZ();
+            value = (int)(BrainPad.Accelerometer.ReadZ() * 1000.0);
             SendAnalogValue(7, value);
         }
 

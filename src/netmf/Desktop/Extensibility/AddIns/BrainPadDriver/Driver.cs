@@ -24,6 +24,11 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
         private int[] _lastReportedAnalogValue = new int[8];
         private int[] _currentAnalogValue = new int[8];
 
+        private double _tempC = 0.0;
+        private double _tempCreported = 0.0;
+        private double _tempF = 0.0;
+        private double _tempFreported = 0.0;
+
         private enum Buttons
         {
             Up = 15,
@@ -106,15 +111,15 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
                 }
             }
 
-            // temp, light, left, middle, right, X, Y Z
+            // light, temp, left, middle, right, X, Y Z
             for (int i = 0; i < _currentAnalogValue.Length; ++i)
             {
                 if (_currentAnalogValue[i] != _lastReportedAnalogValue[i])
                 {
                     if (i == 0)
-                        result.Add("s4nTemp", _currentAnalogValue[i].ToString());
-                    else if (i == 1)
                         result.Add("s4nLight", _currentAnalogValue[i].ToString());
+                    else if (i == 1)
+                        result.Add("s4nTempRaw", _currentAnalogValue[i].ToString());
                     else if (i == 2)
                         result.Add("s4nTouch/left", _currentAnalogValue[i].ToString());
                     else if (i == 3)
@@ -122,14 +127,26 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
                     else if (i == 4)
                         result.Add("s4nTouch/right", _currentAnalogValue[i].ToString());
                     else if (i == 5)
-                        result.Add("s4nTilt/x", _currentAnalogValue[i].ToString());
+                        result.Add("s4nTilt/x", (_currentAnalogValue[i] / 1000.0).ToString());
                     else if (i == 6)
-                        result.Add("s4nTilt/y", _currentAnalogValue[i].ToString());
+                        result.Add("s4nTilt/y", (_currentAnalogValue[i] / 1000.0).ToString());
                     else if (i == 7)
-                        result.Add("s4nTilt/z", _currentAnalogValue[i].ToString());
+                        result.Add("s4nTilt/z", (_currentAnalogValue[i] / 1000.0).ToString());
 
-                    _currentAnalogValue[i] = _lastReportedAnalogValue[i];
+                    _lastReportedAnalogValue[i] = _currentAnalogValue[i];
                 }
+            }
+
+            // Report moving average temperature
+            if (_tempC != _tempCreported)
+            {
+                result.Add("s4nTemp/C", _tempC.ToString());
+                _tempCreported = _tempC;
+            }
+            if (_tempF != _tempFreported)
+            {
+                result.Add("s4nTemp/F", _tempF.ToString());
+                _tempFreported = _tempF;
             }
 
             return result;
@@ -157,6 +174,11 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
         {
             lock (_lock)
             {
+                if (port == 1)
+                {
+                    _tempC = (value - 450.0) / 19.5;
+                    _tempF = _tempC * 9.0 / 5.0 + 32;
+                }
                 _currentAnalogValue[port] = value;
             }
         }

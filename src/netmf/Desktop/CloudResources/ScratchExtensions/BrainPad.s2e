@@ -1,35 +1,41 @@
 {	"extensionName": "BrainPad Extension",
-	"sort":1,
-	"extensionPort": 31076,
-	"firmware":"1.1.103",
-	"blockSpecs": [
-		["h",".Net Program","runDotNet"],
-		
+    "sort": 1,
+    "extensionPort": 31076,
+    "firmware": "1.1.103",
+    "blockSpecs": [
+        [ "h", ".Net Program", "runDotNet" ],
+
         [ "-" ],
         [ "b", "button %d.buttons pressed", "s4nButton", "left" ],
-        [ "w", "set traffic light to %d.traffic", "setTraffic", "OFF" ],
+        [ "w", "set traffic light to %d.traffic", "setTraffic", "off" ],
+        [ "w", "set bulb to color %d.bulbcolor", "setBulb", "black" ],
 
-        [ "R", "temperature", "s4nTemp" ],
-        [ "R", "light level", "s4nLight" ],
-        [ "R", "tilt in the %d.dir direction", "s4nTilt" ],
-        [ "R", "touch value on the %d.pads pad", "s4nTouch", "left" ],
+        [ "r", "raw temperature value", "s4nTempRaw" ],
+        [ "r", "temperature in %d.tempunits", "s4nTemp" ],
+
+        [ "r", "light level", "s4nLight" ],
+        [ "r", "tilt in the %d.dir direction", "s4nTilt" ],
+        [ "r", "touch value on the %d.pads pad", "s4nTouch", "left" ],
 
         [ "w", "set servo angle as %d.servovalue", "setServo", 90 ],
-        [ "w", "set motor speed as %d", "setMotor", 0 ],		
-	],
-	"menus": {
-		"size":["SMALL","BIG"],
-		"dir":["x","y","z"],
-		"pads":["left","middle","right"],
-		"buttons":["up","down","left","right"],
-		"traffic":["off","green","yellow","red"],
-		"beats":["500","250","125","1000","2000","0"],
-		"servovalue":["0","45","90","135","180"],
-		"pwmvalue":["0","50","100","150","255"],
-		"digital":["HIGH","LOW"],
-		"notes":["C2","D2","E2","F2","G2","A2","B2","C3","D3","E3","F3","G3","A3","B3","C4","D4","E4","F4","G4","A4","B4","C5","D5","E5","F5","G5","A5","B5","C6","D6","E6","F6","G6","A6","B6","C7","D7","E7","F7","G7","A7","B7","C8","D8"],
-		"beats":["Half","Quater","Eighth","Whole","Double","Zero"]
-	},
+        [ "w", "set motor speed as %d", "setMotor", 0 ]
+    ],
+    "menus": {
+        "bulbcolor": ["off", "Aqua", "Blue", "Fushcia", "Gray", "Green", "Lime", "Maroon", "Navy",
+            "Olive", "Orange", "Purple", "Red", "Silver", "Teal", "Violet", "White", "Yellow"],
+        "tempunits": [ "C", "F" ],
+        "size": [ "SMALL", "BIG" ],
+        "dir": [ "x", "y", "z" ],
+        "pads": [ "left", "middle", "right" ],
+        "buttons": [ "up", "down", "left", "right" ],
+        "traffic": [ "off", "green", "yellow", "red" ],
+        "beats": [ "500", "250", "125", "1000", "2000", "0" ],
+        "servovalue": [ "0", "45", "90", "135", "180" ],
+        "pwmvalue": [ "0", "50", "100", "150", "255" ],
+        "digital": [ "HIGH", "LOW" ],
+        "notes": [ "C2", "D2", "E2", "F2", "G2", "A2", "B2", "C3", "D3", "E3", "F3", "G3", "A3", "B3", "C4", "D4", "E4", "F4", "G4", "A4", "B4", "C5", "D5", "E5", "F5", "G5", "A5", "B5", "C6", "D6", "E6", "F6", "G6", "A6", "B6", "C7", "D7", "E7", "F7", "G7", "A7", "B7", "C8", "D8" ],
+        "beats": [ "Half", "Quater", "Eighth", "Whole", "Double", "Zero" ]
+    },
 	"values":{
 		"run":2,
 		"get":1,

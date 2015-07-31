@@ -27,6 +27,7 @@ using System.Threading;
 
 using PervasiveDigital.Firmata.Runtime;
 using PervasiveDigital.UsbHelper;
+using System.Text;
 
 namespace BrainPadFirmataApp
 {
@@ -77,11 +78,12 @@ namespace BrainPadFirmataApp
                 if (USB.Init())
                 {
                     //TODO: isn't working yet on my current BrainPad firmware
+                    DisplayStatus("Using USB. Reset to deploy");
                 }
                 else
                     DisplayStatus("Using secondary serial port");
 
-                var port = new SerialPort("COM2", 115200, Parity.None, 8, StopBits.One);
+                var port = new SerialPort("COM1", 115200, Parity.None, 8, StopBits.One);
 
                 _firmata = new FirmataService("BrainPad", "b335f01176044984941833c9ce00d3ae", _appVersion.Major, _appVersion.Minor);
                 _board = new BrainPadBoard(_firmata);

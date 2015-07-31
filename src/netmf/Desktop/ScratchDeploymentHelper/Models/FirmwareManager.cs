@@ -125,7 +125,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
             }
         }
 
-        public async Task<byte[]> GetImageForBoard(Guid id)
+        public async Task<byte[]> GetPhotoForBoard(Guid id)
         {
             var board = _firmwareDictionary.Boards.FirstOrDefault(x => x.Id == id);
             if (board == null)
@@ -144,6 +144,11 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
             catch
             {
                 // ignore exceptions here and try to read from the net again.
+            }
+
+            if (File.Exists(path))
+            {
+                File.Delete(path);
             }
 
             try

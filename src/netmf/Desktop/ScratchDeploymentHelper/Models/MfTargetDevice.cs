@@ -231,17 +231,24 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
 
         public IEnumerable<FirmwareHost> GetCandidateBoards()
         {
+            IEnumerable<FirmwareHost> candidates = new List<FirmwareHost>();
             if (_deviceInfo == null)
-                return new List<FirmwareHost>();
+                return candidates;
 
-            var fwmgr = App.Kernel.Get<FirmwareManager>();
+            try
+            {
+                var fwmgr = App.Kernel.Get<FirmwareManager>();
 
-            var buildInfo =
-                "clr:" + (_deviceInfo.ClrBuildInfo ?? "") + "," +
-                "hal:" + (_deviceInfo.HalBuildInfo ?? "") + "," +
-                "soln:" + (_deviceInfo.SolutionBuildInfo ?? "");
-            var candidates = fwmgr.FindMatchingBoards(_deviceInfo.TargetFrameworkVersion, _port.Name, buildInfo, _deviceInfo.OEM, _deviceInfo.SKU);
-
+                var buildInfo =
+                    "clr:" + (_deviceInfo.ClrBuildInfo ?? "") + "," +
+                    "hal:" + (_deviceInfo.HalBuildInfo ?? "") + "," +
+                    "soln:" + (_deviceInfo.SolutionBuildInfo ?? "");
+                candidates = fwmgr.FindMatchingBoards(_deviceInfo.TargetFrameworkVersion, _port.Name, buildInfo, _deviceInfo.OEM, _deviceInfo.SKU);
+            }
+            catch
+            {
+                // sometimes throws when a board is unplugged - return empty list
+            }
             return candidates;
         }
 
