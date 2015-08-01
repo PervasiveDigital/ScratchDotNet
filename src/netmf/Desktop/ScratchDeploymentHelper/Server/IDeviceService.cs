@@ -63,6 +63,9 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Server
         [OperationContract, WebGet(UriTemplate = "/playTone/{id}/{note}/{beat}")]
         Stream PlayTone(string id, string note, string beat);
 
+        [OperationContract, WebGet(UriTemplate = "/playRest/{id}/{beat}")]
+        Stream PlayRest(string id, string beat);
+
         [OperationContract, WebGet(UriTemplate = "/whenButton/{button}/{state}")]
         Stream WhenButton(string button, string state);
     }

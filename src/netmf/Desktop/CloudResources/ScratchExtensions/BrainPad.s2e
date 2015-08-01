@@ -11,7 +11,7 @@
         [ " ", "set bulb to color %d.bulbcolor", "setBulbColor", "red" ],
         [ " ", "turn bulb %d.onoff", "setBulbState", "off" ],
 
-        [ "w", "rest for %d.beats beats", "playTone", "rest", "Quarter" ],
+        [ "w", "rest for %d.beats beats", "playRest", "Quarter" ],
         [ "w", "play %d.notes for %d.beats beats", "playTone", "C5", "Quarter" ],
 
         [ "r", "raw temperature value", "s4nTempRaw" ],

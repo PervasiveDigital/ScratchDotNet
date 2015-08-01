@@ -300,6 +300,8 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
         public Dictionary<string, string> GetSensorValues()
         {
             var result = new Dictionary<string, string>();
+            if (_firmata == null)
+                return result;
 
             for (int i = 0; i < TotalNumberOfPorts; ++i)
             {
@@ -350,11 +352,11 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
                     else if (i == 4)
                         result.Add("s4nTouch/right", _currentAnalogValue[i].ToString());
                     else if (i == 5)
-                        result.Add("s4nTilt/x", (_currentAnalogValue[i] / 1000.0).ToString());
+                        result.Add("s4nTilt/x", Math.Round(_currentAnalogValue[i] / 1000.0 - 0.5, 2).ToString());
                     else if (i == 6)
-                        result.Add("s4nTilt/y", (_currentAnalogValue[i] / 1000.0).ToString());
+                        result.Add("s4nTilt/y", Math.Round(_currentAnalogValue[i] / 1000.0 - 0.5, 2).ToString());
                     else if (i == 7)
-                        result.Add("s4nTilt/z", (_currentAnalogValue[i] / 1000.0).ToString());
+                        result.Add("s4nTilt/z", Math.Round(_currentAnalogValue[i] / 1000.0 - 0.5, 2).ToString());
 
                     _lastReportedAnalogValue[i] = _currentAnalogValue[i];
                 }

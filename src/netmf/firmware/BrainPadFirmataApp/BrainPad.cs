@@ -164,7 +164,7 @@ public static class BrainPad
             if (degrees < 0 || degrees > 180)
                 throw new Exception("The value " + degrees.ToString() + " is not valid, use 0 to 180 degrees only.");
 
-            Deacticvate();
+            Deactivate();
 
             _pwm.Period = 20000;
             _pwm.Duration = (uint)(750 + ((degrees / 180.0) * 1500));
@@ -176,7 +176,7 @@ public static class BrainPad
         /// <summary>
         /// Stops the Servo Motor.
         /// </summary>
-        public static void Deacticvate()
+        public static void Deactivate()
         {
             if (_started)
             {

@@ -98,6 +98,18 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Server
             return ResultAsString("ok\r\n");
         }
 
+        public Stream PlayRest(string id, string beat)
+        {
+            WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
+
+            if (this.DeviceModel.FirmataTarget != null)
+            {
+                this.DeviceModel.FirmataTarget.ExecuteCommand("playTone", id, new List<string>() { "rest", beat });
+            }
+
+            return ResultAsString("ok\r\n");
+        }
+
         public Stream SetBulbState(string onoff)
         {
             WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";

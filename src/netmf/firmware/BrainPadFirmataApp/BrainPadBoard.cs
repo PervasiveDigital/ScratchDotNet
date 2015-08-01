@@ -341,13 +341,13 @@ namespace BrainPadFirmataApp
             value = (int)(BrainPad.TouchPad.RawRead(BrainPad.TouchPad.Pad.Right) & 0x7fff);
             SendAnalogValue(4, value);
 
-            value = (int)(BrainPad.Accelerometer.ReadX() * 1000.0);
+            value = (int)((BrainPad.Accelerometer.ReadX() + 0.5) * 1000);
             SendAnalogValue(5, value);
 
-            value = (int)(BrainPad.Accelerometer.ReadY() * 1000.0);
+            value = (int)((BrainPad.Accelerometer.ReadY() + 0.5) * 1000);
             SendAnalogValue(6, value);
 
-            value = (int)(BrainPad.Accelerometer.ReadZ() * 1000.0);
+            value = (int)((BrainPad.Accelerometer.ReadZ() + 0.5) * 1000);
             SendAnalogValue(7, value);
         }
 
