@@ -167,7 +167,7 @@ public static class BrainPad
             Deacticvate();
 
             _pwm.Period = 20000;
-            _pwm.Duration = (uint)(1250 + ((degrees / 180) * 500));
+            _pwm.Duration = (uint)(750 + ((degrees / 180.0) * 1500));
 
             Reactivate();
 

@@ -624,6 +624,43 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
             Send(buffer);
         }
 
+        /// <summary>
+        /// Pack an integer into five bytes
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static byte[] IntToMidiBytes(int value)
+        {
+            var result = new byte[5];
+
+            for (int i = 0; i < 5; ++i)
+            {
+                result[i] = (byte)(value & 0x7f);
+                value >>= 7;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Convert five bytes of midi data into an integer
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="offset"></param>
+        /// <returns></returns>
+        public static int MidiBytesToInt(byte[] data, int offset)
+        {
+            var result = 0;
+
+            for (int i = 0; i < 5; ++i)
+            {
+                result <<= 7;
+                result |= (byte)(data[offset+i] & 0x7f);
+            }
+
+            return result;
+        }
+
         private void SendCodeChannelAndValue(byte code, byte channel, int value)
         {
             Send(new byte[] {

@@ -16,6 +16,8 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
         private const int PinsPerPort = 8;
         private const int NumberOfPins = TotalNumberOfPorts * PinsPerPort;
 
+        private const int MotorPort = 9;
+        private const int ServoPort = 10;
         // red=11, yellow=12, green=13
         private const int TrafficLightPort = 11;
         private const int BulbStatePort = 14;
@@ -44,6 +46,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
             DrawLine = 0x12,
             DrawCircle = 0x13,
             DrawRectangle = 0x14,
+            DisplayActionCompleted = 0x1f
         }
 
         private Dictionary<string, int> _palette = new Dictionary<string, int>()
@@ -117,7 +120,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
             "d8"
         };
 
-        private List<string> _waitIds = new List<string>();
+        private Dictionary<string, string> _waitIds = new Dictionary<string, string>();
 
         private enum Buttons
         {
@@ -167,30 +170,36 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
                 case "settraffic":
                     if (args.Count >= 2)
                     {
-                        SetTraffic(id, args[0], args[1]);
+                        SetTraffic(args[0], args[1]);
                     }
                     break;
                 case "setbulbstate":
                     if (args.Count >= 1)
                     {
-                        SetBulbState(id, args[0]);
+                        SetBulbState(args[0]);
                     }
                     break;
                 case "setbulbcolor":
                     if (args.Count >= 1)
                     {
-                        SetBulbColor(id, args[0]);
+                        SetBulbColor(args[0]);
                     }
                     break;
                 case "playtone":
                     PlayTone(id, args[0], args[1]);
+                    break;
+                case "setservo":
+                    SetServo(args[0]);
+                    break;
+                case "setmotor":
+                    SetMotor(args[0]);
                     break;
                 default:
                     break;
             }
         }
 
-        private void SetTraffic(string id, string color, string onoff)
+        private void SetTraffic(string color, string onoff)
         {
             if (_firmata == null)
                 return;
@@ -212,7 +221,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
             }
         }
 
-        private void SetBulbState(string id, string onoff)
+        private void SetBulbState(string onoff)
         {
             if (_firmata == null)
                 return;
@@ -220,7 +229,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
             _firmata.SendDigitalMessage(BulbStatePort, state ? 1 : 0);
         }
 
-        private void SetBulbColor(string id, string color)
+        private void SetBulbColor(string color)
         {
             if (_firmata == null)
                 return;
@@ -235,7 +244,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
             if (_firmata == null)
                 return;
 
-            if (_waitIds.Count > 0)
+            if (_waitIds.ContainsKey("tone"))
                 return; // one tone at a time for now
 
             var noteValue = _notes.IndexOf(note.ToLowerInvariant());
@@ -265,8 +274,27 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
                     return;
             }
 
-            _waitIds.Add(id);
+            _waitIds.Add("tone", id);
             _firmata.SendExtendedMessage((byte)ExtendedMessageCommand.PlayTone, new byte[] { (byte)noteValue, (byte)duration});
+        }
+
+        private void SetServo(string angle)
+        {
+            if (_firmata == null)
+                return;
+            var angleValue = int.Parse(angle);
+            if (angleValue >= 0 && angleValue <= 180)
+                _firmata.SendDigitalMessage((byte)ServoPort, angleValue);
+        }
+
+        private void SetMotor(string speed)
+        {
+            if (_firmata == null)
+                return;
+            var speedValue = int.Parse(speed);
+            // value will be between 0 and 200
+            if (speedValue >= -100 && speedValue <= 100)
+                _firmata.SendDigitalMessage((byte)MotorPort, speedValue + 100);
         }
 
         public Dictionary<string, string> GetSensorValues()
@@ -345,7 +373,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
             }
 
             // Report wait ids
-            foreach (var id in _waitIds)
+            foreach (var id in _waitIds.Values)
             {
                 result.Add("_busy", id);
             }
@@ -389,11 +417,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
             switch (command)
             {
                 case (byte)ExtendedMessageCommand.ToneCompleted:
-                    // not quite correct, but good enough for now
-                    // if you play multiple tones from multiple threads, 
-                    // this won't work, but then again what were you 
-                    //  expecting by playing multiple tones from multiple threads?
-                    _waitIds.Clear();
+                    _waitIds.Remove("tone");
                     break;
             }
         }

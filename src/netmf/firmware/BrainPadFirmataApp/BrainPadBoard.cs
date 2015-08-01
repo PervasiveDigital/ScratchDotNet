@@ -37,6 +37,8 @@ namespace BrainPadFirmataApp
         private const int PinsPerPort = 8;
         private const int NumberOfPins = TotalNumberOfPorts * PinsPerPort;
 
+        private const int MotorPort = 9;
+        private const int ServoPort = 10;
         private const int TrafficLightPort = 11;
         private const int BulbStatePort = 14;
         private const int BulbColorPort = 15;
@@ -66,6 +68,7 @@ namespace BrainPadFirmataApp
             DrawLine = 0x12,
             DrawCircle = 0x13,
             DrawRectangle = 0x14,
+            DisplayActionCompleted = 0x1f
         }
 
         private int[] _notes = new int[]
@@ -151,6 +154,23 @@ namespace BrainPadFirmataApp
 
         public void ProcessDigitalMessage(int port, int value)
         {
+            if (port == MotorPort)
+            {
+                if (value >= 0 && value <= 200)
+                {
+                    value = value - 100;
+                    double dvalue = value / 100.0;
+                    if (value == 0)
+                        BrainPad.DcMotor.Stop();
+                    else
+                        BrainPad.DcMotor.SetSpeed(dvalue);
+                }
+            }
+            if (port == ServoPort)
+            {
+                if (value>=0 && value <=180)
+                    BrainPad.ServoMotor.SetPosition(value);
+            }
             if (port == TrafficLightPort) // traffic light, red
             {
                 if (value == 0)
@@ -240,6 +260,10 @@ namespace BrainPadFirmataApp
                     var duration = message[2];
                     PlayTone(tone, duration);
                     break;
+                case (byte)ExtendedMessageCommand.ClearDisplay:
+                    BrainPad.Display.Clear();
+                    _firmata.SendSysex((byte)ExtendedMessageCommand.DisplayActionCompleted);
+                    break;
                 default:
                     break;
             }
@@ -247,9 +271,17 @@ namespace BrainPadFirmataApp
 
         private ExtendedTimer _noteTimer;
 
+        // duration is expressed in eighth notes at 120 beats/min
         private void PlayTone(int tone, int duration)
         {
-            // duration is expressed in eighth notes at 120 beats/min
+            if (_noteTimer != null)
+            {
+                // A new note kills the previous one
+                _noteTimer.Dispose();
+                _noteTimer = null;
+                BrainPad.Buzzer.Stop();
+                _firmata.SendSysex((byte)ExtendedMessageCommand.ToneCompleted);
+            }
 
             if (tone < _notes.Length)
             {
@@ -267,6 +299,8 @@ namespace BrainPadFirmataApp
 
         private void EndTone(object state)
         {
+            _noteTimer.Dispose();
+            _noteTimer = null;
             BrainPad.Buzzer.Stop();
             _firmata.SendSysex((byte)ExtendedMessageCommand.ToneCompleted);
         }
