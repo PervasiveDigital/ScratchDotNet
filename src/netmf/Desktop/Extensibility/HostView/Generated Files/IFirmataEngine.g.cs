@@ -14,6 +14,8 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
     public interface IFirmataEngine
     {
         void ReportDigital(byte port, int value);
+        void SendDigitalMessage(byte port, int value);
+        void SendExtendedMessage(byte command, byte[] data);
     }
 }
 

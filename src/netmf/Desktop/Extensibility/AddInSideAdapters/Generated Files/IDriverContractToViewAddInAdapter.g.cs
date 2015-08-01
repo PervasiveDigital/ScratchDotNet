@@ -51,6 +51,10 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility.AddInSideAdapt
         {
             _contract.ProcessAnalogMessage(port, value);
         }
+        public void ProcessExtendedMessage(byte command, byte[] data)
+        {
+            _contract.ProcessExtendedMessage(command, data);
+        }
         internal PervasiveDigital.Scratch.DeploymentHelper.Extensibility.Contracts.IDriverContract GetSourceContract()
         {
             return _contract;

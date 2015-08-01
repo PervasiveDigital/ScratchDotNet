@@ -62,25 +62,25 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Server
             return ResultAsString("ok\r\n");
         }
 
-        public Stream SetDigital(string id, string pin, string value)
+        public Stream SetDigital(string pin, string value)
         {
             WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
 
             if (this.DeviceModel.FirmataTarget != null)
             {
-                this.DeviceModel.FirmataTarget.ExecuteCommand("setDigital", id, new List<string>() { pin, value });
+                this.DeviceModel.FirmataTarget.ExecuteCommand("setDigital", null, new List<string>() { pin, value });
             }
 
             return ResultAsString("ok\r\n");
         }
 
-        public Stream SetPwm(string id, string port, string value)
+        public Stream SetPwm(string port, string value)
         {
             WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
 
             if (this.DeviceModel.FirmataTarget != null)
             {
-                this.DeviceModel.FirmataTarget.ExecuteCommand("setPwm", id, new List<string>() { port, value });
+                this.DeviceModel.FirmataTarget.ExecuteCommand("setPwm", null, new List<string>() { port, value });
             }
 
             return ResultAsString("ok\r\n");
@@ -98,37 +98,61 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Server
             return ResultAsString("ok\r\n");
         }
 
-        public Stream SetTraffic(string id, string color)
+        public Stream SetBulbState(string onoff)
         {
             WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
 
             if (this.DeviceModel.FirmataTarget != null)
             {
-                this.DeviceModel.FirmataTarget.ExecuteCommand("setTraffic", id, new List<string>() { color });
+                this.DeviceModel.FirmataTarget.ExecuteCommand("setBulbState", null, new List<string>() { onoff });
             }
 
             return ResultAsString("ok\r\n");
         }
 
-        public Stream SetServo(string id, string angle)
+        public Stream SetBulbColor(string color)
         {
             WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
 
             if (this.DeviceModel.FirmataTarget != null)
             {
-                this.DeviceModel.FirmataTarget.ExecuteCommand("setServo", id, new List<string>() { angle });
+                this.DeviceModel.FirmataTarget.ExecuteCommand("setBulbColor", null, new List<string>() { color });
             }
 
             return ResultAsString("ok\r\n");
         }
 
-        public Stream SetMotor(string id, string speed)
+        public Stream SetTraffic(string color, string onoff)
         {
             WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
 
             if (this.DeviceModel.FirmataTarget != null)
             {
-                this.DeviceModel.FirmataTarget.ExecuteCommand("setMotor", id, new List<string>() { speed });
+                this.DeviceModel.FirmataTarget.ExecuteCommand("setTraffic", null, new List<string>() { color, onoff });
+            }
+
+            return ResultAsString("ok\r\n");
+        }
+
+        public Stream SetServo(string angle)
+        {
+            WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
+
+            if (this.DeviceModel.FirmataTarget != null)
+            {
+                this.DeviceModel.FirmataTarget.ExecuteCommand("setServo", null, new List<string>() { angle });
+            }
+
+            return ResultAsString("ok\r\n");
+        }
+
+        public Stream SetMotor(string speed)
+        {
+            WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
+
+            if (this.DeviceModel.FirmataTarget != null)
+            {
+                this.DeviceModel.FirmataTarget.ExecuteCommand("setMotor", null, new List<string>() { speed });
             }
 
             return ResultAsString("ok\r\n");
@@ -149,6 +173,13 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Server
                     _dm = App.Kernel.Get<DeviceModel>();
                 return _dm;
             }
+        }
+
+        public Stream WhenButton(string button, string state)
+        {
+            WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
+
+            return ResultAsString(string.Format("whenButton/{0}/{1} false\r\n",button, state));
         }
     }
 }

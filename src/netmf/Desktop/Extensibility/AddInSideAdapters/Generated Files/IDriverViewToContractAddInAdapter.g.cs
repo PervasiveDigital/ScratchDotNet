@@ -47,6 +47,10 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility.AddInSideAdapt
         {
             _view.ProcessAnalogMessage(port, value);
         }
+        public virtual void ProcessExtendedMessage(byte command, byte[] data)
+        {
+            _view.ProcessExtendedMessage(command, data);
+        }
         internal PervasiveDigital.Scratch.DeploymentHelper.Extensibility.IDriver GetSourceView()
         {
             return _view;

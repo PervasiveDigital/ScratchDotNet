@@ -307,7 +307,7 @@ namespace PervasiveDigital.Firmata.Runtime
                                     _board.ProcessDigitalMessage(multiByteChannel, _inputMessage[0] << 7 | _inputMessage[1]);
                                     break;
                                 case (byte)CommandCode.SET_PIN_MODE:
-                                    _board.SetPinMode(_inputMessage[1], _inputMessage[0]);
+                                    _board.SetPinMode(_inputMessage[1], _inputMessage[0] << 7 | _inputMessage[1]);
                                     break;
                                 case (byte)CommandCode.REPORT_ANALOG:
                                     _board.ReportAnalog(multiByteChannel, _inputMessage[0] << 7 | _inputMessage[1]);

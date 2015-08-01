@@ -291,5 +291,10 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
                 _selectedFirmataTarget.ProcessAnalogMessage(port, value);
         }
 
+        public void ProcessExtendedMessage(byte[] message, int len)
+        {
+            if (_selectedFirmataTarget != null)
+                _selectedFirmataTarget.ProcessExtendedMessage(message, len);
+        }
     }
 }

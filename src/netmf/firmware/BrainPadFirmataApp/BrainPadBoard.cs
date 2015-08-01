@@ -21,8 +21,11 @@
 //-------------------------------------------------------------------------
 using System;
 using Microsoft.SPOT;
-using PervasiveDigital.Firmata.Runtime;
 using Microsoft.SPOT.Hardware;
+using System.Collections;
+using System.Threading;
+
+using PervasiveDigital.Firmata.Runtime;
 
 namespace BrainPadFirmataApp
 {
@@ -33,6 +36,10 @@ namespace BrainPadFirmataApp
         private const int TotalNumberOfPorts = NumberOfDigitalPorts + NumberOfSyntheticPorts;
         private const int PinsPerPort = 8;
         private const int NumberOfPins = TotalNumberOfPorts * PinsPerPort;
+
+        private const int TrafficLightPort = 11;
+        private const int BulbStatePort = 14;
+        private const int BulbColorPort = 15;
 
         private readonly FirmataService _firmata;
 
@@ -47,6 +54,68 @@ namespace BrainPadFirmataApp
         private static AnalogInput _lightSensor = new AnalogInput((Cpu.AnalogChannel)9);
         // temp, light, left, middle, right, X, Y Z
         private int[] _analogValues = new int[8];
+
+        // Our Sysex commands
+        private enum ExtendedMessageCommand : byte
+        {
+            PlayTone = 0x01,
+            ToneCompleted = 0x02,
+
+            ClearDisplay = 0x10,
+            WriteText = 0x11,
+            DrawLine = 0x12,
+            DrawCircle = 0x13,
+            DrawRectangle = 0x14,
+        }
+
+        private int[] _notes = new int[]
+        {
+               0,    // a 'rest'
+              65,    // "C2"
+              73,    // "D2"
+              82,    // "E2"
+              87,    // "F2"
+              98,    // "G2"
+             110,    // "A2"
+             123,    // "B2"
+             131,    // "C3"
+             147,    // "D3"
+             165,    // "E3"
+             175,    // "F3"
+             194,    // "G3"
+             220,    // "A3"
+             247,    // "B3"
+             262,    // "C4"
+             294,    // "D4"
+             330,    // "E4"
+             349,    // "F4"
+             392,    // "G4"
+             440,    // "A4"
+             494,    // "B4"
+             523,    // "C5"
+             587,    // "D5"
+             659,    // "E5"
+             699,    // "F5"
+             784,    // "G5"
+             880,    // "A5"
+             988,    // "B5"
+            1047,    // "C6"
+            1175,    // "D6"
+            1319,    // "E6"
+            1397,    // "F6"
+            1568,    // "G6"
+            1760,    // "A6"
+            1976,    // "B6"
+            2093,    // "C7"
+            2349,    // "D7"
+            2637,    // "E7"
+            2794,    // "F7"
+            3136,    // "G7"
+            3520,    // "A7"
+            3951,    // "B7"
+            4186,    // "C8"
+            4699     // "D8"
+        };
 
         public BrainPadBoard(FirmataService firmata)
         {
@@ -82,6 +151,41 @@ namespace BrainPadFirmataApp
 
         public void ProcessDigitalMessage(int port, int value)
         {
+            if (port == TrafficLightPort) // traffic light, red
+            {
+                if (value == 0)
+                    BrainPad.TrafficLight.TurnOff(BrainPad.Color.Palette.Red);
+                else
+                    BrainPad.TrafficLight.TurnOn(BrainPad.Color.Palette.Red);
+            }
+            if (port == TrafficLightPort + 1) // traffic light, yellow
+            {
+                if (value == 0)
+                    BrainPad.TrafficLight.TurnOff(BrainPad.Color.Palette.Yellow);
+                else
+                    BrainPad.TrafficLight.TurnOn(BrainPad.Color.Palette.Yellow);
+            }
+            if (port == TrafficLightPort + 2) // traffic light, green
+            {
+                if (value == 0)
+                    BrainPad.TrafficLight.TurnOff(BrainPad.Color.Palette.Green);
+                else
+                    BrainPad.TrafficLight.TurnOn(BrainPad.Color.Palette.Green);
+            }
+            if (port == BulbStatePort)
+            {
+                if (value == 0)
+                    BrainPad.LightBulb.TurnOff();
+                else
+                    BrainPad.LightBulb.TurnOn();
+            }
+            if (port == BulbColorPort)
+            {
+                var red = (byte)(((value & 0xF800) >> 11) * 8);
+                var green = (byte)(((value & 0x7E0) >> 5) * 4);
+                var blue = (byte)((value & 0x1F) * 8);
+                BrainPad.LightBulb.SetColor(red / 255.0, green / 255.0, blue / 255.0);
+            }
         }
 
         public void SetPinMode(int pin, int mode)
@@ -129,6 +233,42 @@ namespace BrainPadFirmataApp
 
         public void ProcessExtendedMessage(byte[] message, int len)
         {
+            switch (message[0])
+            {
+                case (byte)ExtendedMessageCommand.PlayTone:
+                    var tone = message[1];
+                    var duration = message[2];
+                    PlayTone(tone, duration);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private ExtendedTimer _noteTimer;
+
+        private void PlayTone(int tone, int duration)
+        {
+            // duration is expressed in eighth notes at 120 beats/min
+
+            if (tone < _notes.Length)
+            {
+                if (tone != 0) // a tone of 0 is a rest - we don't play anything, we just wait it out
+                {
+                    BrainPad.Buzzer.PlayFrequency(_notes[tone]);
+                }
+                _noteTimer = new ExtendedTimer(
+                    EndTone,
+                    null,
+                    250 * duration,
+                    System.Threading.Timeout.Infinite);
+            }
+        }
+
+        private void EndTone(object state)
+        {
+            BrainPad.Buzzer.Stop();
+            _firmata.SendSysex((byte)ExtendedMessageCommand.ToneCompleted);
         }
 
         private DateTime _lastAnnouncement = DateTime.MinValue;
@@ -198,7 +338,7 @@ namespace BrainPadFirmataApp
                 // read the digital pins
                 if (iPort < NumberOfDigitalPorts)
                 {
-                    for (int iPin = PinsPerPort-1; iPin >= 0; --iPin)
+                    for (int iPin = PinsPerPort - 1; iPin >= 0; --iPin)
                     {
                         var iInput = iPort * PinsPerPort + iPin;
                         if ((_reportPins[iPort] & (1 << iPin)) != 0)

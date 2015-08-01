@@ -7,34 +7,58 @@
 
         [ "-" ],
         [ "b", "button %d.buttons pressed", "s4nButton", "left" ],
-        [ "w", "set traffic light to %d.traffic", "setTraffic", "off" ],
-        [ "w", "set bulb to color %d.bulbcolor", "setBulb", "black" ],
+        [ " ", "turn %d.traffic traffic light %d.onoff", "setTraffic", "red", "on" ],
+        [ " ", "set bulb to color %d.bulbcolor", "setBulbColor", "red" ],
+        [ " ", "turn bulb %d.onoff", "setBulbState", "off" ],
+
+        [ "w", "rest for %d.beats beats", "playTone", "rest", "Quarter" ],
+        [ "w", "play %d.notes for %d.beats beats", "playTone", "C5", "Quarter" ],
 
         [ "r", "raw temperature value", "s4nTempRaw" ],
-        [ "r", "temperature in %d.tempunits", "s4nTemp" ],
+        [ "r", "temperature in %d.tempunits", "s4nTemp", "C" ],
 
         [ "r", "light level", "s4nLight" ],
-        [ "r", "tilt in the %d.dir direction", "s4nTilt" ],
+        [ "r", "tilt in the %d.dir direction", "s4nTilt", "X" ],
         [ "r", "touch value on the %d.pads pad", "s4nTouch", "left" ],
 
-        [ "w", "set servo angle as %d.servovalue", "setServo", 90 ],
-        [ "w", "set motor speed as %d", "setMotor", 0 ]
+        [ " ", "set servo angle as %d.servovalue", "setServo", 90 ],
+        [ " ", "set motor speed as %d", "setMotor", 0 ]
     ],
     "menus": {
-        "bulbcolor": ["off", "Aqua", "Blue", "Fushcia", "Gray", "Green", "Lime", "Maroon", "Navy",
-            "Olive", "Orange", "Purple", "Red", "Silver", "Teal", "Violet", "White", "Yellow"],
+        "bulbcolor": [
+            "Aqua",
+            "Black",
+            "Blue",
+            "Fushcia",
+            "Gray",
+            "Green",
+            "Lime",
+            "Maroon",
+            "Navy",
+            "Olive",
+            "Orange",
+            "Purple",
+            "Red",
+            "Silver",
+            "Teal",
+            "Violet",
+            "White",
+            "Yellow"
+        ],
+        "press" : ["pressed", "released"],
         "tempunits": [ "C", "F" ],
+        "onoff": [ "on", "off" ],
         "size": [ "SMALL", "BIG" ],
         "dir": [ "x", "y", "z" ],
         "pads": [ "left", "middle", "right" ],
         "buttons": [ "up", "down", "left", "right" ],
-        "traffic": [ "off", "green", "yellow", "red" ],
+        "traffic": [ "green", "yellow", "red" ],
         "beats": [ "500", "250", "125", "1000", "2000", "0" ],
         "servovalue": [ "0", "45", "90", "135", "180" ],
         "pwmvalue": [ "0", "50", "100", "150", "255" ],
         "digital": [ "HIGH", "LOW" ],
         "notes": [ "C2", "D2", "E2", "F2", "G2", "A2", "B2", "C3", "D3", "E3", "F3", "G3", "A3", "B3", "C4", "D4", "E4", "F4", "G4", "A4", "B4", "C5", "D5", "E5", "F5", "G5", "A5", "B5", "C6", "D6", "E6", "F6", "G6", "A6", "B6", "C7", "D7", "E7", "F7", "G7", "A7", "B7", "C8", "D8" ],
-        "beats": [ "Half", "Quater", "Eighth", "Whole", "Double", "Zero" ]
+        "beats": [ "Half", "Quarter", "Eighth", "Whole", "Double" ]
     },
 	"values":{
 		"run":2,

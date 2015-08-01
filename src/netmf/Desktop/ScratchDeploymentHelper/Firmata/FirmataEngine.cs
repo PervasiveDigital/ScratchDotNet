@@ -386,13 +386,13 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
                                     _dm.ProcessDigitalMessage(multiByteChannel, _inputMessage[0] << 7 | _inputMessage[1]);
                                     break;
                                 case (byte)CommandCode.SET_PIN_MODE:
-                                    //_board.SetPinMode(_inputMessage[1], _inputMessage[0]);
+                                    //_board.SetPinMode(_inputMessage[1], _inputMessage[0] << 7 | _inputMessage[1]);
                                     break;
                                 case (byte)CommandCode.REPORT_ANALOG:
-                                    //_board.ReportAnalog(multiByteChannel, _inputMessage[0]);
+                                    //_board.ReportAnalog(multiByteChannel, _inputMessage[0] << 7 | _inputMessage[1]);
                                     break;
                                 case (byte)CommandCode.REPORT_DIGITAL:
-                                    //_board.ReportDigital(multiByteChannel, _inputMessage[0]);
+                                    //_board.ReportDigital(multiByteChannel, _inputMessage[0] << 7 | _inputMessage[1]);
                                     break;
                                 case (byte)CommandCode.REPORT_VERSION:
                                     var key = ComputeCommandKey((byte)CommandCode.REPORT_VERSION);
@@ -482,7 +482,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
                     //.ProcessStringMessage(str);
                     break;
                 default:
-                    //_board.ProcessExtendedMessage(_inputMessage, _cbInputMessage);
+                    _dm.ProcessExtendedMessage(_inputMessage, _cbInputMessage);
                     break;
             }
         }
@@ -657,6 +657,16 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
         public void ReportDigital(byte port, int value)
         {
             this.SendCodeChannelAndValue((byte)CommandCode.REPORT_DIGITAL, port, value);
+        }
+
+        public void SendDigitalMessage(byte port, int value)
+        {
+            this.SendCodeChannelAndValue((byte)CommandCode.DIGITAL_MESSAGE, port, value);
+        }
+
+        public void SendExtendedMessage(byte command, byte[] data)
+        {
+            this.SendSysex(command, data);
         }
 
         #endregion

@@ -28,6 +28,14 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility.HostSideAdapte
         {
             _contract.ReportDigital(port, value);
         }
+        public void SendDigitalMessage(byte port, int value)
+        {
+            _contract.SendDigitalMessage(port, value);
+        }
+        public void SendExtendedMessage(byte command, byte[] data)
+        {
+            _contract.SendExtendedMessage(command, data);
+        }
         internal PervasiveDigital.Scratch.DeploymentHelper.Extensibility.Contracts.IFirmataEngineContract GetSourceContract()
         {
             return _contract;

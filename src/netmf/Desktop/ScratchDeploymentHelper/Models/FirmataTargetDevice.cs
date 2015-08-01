@@ -224,6 +224,20 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
             }
         }
 
+        public void ProcessExtendedMessage(byte[] message, int len)
+        {
+            if (this.Driver != null)
+            {
+                byte command = message[0];
+                byte[] data = new byte[len-1];
+                if (len - 1 > 0)
+                {
+                    Array.Copy(message, 1, data, 0, len - 1);
+                }
+                this.Driver.ProcessExtendedMessage(command, data);
+            }
+        }
+
         #endregion
     }
 }

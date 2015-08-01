@@ -39,22 +39,31 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Server
         [OperationContract, WebGet(UriTemplate = "/runDotNet")]
         Stream RunDotNet();
 
-        [OperationContract, WebGet(UriTemplate = "/setDigital/{id}/{pin}/{value}")]
-        Stream SetDigital(string id, string pin, string value);
+        [OperationContract, WebGet(UriTemplate = "/setDigital/{pin}/{value}")]
+        Stream SetDigital(string pin, string value);
 
-        [OperationContract, WebGet(UriTemplate = "/setTraffic/{id}/{color}")]
-        Stream SetTraffic(string id, string color);
+        [OperationContract, WebGet(UriTemplate = "/setBulbState/{onoff}")]
+        Stream SetBulbState(string onoff);
 
-        [OperationContract, WebGet(UriTemplate = "/setServo/{id}/{angle}")]
-        Stream SetServo(string id, string angle);
+        [OperationContract, WebGet(UriTemplate = "/setBulbColor/{color}")]
+        Stream SetBulbColor(string color);
 
-        [OperationContract, WebGet(UriTemplate = "/setMotor/{id}/{speed}")]
-        Stream SetMotor(string id, string speed);
+        [OperationContract, WebGet(UriTemplate = "/setTraffic/{color}/{onoff}")]
+        Stream SetTraffic(string color, string onoff);
 
-        [OperationContract, WebGet(UriTemplate = "/setPwm/{id}/{port}/{value}")]
-        Stream SetPwm(string id, string port, string value);
+        [OperationContract, WebGet(UriTemplate = "/setServo/{angle}")]
+        Stream SetServo(string angle);
+
+        [OperationContract, WebGet(UriTemplate = "/setMotor/{speed}")]
+        Stream SetMotor(string speed);
+
+        [OperationContract, WebGet(UriTemplate = "/setPwm/{port}/{value}")]
+        Stream SetPwm(string port, string value);
 
         [OperationContract, WebGet(UriTemplate = "/playTone/{id}/{note}/{beat}")]
         Stream PlayTone(string id, string note, string beat);
+
+        [OperationContract, WebGet(UriTemplate = "/whenButton/{button}/{state}")]
+        Stream WhenButton(string button, string state);
     }
 }

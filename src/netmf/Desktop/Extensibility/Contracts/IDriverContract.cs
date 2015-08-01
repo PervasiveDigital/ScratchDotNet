@@ -34,5 +34,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility.Contracts
         void ProcessDigitalMessage(int port, int value);
 
         void ProcessAnalogMessage(int port, int value);
+
+        void ProcessExtendedMessage(byte command, byte[] data);
     }
 }
