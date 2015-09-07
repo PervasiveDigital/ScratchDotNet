@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
+using System.Configuration;
+using Microsoft.ApplicationInsights;
 
 namespace ScratchDotNet.Models
 {
@@ -16,25 +18,11 @@ namespace ScratchDotNet.Models
         private CloudTableClient _tableClient;
         private CloudTable _productsTable;
         private CloudTable _manufacturersTable;
+        private TelemetryClient _tc;
 
-        public AzureStorageContext()
+        public AzureStorageContext(TelemetryClient tc)
         {
-            //var item =
-            //        new ProductEntity("GHI Electronics", "BrainPad")
-            //        {
-            //            Blocks = "Thermometer, accelerometer, buttons, touch, speaker, display, lights, servo, motor, GPIO, Serial",
-            //            Description = "",
-            //            GenericFWSupport = true,
-            //            CustomFWSupport = true,
-            //            ScratchOnlineSupport = true,
-            //            ScratchOfflineSupport = true,
-            //            ImageFooter = "The BrainPad was specifically created for education and is well supported by Scratch for .Net with custom firmware and custom Scratch blocks that provide access to the BrainPad's sensors and actuators.",
-            //            ProductImageUrl = "https://s4netus.blob.core.windows.net/s4netproductimages/BrainPad.jpg",
-            //            ProductName = "BrainPad",
-            //            ProductLink = "https://www.ghielectronics.com/catalog/product/536"
-            //        };
-            //var op = TableOperation.Insert(item);
-            //this.ProductsTable.Execute(op);
+            _tc = tc;
         }
 
         public CloudTable ProductsTable
@@ -43,8 +31,15 @@ namespace ScratchDotNet.Models
             {
                 if (_productsTable == null)
                 {
-                    _productsTable = this.TableClient.GetTableReference("s4nethardware");
-                    _productsTable.CreateIfNotExists();
+                    try
+                    {
+                        _productsTable = this.TableClient.GetTableReference("s4nethardware");
+                        _productsTable.CreateIfNotExists();
+                    }
+                    catch (Exception ex)
+                    {
+                        _tc.TrackException(ex);
+                    }
                 }
                 return _productsTable;
             }
@@ -56,8 +51,15 @@ namespace ScratchDotNet.Models
             {
                 if (_manufacturersTable == null)
                 {
-                    _manufacturersTable = this.TableClient.GetTableReference("s4netmanufacturers");
-                    _manufacturersTable.CreateIfNotExists();
+                    try
+                    {
+                        _manufacturersTable = this.TableClient.GetTableReference("s4netmanufacturers");
+                        _manufacturersTable.CreateIfNotExists();
+                    }
+                    catch (Exception ex)
+                    {
+                        _tc.TrackException(ex);
+                    }
                 }
                 return _manufacturersTable;
             }
@@ -69,7 +71,14 @@ namespace ScratchDotNet.Models
             {
                 if (_account==null)
                 {
-                    _account = CloudStorageAccount.Parse(CloudConfigurationManager.GetSetting("s4netstorage"));
+                    try
+                    {
+                        _account = CloudStorageAccount.Parse(ConfigurationManager.AppSettings["s4netstorage"]);
+                    }
+                    catch (Exception ex)
+                    {
+                        _tc.TrackException(ex);
+                    }
                 }
                 return _account;
             }
@@ -81,7 +90,14 @@ namespace ScratchDotNet.Models
             {
                 if (_tableClient == null)
                 {
-                    _tableClient = this.Account.CreateCloudTableClient();
+                    try
+                    {
+                        _tableClient = this.Account.CreateCloudTableClient();
+                    }
+                    catch (Exception ex)
+                    {
+                        _tc.TrackException(ex);
+                    }
                 }
                 return _tableClient;
             }

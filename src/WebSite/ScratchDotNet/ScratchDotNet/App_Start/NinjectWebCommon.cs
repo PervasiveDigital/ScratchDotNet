@@ -11,6 +11,7 @@ namespace ScratchDotNet.App_Start
     using Ninject;
     using Ninject.Web.Common;
     using ScratchDotNet.Models;
+    using Microsoft.ApplicationInsights;
 
     public static class NinjectWebCommon 
     {
@@ -45,6 +46,7 @@ namespace ScratchDotNet.App_Start
             {
                 kernel.Bind<Func<IKernel>>().ToMethod(ctx => () => new Bootstrapper().Kernel);
                 kernel.Bind<IHttpModule>().To<HttpApplicationInitializationHttpModule>();
+                kernel.Bind<TelemetryClient>().ToSelf().InSingletonScope();
 
                 RegisterServices(kernel);
                 return kernel;
