@@ -28,6 +28,8 @@ using System.Threading;
 using PervasiveDigital.Firmata.Runtime;
 using PervasiveDigital.UsbHelper;
 using System.Text;
+using GHI.Usb.Client;
+using Microsoft.SPOT.Hardware.UsbClient;
 
 namespace BrainPadFirmataApp
 {
@@ -43,55 +45,32 @@ namespace BrainPadFirmataApp
 
             DisplayTitlePage();
 
-            // Wait for 5 seconds to see if the user wants debug mode
-            var left = new InputPort((Cpu.Pin)26, true, Port.ResistorMode.PullUp);
-            DisplayStatus("Press LEFT for dbg/deploy");
-            bool fDebugMode = false;
-            var now = DateTime.UtcNow;
-            while (true)
-            {
-                var delta = (DateTime.UtcNow - now).Seconds;
-                if (delta >= 6)
-                    break;
-                BrainPad.Display.DrawString(70, 100, (5 - delta).ToString(), BrainPad.Color.Palette.Lime);
-                if (!left.Read())
-                {
-                    fDebugMode = true;
-                    break;
-                }
-                Thread.Sleep(50);
-            }
-            // so we don't conflict with firmata's access to this pin
-            left.Dispose();
-            left = null;
-
             ClearStatus();
             BrainPad.Display.DrawFillRect(65, 100, 10, 10, BrainPad.Color.Palette.Black);
 
-            if (fDebugMode)
+            ICommunicationChannel channel = null;
+            _board = new BrainPadBoard(_firmata);
+            _firmata = new FirmataService("BrainPad", "b335f01176044984941833c9ce00d3ae", _appVersion.Major, _appVersion.Minor);
+
+            try
             {
-                DisplayStatus("Debug/Deploy Mode enabled");
-                Thread.Sleep(Timeout.Infinite);
+                var vsp = new Cdc();
+                Controller.ActiveDevice = vsp;
+                channel = new UsbCommunicationChannel(vsp);
+                DisplayStatus("Using USB. Reset to deploy");
             }
-            else
+            catch
             {
-                if (USB.Init())
-                {
-                    //TODO: isn't working yet on my current BrainPad firmware
-                    DisplayStatus("Using USB. Reset to deploy");
-                }
-                else
-                    DisplayStatus("Using secondary serial port");
-
                 var port = new SerialPort("COM1", 115200, Parity.None, 8, StopBits.One);
+                channel = new SerialCommunicationChannel(port);
+                DisplayStatus("Using secondary serial port");
+            }
+            
+            _firmata.Open(_board, channel);
 
-                _firmata = new FirmataService("BrainPad", "b335f01176044984941833c9ce00d3ae", _appVersion.Major, _appVersion.Minor);
-                _board = new BrainPadBoard(_firmata);
-                _firmata.Open(_board, new SerialCommunicationChannel(port));
-                while (true)
-                {
-                    _board.Process();
-                }
+            while (true)
+            {
+                _board.Process();
             }
         }
 

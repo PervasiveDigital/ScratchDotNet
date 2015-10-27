@@ -32,6 +32,7 @@ using PervasiveDigital.Scratch.DeploymentHelper.Firmata;
 using System.IO.Ports;
 using System.Diagnostics;
 using PervasiveDigital.Scratch.Common;
+using PervasiveDigital.Scratch.DeploymentHelper.Properties;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper.Models
 {
@@ -92,12 +93,24 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
         {
             using (var releaser = await _firmataDeviceListLock.LockAsync())
             {
+                var useOnlyThesePorts = new List<string>();
+                if (Settings.Default.ScanCOMPorts != null && Settings.Default.ScanCOMPorts.Count > 0)
+                {
+                    useOnlyThesePorts = Settings.Default.ScanCOMPorts.Cast<string>().ToList();
+                }
+
                 // Treat serial ports as firmata first, deployable targets secondly
                 // Deployment usually happens on USB and firmata is always found on serial,
                 //   so making this presumption speeds things up.
                 var serialPorts = SerialPort.GetPortNames();
                 foreach (var portname in serialPorts)
                 {
+                    // If the com-port list is not empty, and the current port is not in that list
+                    //   then skip this candidate port. The user has excluded it.
+                    if (useOnlyThesePorts.Count > 0 &&
+                        !useOnlyThesePorts.Any(x => x.ToLowerInvariant() == portname.ToLowerInvariant()))
+                        continue;
+
                     // only probe if we don't already have this port registered
                     if (_devices.Any(x => x is FirmataTargetDevice && ((FirmataTargetDevice)x).DisplayName == portname))
                         continue;

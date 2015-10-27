@@ -36,13 +36,15 @@ using Ninject;
 using Newtonsoft.Json;
 
 using PervasiveDigital.Scratch.Common;
+using PervasiveDigital.Scratch.DeploymentHelper.Properties;
+using System.Deployment.Application;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper.Models
 {
     public class FirmwareManager
     {
         private const string FirmwareDictionaryFile = "firmware-{0}.{1}.json";
-        private static Version FirmwareVersion = new Version(1, 0);
+        private static Version FirmwareVersion = new Version(1, 2);
 
         private readonly TelemetryClient _tc;
         private readonly LibraryManager _libmgr;
@@ -146,6 +148,25 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
                 // ignore exceptions here and try to read from the net again.
             }
 
+            // If we can't use dynamic content, then return here
+            if (!Settings.Default.OnlineDataUpdates)
+            {
+                string sourcePath = null;
+                if (ApplicationDeployment.IsNetworkDeployed)
+                    sourcePath = ApplicationDeployment.CurrentDeployment.DataDirectory;
+                else
+                    sourcePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                path = Path.Combine(sourcePath, @"Assets\Installation\Photos", board.ProductImageName);
+                if (File.Exists(path))
+                {
+                    var result = File.ReadAllBytes(path);
+                    if (result.Length > 0)
+                        return result;
+                }
+
+                return null;
+            }
+
             if (File.Exists(path))
             {
                 File.Delete(path);
@@ -201,7 +222,68 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
                 await UpdateDownloadableAssets();
         }
 
-        public async Task UpdateFirmwareDictionary()
+        public Task UpdateFirmwareDictionary()
+        {
+            if (Settings.Default.OnlineDataUpdates)
+                return UpdateFirmwareDictionaryFromInternet();
+            else
+                return UpdateFirmwareDictionaryFromInstallation();
+        }
+
+        private async Task UpdateFirmwareDictionaryFromInstallation()
+        {
+            var destPath = GetFirmwareDictionaryPath();
+            string sourcePath;
+
+            if (ApplicationDeployment.IsNetworkDeployed)
+                sourcePath = ApplicationDeployment.CurrentDeployment.DataDirectory;
+            else
+                sourcePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            sourcePath = Path.Combine(sourcePath, @"Assets\Installation\Dictionary", GetFirmwareDictionaryFileName());
+
+            var lastWrite = File.GetLastWriteTime(destPath);
+            // Missing files use a year of 1601 instead of DateTime.MinValue. Treat anything
+            //   before 2015 as a missing file, because unless I start time traveling, that is
+            //   an invalid file.
+            if (lastWrite.Year < 2015)
+            {
+                try
+                {
+                    // We've never retrieved the file - go get a copy unconditionally
+                    // Use a temp file because DownloadFile will create a zero-length file if there is an error retrieving the web content
+                    File.Copy(sourcePath, destPath, true);
+                    await ReadFirmwareDictionary(true);
+                }
+                catch (Exception ex)
+                {
+                    _tc.TrackException(ex);
+                    _firmwareDictionary = null;
+                }
+            }
+            else
+            {
+                try
+                {
+                    // The file exists locally - get it only if it is newer on the server
+                    var destLastWrite = File.GetLastWriteTimeUtc(destPath);
+                    var sourceLastWrite = File.GetCreationTimeUtc(sourcePath);
+
+                    if (destLastWrite < sourceLastWrite)
+                    {
+                        File.Copy(sourcePath, destPath, true);
+                        await ReadFirmwareDictionary(true);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _tc.TrackException(ex);
+                }
+                if (_firmwareDictionary == null || _firmwareDictionary.Boards.Count == 0)
+                    throw new Exception("Unable to load firmware dictionary from install dir. Program cannot start");
+            }
+        }
+
+        private async Task UpdateFirmwareDictionaryFromInternet()
         {
             var destPath = GetFirmwareDictionaryPath();
             var uriString = Constants.S4NHost + Constants.FirmwarePath + GetFirmwareDictionaryFileName();
@@ -272,8 +354,13 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
                 {
                     _tc.TrackException(ex);
                 }
+
                 if (_firmwareDictionary == null || _firmwareDictionary.Boards.Count == 0)
-                    throw new Exception("Unable to load firmware dictionary. Program cannot start");
+                {
+                    await UpdateFirmwareDictionaryFromInstallation();
+                    if (_firmwareDictionary == null || _firmwareDictionary.Boards.Count == 0)
+                        throw new Exception("Unable to load firmware dictionary from web or install dir. Program cannot start");
+                }
             }
         }
 

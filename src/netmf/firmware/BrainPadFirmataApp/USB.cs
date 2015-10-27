@@ -23,6 +23,7 @@ using System;
 using Microsoft.SPOT;
 using Microsoft.SPOT.Hardware.UsbClient;
 using System.Threading;
+using GHI.Usb.Client;
 
 namespace PervasiveDigital.UsbHelper
 {
@@ -125,6 +126,29 @@ namespace PervasiveDigital.UsbHelper
 
         public static bool Init()
         {
+            Cdc vsp = new Cdc();
+            //activedevice is null
+            Controller.ActiveDevice = vsp;
+
+            // Send "Hello world!" to PC every second. (Append a new line too)
+            //byte[] bytes = System.Text.Encoding.UTF8.GetBytes("Hello world!\r\n");
+            while (true)
+            {
+                // Check if connected to PC
+                if (Controller.State !=
+                    UsbController.PortState.Running)
+                {
+                    Debug.Print("Waiting to connect to PC...");
+                }
+                else
+                    break;
+                //else
+                //{
+                //    vsp.Stream.Write(bytes, 0, bytes.Length);
+                //}
+                Thread.Sleep(500);
+            }
+            
             // See if the hardware supports USB
             UsbController[] controllers = UsbController.GetControllers();
             // Bail out if USB is not supported on this hardware!

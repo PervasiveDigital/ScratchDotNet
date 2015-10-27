@@ -29,6 +29,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 using PervasiveDigital.Scratch.Common;
+using PervasiveDigital.Scratch.DeploymentHelper.Properties;
+using System.Deployment.Application;
+using System.Reflection;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper.Models
 {
@@ -44,6 +47,41 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
         }
 
         public async Task UpdateScratchContent(IEnumerable<string> fileNames)
+        {
+            if (Settings.Default.OnlineDataUpdates)
+                await UpdateScratchContentFromInternet(fileNames);
+            else
+                UpdateScratchContentFromInstallation(fileNames);
+        }
+
+        private void UpdateScratchContentFromInstallation(IEnumerable<string> fileNames)
+        {
+            string sourcePath;
+
+            if (ApplicationDeployment.IsNetworkDeployed)
+                sourcePath = ApplicationDeployment.CurrentDeployment.DataDirectory;
+            else
+                sourcePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+            foreach (var file in fileNames)
+            {
+                var sourceFilePath = Path.Combine(sourcePath, @"Assets\Installation", Constants.ScratchExtensionsPath, file);
+                var destPath = Path.Combine(_root, file);
+
+                var sourceLastWrite = File.GetLastWriteTimeUtc(sourceFilePath);
+                var destLastWrite = File.GetLastWriteTimeUtc(destPath);
+
+                if (destLastWrite < sourceLastWrite)
+                {
+                    if (File.Exists(destPath))
+                        File.Delete(destPath);
+
+                    File.Copy(sourceFilePath, destPath, true);
+                }
+            }
+        }
+
+        private async Task UpdateScratchContentFromInternet(IEnumerable<string> fileNames)
         {
             foreach (var file in fileNames)
             {

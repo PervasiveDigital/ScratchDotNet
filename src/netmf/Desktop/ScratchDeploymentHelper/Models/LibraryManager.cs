@@ -32,6 +32,7 @@ using System.Threading.Tasks;
 using Ninject;
 
 using PervasiveDigital.Scratch.Common;
+using PervasiveDigital.Scratch.DeploymentHelper.Properties;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper.Models
 {
@@ -72,6 +73,10 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
                     fDownload = true;
                 if (!fDownload)
                     return path;
+
+                // If we are not allowed to do downloads, then stop here
+                if (!Settings.Default.OnlineDataUpdates)
+                    return null;
 
                 var packageName = id.ToString("N") + ".zip";
                 

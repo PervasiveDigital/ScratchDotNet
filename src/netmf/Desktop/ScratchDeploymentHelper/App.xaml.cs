@@ -40,6 +40,7 @@ using PervasiveDigital.Scratch.DeploymentHelper.Models;
 using PervasiveDigital.Scratch.DeploymentHelper.Server;
 using PervasiveDigital.Scratch.DeploymentHelper.Views;
 using System.ServiceModel;
+using PervasiveDigital.Scratch.DeploymentHelper.Properties;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper
 {
@@ -182,6 +183,12 @@ namespace PervasiveDigital.Scratch.DeploymentHelper
             ShowSplashScreen();
             SetCurrentActivity("Initializing...");
 
+            if (Settings.Default.IsFirstRun)
+                DoFirstRunActivities();
+
+            if (Settings.Default.CheckForUpdates)
+                CheckForUpdates();
+
             await InitializeAsync();
 
             var endTime = DateTime.UtcNow;
@@ -201,6 +208,90 @@ namespace PervasiveDigital.Scratch.DeploymentHelper
             HideSplashScreen();
 
             mainWindow.Show();
+        }
+
+        private void DoFirstRunActivities()
+        {
+            if (Settings.Default.ClassroomMode)
+            {
+                // Classroom mode means that we may not have unfettered internet access
+                //   and dynamic updates might mess with lesson plans, so disable them.
+                Settings.Default.OnlineDataUpdates = false;
+                Settings.Default.CheckForUpdates = false;
+                Settings.Default.IsFirstRun = false;
+                Settings.Default.Save();
+            }
+        }
+
+        private void CheckForUpdates()
+        {
+            UpdateCheckInfo info = null;
+
+            if (ApplicationDeployment.IsNetworkDeployed)
+            {
+                ApplicationDeployment ad = ApplicationDeployment.CurrentDeployment;
+
+                try
+                {
+                    info = ad.CheckForDetailedUpdate();
+
+                }
+                catch (DeploymentDownloadException dde)
+                {
+                    MessageBox.Show("The new version of the application cannot be downloaded at this time. \n\nPlease check your network connection, or try again later. Error: " + dde.Message);
+                    return;
+                }
+                catch (InvalidDeploymentException ide)
+                {
+                    MessageBox.Show("Cannot check for a new version of the application. The ClickOnce deployment is corrupt. Please redeploy the application and try again. Error: " + ide.Message);
+                    return;
+                }
+                catch (InvalidOperationException ioe)
+                {
+                    MessageBox.Show("This application cannot be updated. It is likely not a ClickOnce application. Error: " + ioe.Message);
+                    return;
+                }
+
+                if (info.UpdateAvailable)
+                {
+                    Boolean doUpdate = true;
+
+                    if (!info.IsUpdateRequired)
+                    {
+                        var result = MessageBox.Show("An update is available. Would you like to update the application now?", "Update Available", MessageBoxButton.YesNo);
+                        if (result != MessageBoxResult.Yes)
+                        {
+                            doUpdate = false;
+                        }
+                    }
+                    else
+                    {
+                        // Display a message that the app MUST reboot. Display the minimum required version.
+                        MessageBox.Show("This application has detected a mandatory update from your current " +
+                            "version to version " + info.MinimumRequiredVersion.ToString() +
+                            ". The application will now install the update and restart.",
+                            "Update Available", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+
+                    if (doUpdate)
+                    {
+                        try
+                        {
+                            ad.Update();
+                            MessageBox.Show("The application has been upgraded, and will now restart.");
+                            String ApplicationEntryPoint = ApplicationDeployment.CurrentDeployment.UpdatedApplicationFullName;
+                            Process.Start(ApplicationEntryPoint); 
+                            //System.Windows.Forms.Application.Restart();
+                            Application.Current.Shutdown();
+                        }
+                        catch (DeploymentDownloadException dde)
+                        {
+                            MessageBox.Show("Cannot install the latest version of the application. \n\nPlease check your network connection, or try again later. Error: " + dde);
+                            return;
+                        }
+                    }
+                }
+            }
         }
 
         private async Task InitializeAsync()
@@ -248,8 +339,6 @@ namespace PervasiveDigital.Scratch.DeploymentHelper
                 Application.Current.Shutdown();
                 return;
             }
-
-            //TODO: show a splash screen
 
             // Initialize the extensibility pipeline
             SetCurrentActivity("Updating drivers and plugins...");

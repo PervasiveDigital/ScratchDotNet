@@ -1,4 +1,25 @@
-﻿using System;
+﻿//-------------------------------------------------------------------------
+//  (c) 2015 Pervasive Digital LLC
+//
+//  This file is part of Scratch for .Net Micro Framework
+//
+//  "Scratch for .Net Micro Framework" is free software: you can 
+//  redistribute it and/or modify it under the terms of the 
+//  GNU General Public License as published by the Free Software 
+//  Foundation, either version 3 of the License, or (at your option) 
+//  any later version.
+//
+//  "Scratch for .Net Micro Framework" is distributed in the hope that
+//  it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+//  warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+//  the GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with "Scratch for .Net Micro Framework". If not, 
+//  see <http://www.gnu.org/licenses/>.
+//
+//-------------------------------------------------------------------------
+using System;
 using System.AddIn.Hosting;
 using System.Collections.Generic;
 using System.Deployment.Application;
@@ -16,6 +37,7 @@ using PervasiveDigital.Scratch.DeploymentHelper.Common;
 using PervasiveDigital.Scratch.Common;
 using System.Net;
 using PervasiveDigital.Scratch.DeploymentHelper.Models;
+using PervasiveDigital.Scratch.DeploymentHelper.Properties;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper.Models
 {
@@ -65,12 +87,53 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
                         files.Add(item.ConfigurationExtensionSource);
                     }
                 }
-                await this.UpdatePlugins(files);
+                if (Settings.Default.OnlineDataUpdates)
+                    await this.UpdatePluginsFromInternet(files);
+                else
+                    this.UpdatePluginsFromInstallation(files);
                 UpdatePipeline();
             }
         }
 
-        public async Task UpdatePlugins(IEnumerable<string> fileNames)
+        private void UpdatePluginsFromInstallation(IEnumerable<string> fileNames)
+        {
+            string sourcePath;
+
+            if (ApplicationDeployment.IsNetworkDeployed)
+                sourcePath = ApplicationDeployment.CurrentDeployment.DataDirectory;
+            else
+                sourcePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+            foreach (var file in fileNames)
+            {
+                var sourceFilePath = Path.Combine(sourcePath,  @"Assets\Installation", Constants.ScratchExtensionsPath, file);
+                var destPath = Path.Combine(_cacheRoot, file);
+
+                var sourceLastWrite = File.GetLastWriteTimeUtc(sourceFilePath);
+                var destLastWrite = File.GetLastWriteTimeUtc(destPath);
+
+                if (destLastWrite < sourceLastWrite)
+                {
+                    if (File.Exists(destPath))
+                        File.Delete(destPath);
+
+                    File.Copy(sourceFilePath, destPath, true);
+
+                    // Unzip into the correct location
+                    var dest = Path.Combine(_addInsDirectory, Path.GetFileNameWithoutExtension(file));
+                    if (Directory.Exists(dest))
+                    {
+                        Directory.Delete(dest, true);
+                    }
+                    Directory.CreateDirectory(dest);
+
+                    ZipFile.ExtractToDirectory(destPath, dest);
+
+                }
+            }
+        }
+
+        private async Task UpdatePluginsFromInternet(IEnumerable<string> fileNames)
         {
             foreach (var file in fileNames)
             {

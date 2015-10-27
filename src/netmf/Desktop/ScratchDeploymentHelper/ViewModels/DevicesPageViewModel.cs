@@ -41,7 +41,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
         private readonly ObservableViewCollection<TargetDevice, DeviceViewModel> _devices;
         private bool _fInitialized = false;
 
-        //private RelayCommand _connectCommand;
+        private RelayCommand _settingsCommand;
 
         private DeviceViewModel _selectedDevice = null;
 
@@ -92,27 +92,22 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
                 _dm.SetFirmataTarget(null);
         }
 
-        //public ICommand ConnectCommand
-        //{
-        //    get
-        //    {
-        //        if (_connectCommand == null)
-        //        {
-        //            _connectCommand = new RelayCommand(ConnectCommand_Executed, ConnectCommand_CanExecute);
-        //        }
-        //        return _connectCommand;
-        //    }
-        //}
+        public ICommand SettingsCommand
+        {
+            get
+            {
+                if (_settingsCommand == null)
+                {
+                    _settingsCommand = new RelayCommand(SettingsCommand_Executed);
+                }
+                return _settingsCommand;
+            }
+        }
 
-        //private void ConnectCommand_Executed(object obj)
-        //{
-        //    Connect(_selectedDevice);
-        //}
-
-        //private bool ConnectCommand_CanExecute(object obj)
-        //{
-        //    return _selectedDevice != null;
-        //}
+        private void SettingsCommand_Executed(object obj)
+        {
+            _view.NavigationService.Navigate(new SettingsPage());
+        }
 
         public ObservableViewCollection<TargetDevice, DeviceViewModel> Devices
         {
