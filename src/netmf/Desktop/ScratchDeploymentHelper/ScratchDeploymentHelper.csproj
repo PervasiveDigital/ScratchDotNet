@@ -295,6 +295,15 @@
     <Content Include="Assets\Installation\ScratchExtensions\GadgeteerConfigAddIn.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\Installation\Firmware\8915f2e876c140c297bafcdcb74a8afd.zip">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Installation\Firmware\e98b4d8f6f474663bbaebbe6fc8a019f.zip">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Installation\Firmware\e9e2c5f1dc204b3d88b741b88c3f35f2.zip">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -348,6 +357,36 @@
       <FileType>File</FileType>
     </PublishFile>
     <PublishFile Include="Assets\Installation\Dictionary\firmware-1.2.json">
+      <Visible>False</Visible>
+      <Group>
+      </Group>
+      <TargetPath>
+      </TargetPath>
+      <PublishState>DataFile</PublishState>
+      <IncludeHash>True</IncludeHash>
+      <FileType>File</FileType>
+    </PublishFile>
+    <PublishFile Include="Assets\Installation\Firmware\8915f2e876c140c297bafcdcb74a8afd.zip">
+      <Visible>False</Visible>
+      <Group>
+      </Group>
+      <TargetPath>
+      </TargetPath>
+      <PublishState>DataFile</PublishState>
+      <IncludeHash>True</IncludeHash>
+      <FileType>File</FileType>
+    </PublishFile>
+    <PublishFile Include="Assets\Installation\Firmware\e98b4d8f6f474663bbaebbe6fc8a019f.zip">
+      <Visible>False</Visible>
+      <Group>
+      </Group>
+      <TargetPath>
+      </TargetPath>
+      <PublishState>DataFile</PublishState>
+      <IncludeHash>True</IncludeHash>
+      <FileType>File</FileType>
+    </PublishFile>
+    <PublishFile Include="Assets\Installation\Firmware\e9e2c5f1dc204b3d88b741b88c3f35f2.zip">
       <Visible>False</Visible>
       <Group>
       </Group>

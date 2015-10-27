@@ -33,6 +33,8 @@ using Ninject;
 
 using PervasiveDigital.Scratch.Common;
 using PervasiveDigital.Scratch.DeploymentHelper.Properties;
+using System.Deployment.Application;
+using System.Reflection;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper.Models
 {
@@ -65,6 +67,54 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
 
         public string GetLibrary(Guid id, Action<string> mh)
         {
+            if (Settings.Default.OnlineDataUpdates)
+                return this.GetLibraryFromInternet(id, mh);
+            else
+                return this.GetLibraryFromInstallation(id, mh);
+        }
+
+        private string GetLibraryFromInstallation(Guid id, Action<string> mh)
+        {
+            try
+            {
+            var path = Path.Combine(_libPath, id.ToString("N"));
+            bool fDownload = false;
+            if (!Directory.Exists(path))
+                fDownload = true;
+            if (!fDownload)
+                return path;
+
+            var packageName = id.ToString("N") + ".zip";
+
+            mh(string.Format("Unpacking {0} ...", packageName));
+
+            string sourcePath;
+
+            if (ApplicationDeployment.IsNetworkDeployed)
+                sourcePath = ApplicationDeployment.CurrentDeployment.DataDirectory;
+            else
+                sourcePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+            var sourceFilePath = Path.Combine(sourcePath, @"Assets\Installation", Constants.FirmwarePath, packageName);
+
+            ZipFile.ExtractToDirectory(sourceFilePath, _libPath);
+
+            return path;
+            }
+            catch (Exception ex)
+            {
+                mh(string.Format("ERROR: failed to locate and extract the code library due to an exception : {0}", ex.Message));
+                _tc.TrackException(ex, new Dictionary<string, string>() 
+                    {
+                        { "libraryId", id.ToString() }
+                    });
+                return null;
+            }
+
+        }
+
+        private string GetLibraryFromInternet(Guid id, Action<string> mh)
+        {
             try
             {
                 var path = Path.Combine(_libPath, id.ToString("N"));
@@ -73,10 +123,6 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
                     fDownload = true;
                 if (!fDownload)
                     return path;
-
-                // If we are not allowed to do downloads, then stop here
-                if (!Settings.Default.OnlineDataUpdates)
-                    return null;
 
                 var packageName = id.ToString("N") + ".zip";
                 

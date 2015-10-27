@@ -50,8 +50,9 @@
                 "99d20fa1-895e-49b6-9a4f-45e4e08ff106",
                 "a39662ef-143e-4cb4-9f75-22f0ea1b404b",
                 "302fe463-f90c-4a03-9554-e8af4903f516",
-                "62239dee-07d4-4447-997f-fa3808e250bd",
-                "5b61839a-bc8b-4328-800b-e3372a7262e2"
+                "942e1e17-72ad-4a67-b447-ed25fa3798d8",
+                "9a11b1c2-9a90-4bf8-bfd7-a82924374078",
+                "fc6ecfb7-6a89-4064-923c-fcf67b6eeb37"
             ]
         }
     ],
@@ -86,7 +87,7 @@
         },
         {
             "Id": "302fe463-f90c-4a03-9554-e8af4903f516",
-            "LibraryId": "3741911e-8afc-4565-8027-885beb6df0cf",
+            "LibraryId": "e9e2c5f1-dc20-4b3d-88b7-41b88c3f35f2",
             "IsLittleEndian": true,
             "Filename": "GHI.Hardware.pe",
             "TargetFrameworkVersion": {
@@ -99,8 +100,22 @@
             }
         },
         {
-            "Id": "62239dee-07d4-4447-997f-fa3808e250bd",
-            "LibraryId": "e0fabc0f-abb5-42bf-bcc5-85f5de9b8ddd",
+            "Id": "942e1e17-72ad-4a67-b447-ed25fa3798d8",
+            "LibraryId": "e9e2c5f1-dc20-4b3d-88b7-41b88c3f35f2",
+            "IsLittleEndian": true,
+            "Filename": "GHI.USB.pe",
+            "TargetFrameworkVersion": {
+                "Major": 4,
+                "Minor": 3,
+                "Build": 1,
+                "Revision": 0,
+                "MajorRevision": 0,
+                "MinorRevision": 0
+            }
+        },
+        {
+            "Id": "9a11b1c2-9a90-4bf8-bfd7-a82924374078",
+            "LibraryId": "8915f2e8-76c1-40c2-97ba-fcdcb74a8afd",
             "IsLittleEndian": true,
             "Filename": "FirmataRuntime.pe",
             "TargetFrameworkVersion": {
@@ -113,8 +128,8 @@
             }
         },
         {
-            "Id": "5b61839a-bc8b-4328-800b-e3372a7262e2",
-            "LibraryId": "e0fabc0f-abb5-42bf-bcc5-85f5de9b8ddd",
+            "Id": "fc6ecfb7-6a89-4064-923c-fcf67b6eeb37",
+            "LibraryId": "8915f2e8-76c1-40c2-97ba-fcdcb74a8afd",
             "IsLittleEndian": true,
             "Filename": "BrainPadFirmataApp.pe",
             "TargetFrameworkVersion": {
