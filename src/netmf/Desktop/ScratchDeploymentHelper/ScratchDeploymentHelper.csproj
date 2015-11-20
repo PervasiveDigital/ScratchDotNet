@@ -155,11 +155,6 @@
     <Compile Include="Common\WatermarkAdorner.cs" />
     <Compile Include="Common\WatermarkService.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="Firmata\ISerialStream.cs" />
-    <Compile Include="Firmata\SerialPort.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Firmata\WinSerialStream.cs" />
     <Compile Include="Models\ExtensionManager.cs" />
     <Compile Include="Firmata\CircularBuffer.cs" />
     <Compile Include="Firmata\Exceptions.cs" />

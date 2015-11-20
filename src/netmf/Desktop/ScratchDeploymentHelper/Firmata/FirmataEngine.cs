@@ -20,7 +20,6 @@ using System.Threading.Tasks;
 
 using Ninject;
 
-using pdp = PervasiveDigital.IO.Ports;
 using PervasiveDigital.Scratch.DeploymentHelper.Common;
 using PervasiveDigital.Scratch.DeploymentHelper.Extensibility;
 using PervasiveDigital.Scratch.DeploymentHelper.Models;
@@ -112,7 +111,6 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
         private bool _isOpen;
         private string _portName;
         private SerialPort _port;
-        private pdp.SerialPort _pdpPort;
         private CircularBuffer<byte> _input = new CircularBuffer<byte>(256, 1, 256);
         private AutoResetEvent _haveDataEvent = new AutoResetEvent(false);
         private int _cbInputMessage;
@@ -160,7 +158,6 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
                     }
                     catch (System.UnauthorizedAccessException ex)
                     {
-                        _port.Close();
                         _port.Dispose();
                         _port = null;
 
@@ -169,27 +166,20 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
                     }
                     catch (System.IO.IOException)
                     {
-                        // this may be a CDC port - try a serial wrapper - the port parameters don't matter - only the name
                         _port.Dispose();
                         _port = null;
-                        Thread.Sleep(300);
-                        _pdpPort = new pdp.SerialPort(_portName, baud, Parity.None, 8, StopBits.One);
-                        _pdpPort.Open();
-                        
-                        new Thread(() => { PdpSerialReadLoop(); }).Start();
                     }
                     fDone = 
-                        (_pdpPort != null && _pdpPort.IsOpen) ||
                         (_port != null && _port.IsOpen) || 
                         (--openRetries <= 0);
                 } while (!fDone);
 
-                if ((_port != null && _port.IsOpen) || (_pdpPort != null && _pdpPort.IsOpen))
+                if (_port != null && _port.IsOpen)
                 {
                     new Thread(() => { ProcessReceivedData(); }).Start();
                 }
 
-                result = (_pdpPort != null && _pdpPort.IsOpen) || (_port != null && _port.IsOpen);
+                result = (_port != null && _port.IsOpen);
             }
             catch
             {
@@ -198,21 +188,6 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
 
             _isOpen = result;
             return result;
-        }
-
-        private void PdpSerialReadLoop()
-        {
-            while (true)
-            {
-                var count = _pdpPort.BytesToRead;
-                if (count > 0)
-                {
-                    var buffer = new byte[count];
-                    var cbRead = _pdpPort.Read(buffer, 0, count);
-                    _input.Put(buffer, 0, cbRead);
-                    _haveDataEvent.Set();
-                }
-            }
         }
 
         public async Task ProbeAndOpen()
@@ -274,10 +249,6 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
             {
                 _port.DataReceived -= _port_DataReceived;
                 _port.Close();
-            }
-            else if (_pdpPort!=null)
-            {
-                _pdpPort.Close();
             }
             _haveDataEvent.Set();
         }
@@ -717,8 +688,6 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
         {
             if (_port != null)
                 _port.Write(data, 0, data.Length);
-            else if (_pdpPort!=null)
-                _pdpPort.Write(data, 0, data.Length);
         }
 
         public static String ConvertToString(Byte[] byteArray)

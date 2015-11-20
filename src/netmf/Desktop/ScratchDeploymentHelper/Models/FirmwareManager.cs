@@ -455,7 +455,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
                     if (fDownloadScratchDocuments)
                         await UpdateDownloadableAssets();
                 }
-                catch (FileNotFoundException fnfex)
+                catch (FileNotFoundException)
                 {
                     _firmwareDictionary = null;
                 }
