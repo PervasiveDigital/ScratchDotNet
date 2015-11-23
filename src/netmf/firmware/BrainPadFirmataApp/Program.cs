@@ -49,8 +49,9 @@ namespace BrainPadFirmataApp
             BrainPad.Display.DrawFillRect(65, 100, 10, 10, BrainPad.Color.Palette.Black);
 
             ICommunicationChannel channel = null;
-            _board = new BrainPadBoard(_firmata);
+
             _firmata = new FirmataService("BrainPad", "b335f01176044984941833c9ce00d3ae", _appVersion.Major, _appVersion.Minor);
+            _board = new BrainPadBoard(_firmata);            
 
             try
             {
