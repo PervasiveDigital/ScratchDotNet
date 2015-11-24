@@ -39,32 +39,8 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Server
         [OperationContract, WebGet(UriTemplate = "/runDotNet")]
         Stream RunDotNet();
 
-        [OperationContract, WebGet(UriTemplate = "/setDigital/{pin}/{value}")]
-        Stream SetDigital(string pin, string value);
-
-        [OperationContract, WebGet(UriTemplate = "/setBulbState/{onoff}")]
-        Stream SetBulbState(string onoff);
-
-        [OperationContract, WebGet(UriTemplate = "/setBulbColor/{color}")]
-        Stream SetBulbColor(string color);
-
-        [OperationContract, WebGet(UriTemplate = "/setTraffic/{color}/{onoff}")]
-        Stream SetTraffic(string color, string onoff);
-
-        [OperationContract, WebGet(UriTemplate = "/setServo/{angle}")]
-        Stream SetServo(string angle);
-
-        [OperationContract, WebGet(UriTemplate = "/setMotor/{speed}")]
-        Stream SetMotor(string speed);
-
-        [OperationContract, WebGet(UriTemplate = "/setPwm/{port}/{value}")]
-        Stream SetPwm(string port, string value);
-
-        [OperationContract, WebGet(UriTemplate = "/playTone/{id}/{note}/{beat}")]
-        Stream PlayTone(string id, string note, string beat);
-
-        [OperationContract, WebGet(UriTemplate = "/playRest/{id}/{beat}")]
-        Stream PlayRest(string id, string beat);
+        [OperationContract, WebGet(UriTemplate = "/{*path}")]
+        Stream ExecuteCommand(string path);
 
         [OperationContract, WebGet(UriTemplate = "/whenButton/{button}/{state}")]
         Stream WhenButton(string button, string state);

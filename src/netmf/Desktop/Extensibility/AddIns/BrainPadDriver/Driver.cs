@@ -186,7 +186,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
                     }
                     break;
                 case "playtone":
-                    PlayTone(id, args[0], args[1]);
+                    PlayTone(args[0], args[1], args[2]);
                     break;
                 case "setservo":
                     SetServo(args[0]);

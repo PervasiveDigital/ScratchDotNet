@@ -62,114 +62,22 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Server
             return ResultAsString("ok\r\n");
         }
 
-        public Stream SetDigital(string pin, string value)
+        public Stream ExecuteCommand(string path)
         {
             WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
 
+            var segments = new List<string>(WebOperationContext.Current.IncomingRequest.UriTemplateMatch.RelativePathSegments);
+
+            var command = segments[0];
+            segments.RemoveAt(0);
             if (this.DeviceModel.FirmataTarget != null)
             {
-                this.DeviceModel.FirmataTarget.ExecuteCommand("setDigital", null, new List<string>() { pin, value });
+                this.DeviceModel.FirmataTarget.ExecuteCommand(command, null, segments);
             }
 
             return ResultAsString("ok\r\n");
         }
-
-        public Stream SetPwm(string port, string value)
-        {
-            WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
-
-            if (this.DeviceModel.FirmataTarget != null)
-            {
-                this.DeviceModel.FirmataTarget.ExecuteCommand("setPwm", null, new List<string>() { port, value });
-            }
-
-            return ResultAsString("ok\r\n");
-        }
-
-        public Stream PlayTone(string id, string note, string beat)
-        {
-            WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
-
-            if (this.DeviceModel.FirmataTarget != null)
-            {
-                this.DeviceModel.FirmataTarget.ExecuteCommand("playTone", id, new List<string>() { note, beat });
-            }
-
-            return ResultAsString("ok\r\n");
-        }
-
-        public Stream PlayRest(string id, string beat)
-        {
-            WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
-
-            if (this.DeviceModel.FirmataTarget != null)
-            {
-                this.DeviceModel.FirmataTarget.ExecuteCommand("playTone", id, new List<string>() { "rest", beat });
-            }
-
-            return ResultAsString("ok\r\n");
-        }
-
-        public Stream SetBulbState(string onoff)
-        {
-            WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
-
-            if (this.DeviceModel.FirmataTarget != null)
-            {
-                this.DeviceModel.FirmataTarget.ExecuteCommand("setBulbState", null, new List<string>() { onoff });
-            }
-
-            return ResultAsString("ok\r\n");
-        }
-
-        public Stream SetBulbColor(string color)
-        {
-            WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
-
-            if (this.DeviceModel.FirmataTarget != null)
-            {
-                this.DeviceModel.FirmataTarget.ExecuteCommand("setBulbColor", null, new List<string>() { color });
-            }
-
-            return ResultAsString("ok\r\n");
-        }
-
-        public Stream SetTraffic(string color, string onoff)
-        {
-            WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
-
-            if (this.DeviceModel.FirmataTarget != null)
-            {
-                this.DeviceModel.FirmataTarget.ExecuteCommand("setTraffic", null, new List<string>() { color, onoff });
-            }
-
-            return ResultAsString("ok\r\n");
-        }
-
-        public Stream SetServo(string angle)
-        {
-            WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
-
-            if (this.DeviceModel.FirmataTarget != null)
-            {
-                this.DeviceModel.FirmataTarget.ExecuteCommand("setServo", null, new List<string>() { angle });
-            }
-
-            return ResultAsString("ok\r\n");
-        }
-
-        public Stream SetMotor(string speed)
-        {
-            WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
-
-            if (this.DeviceModel.FirmataTarget != null)
-            {
-                this.DeviceModel.FirmataTarget.ExecuteCommand("setMotor", null, new List<string>() { speed });
-            }
-
-            return ResultAsString("ok\r\n");
-        }
-
+        
         public static Stream ResultAsString(string returnValue)
         {
             byte[] resultBytes = Encoding.UTF8.GetBytes(returnValue);
