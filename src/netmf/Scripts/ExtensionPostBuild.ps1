@@ -11,8 +11,11 @@ Add-Type -assembly "system.io.compression.filesystem"
 
 $source = $TargetDir
 $destination = $SolutionDir + "Desktop\CloudResources\AddIns\" + $ProjectName + ".zip"
-
 Write-Verbose "$source => $destination"
+if (test-path $destination) { ri -fo $destination }
+[io.compression.zipfile]::CreateFromDirectory($source, $destination)
 
+$destination = $SolutionDir + "Desktop\ScratchDeploymentHelper\Assets\Installation\ScratchExtensions\" + $ProjectName + ".zip"
+Write-Verbose "$source => $destination"
 if (test-path $destination) { ri -fo $destination }
 [io.compression.zipfile]::CreateFromDirectory($source, $destination)

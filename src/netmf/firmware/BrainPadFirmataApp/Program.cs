@@ -51,7 +51,7 @@ namespace BrainPadFirmataApp
             ICommunicationChannel channel = null;
 
             _firmata = new FirmataService("BrainPad", "b335f01176044984941833c9ce00d3ae", _appVersion.Major, _appVersion.Minor);
-            _board = new BrainPadBoard(_firmata);            
+            _board = new BrainPadBoard(_firmata);
 
             try
             {
@@ -71,7 +71,33 @@ namespace BrainPadFirmataApp
 
             while (true)
             {
-                _board.Process();
+                try
+                {
+                    _board.Process();
+                }
+                catch (GHI.Usb.OperationTimedOutException)
+                {
+
+                }
+                catch (Exception ex)
+                {
+                    BrainPad.Display.Clear();
+                    BrainPad.Display.DrawString(0, 0, "Exception", BrainPad.Color.Palette.Red);
+                    var msg = ex.Message;
+                    int iy = 10;
+                    while (msg.Length>0)
+                    {
+                        var line = msg;
+                        if (line.Length>27)
+                            line = msg.Substring(0, 27);
+                        BrainPad.Display.DrawString(0, iy, line, BrainPad.Color.Palette.Red);
+                        iy += 10;
+                        if (msg.Length > 27)
+                            msg = msg.Substring(27);
+                        else
+                            msg = "";
+                    }
+                }
             }
         }
 

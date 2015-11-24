@@ -143,7 +143,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
             config[PinToPort((int)Buttons.Right)] |= PinToBit((int)Buttons.Right);
 
             // touch pads (synthetic port, port=8)
-            config[8] = 0x0f;
+            //config[8] = 0x0f;
 
             // Register our interest in those pins
             for (var i = 0 ; i < TotalNumberOfPorts ; ++i)

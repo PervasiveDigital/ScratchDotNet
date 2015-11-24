@@ -123,10 +123,6 @@ namespace BrainPadFirmataApp
         public BrainPadBoard(FirmataService firmata)
         {
             _firmata = firmata;
-
-            BrainPad.TouchPad.SetThreshold(BrainPad.TouchPad.Pad.Left, 170);
-            BrainPad.TouchPad.SetThreshold(BrainPad.TouchPad.Pad.Middle, 170);
-            BrainPad.TouchPad.SetThreshold(BrainPad.TouchPad.Pad.Right, 170);
         }
 
         public void VersionIndicatorLed(bool on)
@@ -332,15 +328,6 @@ namespace BrainPadFirmataApp
             value = (int)(avg * 3300.0);
             SendAnalogValue(1, value);
 
-            value = (int)(BrainPad.TouchPad.RawRead(BrainPad.TouchPad.Pad.Left) & 0x7fff);
-            SendAnalogValue(2, value);
-
-            value = (int)(BrainPad.TouchPad.RawRead(BrainPad.TouchPad.Pad.Middle) & 0x7fff);
-            SendAnalogValue(3, value);
-
-            value = (int)(BrainPad.TouchPad.RawRead(BrainPad.TouchPad.Pad.Right) & 0x7fff);
-            SendAnalogValue(4, value);
-
             value = (int)((BrainPad.Accelerometer.ReadX() + 0.5) * 1000);
             SendAnalogValue(5, value);
 
@@ -386,13 +373,13 @@ namespace BrainPadFirmataApp
                     //int iSynthPort = iPort - NumberOfDigitalPorts;
 
                     // Read the touch pads
-                    for (int iPin = 0; iPin < 3; ++iPin)
-                    {
-                        if ((_reportPins[iPort] & (1 << iPin)) != 0)
-                            value = ((value << 1) | (BrainPad.TouchPad.IsTouched(BrainPad.TouchPad.Pad.Left + iPin) ? 1 : 0));
-                        else
-                            value <<= 1;
-                    }
+                    //for (int iPin = 0; iPin < 3; ++iPin)
+                    //{
+                    //    if ((_reportPins[iPort] & (1 << iPin)) != 0)
+                    //        value = ((value << 1) | (BrainPad.TouchPad.IsTouched(BrainPad.TouchPad.Pad.Left + iPin) ? 1 : 0));
+                    //    else
+                    //        value <<= 1;
+                    //}
                 }
 
                 if ((value ^ _prevReportedValue[iPort]) != 0)
