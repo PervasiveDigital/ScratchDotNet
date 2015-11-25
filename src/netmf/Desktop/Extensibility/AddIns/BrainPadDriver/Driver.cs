@@ -42,10 +42,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
             ToneCompleted = 0x02,
 
             ClearDisplay = 0x10,
-            WriteText = 0x11,
-            DrawLine = 0x12,
-            DrawCircle = 0x13,
-            DrawRectangle = 0x14,
+            PaintDisplay = 0x11,
             DisplayActionCompleted = 0x1f
         }
 
@@ -194,6 +191,9 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
                 case "setmotor":
                     SetMotor(args[0]);
                     break;
+                case "cleardisplay":
+                    ClearDisplay(args[0]);
+                    break;
                 default:
                     break;
             }
@@ -276,6 +276,18 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
 
             _waitIds.Add("tone", id);
             _firmata.SendExtendedMessage((byte)ExtendedMessageCommand.PlayTone, new byte[] { (byte)noteValue, (byte)duration});
+        }
+
+        private void ClearDisplay(string id)
+        {
+            if (_firmata == null)
+                return;
+
+            if (_waitIds.ContainsKey("display"))
+                return; // one display action at a time for now
+
+            _waitIds.Add("display", id);
+            _firmata.SendExtendedMessage((byte)ExtendedMessageCommand.ClearDisplay, new byte[] { });
         }
 
         private void SetServo(string angle)
@@ -420,6 +432,9 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
             {
                 case (byte)ExtendedMessageCommand.ToneCompleted:
                     _waitIds.Remove("tone");
+                    break;
+                case (byte)ExtendedMessageCommand.DisplayActionCompleted:
+                    _waitIds.Remove("display");
                     break;
             }
         }

@@ -64,10 +64,7 @@ namespace BrainPadFirmataApp
             ToneCompleted = 0x02,
 
             ClearDisplay = 0x10,
-            WriteText = 0x11,
-            DrawLine = 0x12,
-            DrawCircle = 0x13,
-            DrawRectangle = 0x14,
+            PaintDisplay = 0x11,
             DisplayActionCompleted = 0x1f
         }
 

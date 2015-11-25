@@ -13,13 +13,13 @@
 
         [ "w", "rest for %m.beats beats", "playRest", "quarter" ],
         [ "w", "play %m.notes for %m.beats beats", "playTone", "C5", "quarter" ],
+        [ "w", "clear display", "cleardisplay" ],
 
         [ "r", "raw temperature value", "s4nTempRaw" ],
         [ "r", "temperature in %m.tempunits", "s4nTemp", "C" ],
 
         [ "r", "light level", "s4nLight" ],
         [ "r", "tilt in the %m.dir direction", "s4nTilt", "x" ],
-        [ "r", "touch value on the %m.pads pad", "s4nTouch", "left" ],
 
         [ " ", "set servo angle as %n", "setServo", 90 ],
         [ " ", "set motor speed as %n", "setMotor", 0 ]
