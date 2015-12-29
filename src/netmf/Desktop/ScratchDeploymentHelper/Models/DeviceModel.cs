@@ -31,8 +31,13 @@ using PervasiveDigital.Scratch.DeploymentHelper.Common;
 using PervasiveDigital.Scratch.DeploymentHelper.Firmata;
 using System.IO.Ports;
 using System.Diagnostics;
+using System.Threading;
+using System.Timers;
+using Microsoft.ApplicationInsights;
+using Ninject;
 using PervasiveDigital.Scratch.Common;
 using PervasiveDigital.Scratch.DeploymentHelper.Properties;
+using Timer = System.Timers.Timer;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper.Models
 {
@@ -42,6 +47,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
         private readonly ObservableCollection<TargetDevice> _devices = new ObservableCollection<TargetDevice>();
         private MFDeploy _deploy;
         private FirmataTargetDevice _selectedFirmataTarget;
+        private Timer _healthCheck;
 
         public DeviceModel()
         {
@@ -49,6 +55,19 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
             _deploy.OnDeviceListUpdate += _deploy_OnDeviceListUpdate;
             // This is slow and needs to run in the background
             Task.Run(() => UpdateDeviceList());
+            _healthCheck = new Timer(10 * 1000);
+            _healthCheck.Elapsed += HealthCheckOnElapsed;
+            _healthCheck.Enabled = true;
+            _healthCheck.Start();
+        }
+
+        private void HealthCheckOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
+        {
+            if (!_devices.Any())
+            {
+                // Sometimes, a USB UART will wake up too late and we will miss it
+                DevicesChanged();
+            }
         }
 
         public void Dispose()
@@ -81,6 +100,40 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
 
         public ObservableCollection<TargetDevice> Devices { get { return _devices; } }
 
+        private int _recoveryInProgress = 0;
+        private int _reentryCount = 0;
+        public void DevicesChanged()
+        {
+            if (1 == Interlocked.CompareExchange(ref _recoveryInProgress, 1, 0))
+            {
+                Interlocked.Increment(ref _reentryCount);
+                return;
+            }
+
+            bool done;
+            do
+            {
+                try
+                {
+                    var tc = App.Kernel.Get<TelemetryClient>();
+                    if (tc != null)
+                        tc.TrackEvent("DeviceLostRecovery");
+
+                    foreach (var item in _devices)
+                    {
+                        item.Dispose();
+                    }
+                    _devices.Clear();
+                    UpdateDeviceList();
+                }
+                finally
+                {
+                    done = Interlocked.Exchange(ref _reentryCount, 0) == 0;
+                    Interlocked.Exchange(ref _recoveryInProgress, 0);
+                }
+            } while (!done);
+        }
+
         private void UpdateDeviceList()
         {
             UpdateFirmataDeviceList();
@@ -89,9 +142,14 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
             //UpdateNetmfDeviceList(TransportType.TCPIP);
         }
 
+        private int _firmataScanInProgress = 0;
         private async void UpdateFirmataDeviceList()
         {
-            using (var releaser = await _firmataDeviceListLock.LockAsync())
+            // return immediately if a scan is already in progress
+            if (1 == Interlocked.CompareExchange(ref _firmataScanInProgress, 1, 0))
+                return;
+
+            try
             {
                 var useOnlyThesePorts = new List<string>();
                 if (Settings.Default.ScanCOMPorts != null && Settings.Default.ScanCOMPorts.Count > 0)
@@ -153,6 +211,10 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
                         }
                     }
                 }
+            }
+            finally
+            {
+                Interlocked.Exchange(ref _firmataScanInProgress, 0);
             }
         }
 
@@ -230,7 +292,8 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
 
         void _deploy_OnDeviceListUpdate(object sender, EventArgs e)
         {
-            Task.Run(() => UpdateDeviceList());
+            // seems pretty unreliable
+            //Task.Run(() => UpdateDeviceList());
         }
 
         private MFDevice ConnectToNetmfDevice(MFPortDefinition port)

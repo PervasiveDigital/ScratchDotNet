@@ -100,13 +100,13 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
         };
         private const int TOTAL_PIN_MODES = 11;
 
-#if DEBUG
-        // two minutes in debug
-        private const int DefaultTimeout = 120000;
-#else
+//#if DEBUG
+//        // two minutes in debug
+//        private const int DefaultTimeout = 120000;
+//#else
         // one second timeout in release code
         private const int DefaultTimeout = 1000;
-#endif
+//#endif
 
         private bool _isOpen;
         private string _portName;
@@ -192,7 +192,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
 
         public async Task ProbeAndOpen()
         {
-            var probeRates = new int[] { 115200, 57600, 19200, 9600 };
+            var probeRates = new int[] { 115200, 115200, 115200, 115200 /* All other speeds are just painfully slow */};
             bool success = false;
             foreach (var rate in probeRates)
             {

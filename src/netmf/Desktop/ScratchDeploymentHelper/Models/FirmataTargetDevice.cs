@@ -172,6 +172,12 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
             _isEnabled = enable;
         }
 
+        private void DeviceLost()
+        {
+            var dm = App.Kernel.Get<DeviceModel>();
+            dm.DevicesChanged();
+        }
+
         private void EnableDriver(bool enable)
         {
             if (enable)
@@ -182,24 +188,43 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
 
         public void StartOfProgram()
         {
-            if (this.Driver != null)
-                this.Driver.StartOfProgram();
+            try
+            {
+                if (this.Driver != null)
+                    this.Driver.StartOfProgram();
+            }
+            catch (InvalidOperationException)
+            {
+                DeviceLost();
+            }
         }
 
         public void ExecuteCommand(string verb, string id, IList<string> args)
         {
-            if (this.Driver != null)
-                this.Driver.ExecuteCommand(verb, id, args);
+            try
+            {
+                if (this.Driver != null)
+                    this.Driver.ExecuteCommand(verb, id, args);
+            }
+            catch (InvalidOperationException)
+            {
+                DeviceLost();
+            }
         }
 
         public Dictionary<string, string> GetSensorValues()
         {
-            Dictionary<string,string> result;
+            Dictionary<string,string> result = new Dictionary<string, string>();
 
-            if (this.Driver != null)
-                result = this.Driver.GetSensorValues();
-            else
-                result = new Dictionary<string, string>();
+            try
+            {
+                if (this.Driver != null)
+                    result = this.Driver.GetSensorValues();
+            }
+            catch (InvalidOperationException)
+            {
+                DeviceLost();
+            }
 
             return result;
         }
@@ -210,31 +235,48 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
 
         public void ProcessDigitalMessage(int port, int value)
         {
-            if (this.Driver != null)
+            try
             {
-                this.Driver.ProcessDigitalMessage(port, value);
+                if (this.Driver != null)
+                    this.Driver.ProcessDigitalMessage(port, value);
+            }
+            catch (InvalidOperationException)
+            {
+                DeviceLost();
             }
         }
 
         public void ProcessAnalogMessage(int port, int value)
         {
-            if (this.Driver != null)
+            try
             {
-                this.Driver.ProcessAnalogMessage(port, value);
+                if (this.Driver != null)
+                    this.Driver.ProcessAnalogMessage(port, value);
+            }
+            catch (InvalidOperationException)
+            {
+                DeviceLost();
             }
         }
 
         public void ProcessExtendedMessage(byte[] message, int len)
         {
-            if (this.Driver != null)
+            try
             {
-                byte command = message[0];
-                byte[] data = new byte[len-1];
-                if (len - 1 > 0)
+                if (this.Driver != null)
                 {
-                    Array.Copy(message, 1, data, 0, len - 1);
+                    byte command = message[0];
+                    byte[] data = new byte[len - 1];
+                    if (len - 1 > 0)
+                    {
+                        Array.Copy(message, 1, data, 0, len - 1);
+                    }
+                    this.Driver.ProcessExtendedMessage(command, data);
                 }
-                this.Driver.ProcessExtendedMessage(command, data);
+            }
+            catch (InvalidOperationException)
+            {
+                DeviceLost();
             }
         }
 

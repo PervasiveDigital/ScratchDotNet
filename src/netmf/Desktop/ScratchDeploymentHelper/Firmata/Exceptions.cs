@@ -27,12 +27,14 @@ using System.Threading.Tasks;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
 {
+    [Serializable]
     public class FirmataException : Exception
     {
         public FirmataException() { }
         public FirmataException(string msg) : base(msg) { }
     }
 
+    [Serializable]
     public class FirmataNotFoundException : FirmataException
     {
         public FirmataNotFoundException()
@@ -40,6 +42,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
         { }
     }
 
+    [Serializable]
     public class UnsupportedFirmataVersionException : FirmataException
     {
         public UnsupportedFirmataVersionException(Version min, Version found) : base(string.Format("Minimum supported version : {0}, Found version : {1}", min, found))

@@ -183,6 +183,16 @@ namespace PervasiveDigital.Scratch.DeploymentHelper
             ShowSplashScreen();
             SetCurrentActivity("Initializing...");
 
+            if (Settings.Default.ClassroomMode)
+            {
+                // Classroom mode means that we may not have unfettered internet access
+                //   and dynamic updates might mess with lesson plans, so disable them.
+                Settings.Default.OnlineDataUpdates = false;
+                Settings.Default.CheckForUpdates = false;
+                Settings.Default.IsFirstRun = false;
+                Settings.Default.Save();
+            }
+
             if (Settings.Default.IsFirstRun)
                 DoFirstRunActivities();
 
@@ -212,15 +222,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper
 
         private void DoFirstRunActivities()
         {
-            if (Settings.Default.ClassroomMode)
-            {
-                // Classroom mode means that we may not have unfettered internet access
-                //   and dynamic updates might mess with lesson plans, so disable them.
-                Settings.Default.OnlineDataUpdates = false;
-                Settings.Default.CheckForUpdates = false;
-                Settings.Default.IsFirstRun = false;
-                Settings.Default.Save();
-            }
+            // currently, there aren't any
         }
 
         private void CheckForUpdates()
