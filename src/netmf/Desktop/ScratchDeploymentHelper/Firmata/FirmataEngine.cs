@@ -164,7 +164,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
                         Debug.WriteLine("SerialPort open failed with exception : " + ex.Message);
                         Thread.Sleep(1000);
                     }
-                    catch (System.IO.IOException)
+                    catch (System.IO.IOException ioex)
                     {
                         _port.Dispose();
                         _port = null;

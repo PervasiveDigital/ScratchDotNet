@@ -53,6 +53,13 @@ namespace BrainPadFirmataApp
             _firmata = new FirmataService("BrainPad", "b335f01176044984941833c9ce00d3ae", _appVersion.Major, _appVersion.Minor);
             _board = new BrainPadBoard(_firmata);
 
+            //bool fPreferenceIsSet = GHI.Processor.Configuration.GetEntrySize("S4DNDebug") > 0;
+
+            //if (fPreferenceIsSet)
+            //{
+            //    GHI.Processor.DebugInterface
+            //}
+
             try
             {
                 var vsp = new Cdc();

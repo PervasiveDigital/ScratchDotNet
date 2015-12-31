@@ -23,6 +23,7 @@ using System;
 using Microsoft.SPOT;
 using Microsoft.SPOT.Hardware;
 using System.Collections;
+using System.Text;
 using System.Threading;
 
 using PervasiveDigital.Firmata.Runtime;
@@ -40,6 +41,7 @@ namespace BrainPadFirmataApp
         private const int MotorPort = 9;
         private const int ServoPort = 10;
         private const int TrafficLightPort = 11;
+        private const int PenColorPort = 12;
         private const int BulbStatePort = 14;
         private const int BulbColorPort = 15;
 
@@ -57,6 +59,11 @@ namespace BrainPadFirmataApp
         // temp, light, left, middle, right, X, Y Z
         private int[] _analogValues = new int[8];
 
+        private StringBuilder _sb = new StringBuilder();
+        private int _cursorX = 0;
+        private int _cursorY = 0;
+        private ushort _penColor = (ushort)BrainPad.Color.Palette.Green;
+
         // Our Sysex commands
         private enum ExtendedMessageCommand : byte
         {
@@ -64,7 +71,13 @@ namespace BrainPadFirmataApp
             ToneCompleted = 0x02,
 
             ClearDisplay = 0x10,
-            PaintDisplay = 0x11,
+            SetCursor = 0x11,
+            Print = 0x12,
+            DrawLine = 0x13,
+            DrawCircle = 0x14,
+            FillCircle = 0x15,
+            DrawRect = 0x16,
+            FillRect = 0x17,
             DisplayActionCompleted = 0x1f
         }
 
@@ -199,6 +212,10 @@ namespace BrainPadFirmataApp
                 var blue = (byte)((value & 0x1F) * 8);
                 BrainPad.LightBulb.SetColor(red / 255.0, green / 255.0, blue / 255.0);
             }
+            if (port == PenColorPort)
+            {
+                _penColor = (ushort) (value);
+            }
         }
 
         public void SetPinMode(int pin, int mode)
@@ -242,6 +259,7 @@ namespace BrainPadFirmataApp
 
         public void ProcessStringMessage(string str)
         {
+            _sb.Append(str);
         }
 
         public void ProcessExtendedMessage(byte[] message, int len)
@@ -255,6 +273,60 @@ namespace BrainPadFirmataApp
                     break;
                 case (byte)ExtendedMessageCommand.ClearDisplay:
                     BrainPad.Display.Clear();
+                    _firmata.SendSysex((byte)ExtendedMessageCommand.DisplayActionCompleted);
+                    break;
+                case (byte)ExtendedMessageCommand.SetCursor:
+                    _cursorX = (int)message[1];
+                    _cursorY = (int)message[2];
+                    break;
+                case (byte)ExtendedMessageCommand.Print:
+                    var str = _sb.ToString();
+                    var size = (int) message[1];
+                    if (size==0)
+                        BrainPad.Display.DrawString(_cursorX, _cursorY, str, (BrainPad.Color.Palette)_penColor);
+                    else if (size==1)
+                        BrainPad.Display.DrawXLargeString(_cursorX, _cursorY, str, (BrainPad.Color.Palette)_penColor);
+                    _sb.Clear();
+                    _firmata.SendSysex((byte)ExtendedMessageCommand.DisplayActionCompleted);
+                    break;
+                case (byte)ExtendedMessageCommand.DrawCircle:
+                    {
+                        var r = (int) message[1];
+                        BrainPad.Display.DrawCircle(_cursorX, _cursorY, r, (BrainPad.Color.Palette)_penColor);
+                    }
+                    _firmata.SendSysex((byte)ExtendedMessageCommand.DisplayActionCompleted);
+                    break;
+                case (byte)ExtendedMessageCommand.FillCircle:
+                    {
+                        var r = (int) message[1];
+                        BrainPad.Display.DrawCircle(_cursorX, _cursorY, r, (BrainPad.Color.Palette)_penColor);
+                    }
+                    _firmata.SendSysex((byte)ExtendedMessageCommand.DisplayActionCompleted);
+                    break;
+                case (byte)ExtendedMessageCommand.DrawLine:
+                    {
+                        var x1 = (int)message[1];
+                        var y1 = (int)message[2];
+                        BrainPad.Display.DrawLine(_cursorX, _cursorY, x1, y1, (BrainPad.Color.Palette)_penColor);
+                        _cursorX = x1;
+                        _cursorY = y1;
+                    }
+                    _firmata.SendSysex((byte)ExtendedMessageCommand.DisplayActionCompleted);
+                    break;
+                case (byte)ExtendedMessageCommand.DrawRect:
+                    {
+                        var w = (int)message[1];
+                        var h = (int)message[2];
+                        BrainPad.Display.DrawRect(_cursorX, _cursorY, w, h, (BrainPad.Color.Palette)_penColor);
+                    }
+                    _firmata.SendSysex((byte)ExtendedMessageCommand.DisplayActionCompleted);
+                    break;
+                case (byte)ExtendedMessageCommand.FillRect:
+                    {
+                        var w = (int)message[1];
+                        var h = (int)message[2];
+                        BrainPad.Display.DrawFillRect(_cursorX, _cursorY, w, h, (BrainPad.Color.Palette)_penColor);
+                    }
                     _firmata.SendSysex((byte)ExtendedMessageCommand.DisplayActionCompleted);
                     break;
                 default:

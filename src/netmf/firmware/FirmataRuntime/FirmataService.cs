@@ -225,8 +225,8 @@ namespace PervasiveDigital.Firmata.Runtime
             // send each byte of the name as two bytes
             for (var i = 0; i < strdata.Length; ++i)
             {
-                buffer[2 * i + 2] = (byte)(strdata[i] & 0x7f);
-                buffer[2 * i + 3] = (byte)((strdata[i] >> 7) & 0x7f);
+                buffer[2 * i] = (byte)(strdata[i] & 0x7f);
+                buffer[2 * i + 1] = (byte)((strdata[i] >> 7) & 0x7f);
             }
 
             SendSysex(command, buffer, 0, buffer.Length);

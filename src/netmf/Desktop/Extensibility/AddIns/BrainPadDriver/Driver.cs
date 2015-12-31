@@ -20,6 +20,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
         private const int ServoPort = 10;
         // red=11, yellow=12, green=13
         private const int TrafficLightPort = 11;
+        private const int PenColorPort = 12;
         private const int BulbStatePort = 14;
         private const int BulbColorPort = 15;
 
@@ -42,7 +43,13 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
             ToneCompleted = 0x02,
 
             ClearDisplay = 0x10,
-            PaintDisplay = 0x11,
+            SetCursor = 0x11,
+            Print = 0x12,
+            DrawLine = 0x13,
+            DrawCircle = 0x14,
+            FillCircle = 0x15,
+            DrawRect = 0x16,
+            FillRect = 0x17,
             DisplayActionCompleted = 0x1f
         }
 
@@ -143,7 +150,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
             //config[8] = 0x0f;
 
             // Register our interest in those pins
-            for (var i = 0 ; i < TotalNumberOfPorts ; ++i)
+            for (var i = 0; i < TotalNumberOfPorts; ++i)
             {
                 if (config[i] != 0)
                 {
@@ -194,6 +201,20 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
                 case "cleardisplay":
                     ClearDisplay(args[0]);
                     break;
+                case "setcursor":
+                    SetCursor(args[0], args[1]);
+                    break;
+                case "setpencolor":
+                    SetPenColor(args[0]);
+                    break;
+                case "print":
+                    Print(args[0], args[1], args[2]);
+                    break;
+                case "drawcircle":
+                case "fillcircle":
+                case "drawrect":
+                case "fillrect":
+                case "drawline":
                 default:
                     break;
             }
@@ -275,7 +296,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
             }
 
             _waitIds.Add("tone", id);
-            _firmata.SendExtendedMessage((byte)ExtendedMessageCommand.PlayTone, new byte[] { (byte)noteValue, (byte)duration});
+            _firmata.SendExtendedMessage((byte)ExtendedMessageCommand.PlayTone, new byte[] { (byte)noteValue, (byte)duration });
         }
 
         private void ClearDisplay(string id)
@@ -288,6 +309,42 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
 
             _waitIds.Add("display", id);
             _firmata.SendExtendedMessage((byte)ExtendedMessageCommand.ClearDisplay, new byte[] { });
+        }
+
+        private void SetCursor(string xs, string ys)
+        {
+            byte x = (byte)int.Parse(xs);
+            byte y = (byte)int.Parse(ys);
+            _firmata.SendExtendedMessage((byte)ExtendedMessageCommand.SetCursor, new byte[] { x, y });
+        }
+
+        private void SetPenColor(string color)
+        {
+            if (_palette.ContainsKey(color.ToLowerInvariant()))
+            {
+                _firmata.SendDigitalMessage(PenColorPort, _palette[color.ToLowerInvariant()]);
+            }
+        }
+
+        private void Print(string id, string msg, string size)
+        {
+            byte iSize = 0;
+            if (size.ToLowerInvariant() == "big")
+                iSize = 1;
+
+            var strdata = Encoding.UTF8.GetBytes(msg);
+            var buffer = new byte[strdata.Length * 2];
+
+            // send each byte of the name as two bytes
+            for (var i = 0; i < strdata.Length; ++i)
+            {
+                buffer[2 * i] = (byte)(strdata[i] & 0x7f);
+                buffer[2 * i + 1] = (byte)((strdata[i] >> 7) & 0x7f);
+            }
+
+            _waitIds.Add("display", id);
+            _firmata.SendExtendedMessage((byte)0x71, buffer);
+            _firmata.SendExtendedMessage((byte)ExtendedMessageCommand.Print, new [] { iSize });
         }
 
         private void SetServo(string angle)
