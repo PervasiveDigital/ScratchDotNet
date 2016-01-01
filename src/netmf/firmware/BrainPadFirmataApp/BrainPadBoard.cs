@@ -40,10 +40,10 @@ namespace BrainPadFirmataApp
 
         private const int MotorPort = 9;
         private const int ServoPort = 10;
-        private const int TrafficLightPort = 11;
-        private const int PenColorPort = 12;
+        private const int TrafficLightPort = 11; // and 12 and 13 for the three colors
         private const int BulbStatePort = 14;
         private const int BulbColorPort = 15;
+        private const int PenColorPort = 16;
 
         private readonly FirmataService _firmata;
 
@@ -63,12 +63,13 @@ namespace BrainPadFirmataApp
         private int _cursorX = 0;
         private int _cursorY = 0;
         private ushort _penColor = (ushort)BrainPad.Color.Palette.Green;
+        private byte _toneWaitId0, _toneWaitId1;
 
         // Our Sysex commands
         private enum ExtendedMessageCommand : byte
         {
             PlayTone = 0x01,
-            ToneCompleted = 0x02,
+            ActionCompleted = 0x02,
 
             ClearDisplay = 0x10,
             SetCursor = 0x11,
@@ -78,7 +79,6 @@ namespace BrainPadFirmataApp
             FillCircle = 0x15,
             DrawRect = 0x16,
             FillRect = 0x17,
-            DisplayActionCompleted = 0x1f
         }
 
         private int[] _notes = new int[]
@@ -267,13 +267,15 @@ namespace BrainPadFirmataApp
             switch (message[0])
             {
                 case (byte)ExtendedMessageCommand.PlayTone:
-                    var tone = message[1];
-                    var duration = message[2];
+                    _toneWaitId0 = message[1];
+                    _toneWaitId1 = message[2];
+                    var tone = message[3];
+                    var duration = message[4];
                     PlayTone(tone, duration);
                     break;
                 case (byte)ExtendedMessageCommand.ClearDisplay:
                     BrainPad.Display.Clear();
-                    _firmata.SendSysex((byte)ExtendedMessageCommand.DisplayActionCompleted);
+                    _firmata.SendSysex((byte)ExtendedMessageCommand.ActionCompleted, new [] { message[1], message[2] });
                     break;
                 case (byte)ExtendedMessageCommand.SetCursor:
                     _cursorX = (int)message[1];
@@ -281,53 +283,53 @@ namespace BrainPadFirmataApp
                     break;
                 case (byte)ExtendedMessageCommand.Print:
                     var str = _sb.ToString();
-                    var size = (int) message[1];
+                    var size = (int) message[3];
                     if (size==0)
                         BrainPad.Display.DrawString(_cursorX, _cursorY, str, (BrainPad.Color.Palette)_penColor);
                     else if (size==1)
                         BrainPad.Display.DrawXLargeString(_cursorX, _cursorY, str, (BrainPad.Color.Palette)_penColor);
                     _sb.Clear();
-                    _firmata.SendSysex((byte)ExtendedMessageCommand.DisplayActionCompleted);
+                    _firmata.SendSysex((byte)ExtendedMessageCommand.ActionCompleted, new[] { message[1], message[2] });
                     break;
                 case (byte)ExtendedMessageCommand.DrawCircle:
                     {
-                        var r = (int) message[1];
+                        var r = (int) message[3];
                         BrainPad.Display.DrawCircle(_cursorX, _cursorY, r, (BrainPad.Color.Palette)_penColor);
                     }
-                    _firmata.SendSysex((byte)ExtendedMessageCommand.DisplayActionCompleted);
+                    _firmata.SendSysex((byte)ExtendedMessageCommand.ActionCompleted, new[] { message[1], message[2] });
                     break;
                 case (byte)ExtendedMessageCommand.FillCircle:
                     {
-                        var r = (int) message[1];
+                        var r = (int) message[3];
                         BrainPad.Display.DrawCircle(_cursorX, _cursorY, r, (BrainPad.Color.Palette)_penColor);
                     }
-                    _firmata.SendSysex((byte)ExtendedMessageCommand.DisplayActionCompleted);
+                    _firmata.SendSysex((byte)ExtendedMessageCommand.ActionCompleted, new[] { message[1], message[2] });
                     break;
                 case (byte)ExtendedMessageCommand.DrawLine:
                     {
-                        var x1 = (int)message[1];
-                        var y1 = (int)message[2];
+                        var x1 = (int)message[3];
+                        var y1 = (int)message[4];
                         BrainPad.Display.DrawLine(_cursorX, _cursorY, x1, y1, (BrainPad.Color.Palette)_penColor);
                         _cursorX = x1;
                         _cursorY = y1;
                     }
-                    _firmata.SendSysex((byte)ExtendedMessageCommand.DisplayActionCompleted);
+                    _firmata.SendSysex((byte)ExtendedMessageCommand.ActionCompleted, new[] { message[1], message[2] });
                     break;
                 case (byte)ExtendedMessageCommand.DrawRect:
                     {
-                        var w = (int)message[1];
-                        var h = (int)message[2];
+                        var w = (int)message[3];
+                        var h = (int)message[4];
                         BrainPad.Display.DrawRect(_cursorX, _cursorY, w, h, (BrainPad.Color.Palette)_penColor);
                     }
-                    _firmata.SendSysex((byte)ExtendedMessageCommand.DisplayActionCompleted);
+                    _firmata.SendSysex((byte)ExtendedMessageCommand.ActionCompleted, new[] { message[1], message[2] });
                     break;
                 case (byte)ExtendedMessageCommand.FillRect:
                     {
-                        var w = (int)message[1];
-                        var h = (int)message[2];
+                        var w = (int)message[3];
+                        var h = (int)message[4];
                         BrainPad.Display.DrawFillRect(_cursorX, _cursorY, w, h, (BrainPad.Color.Palette)_penColor);
                     }
-                    _firmata.SendSysex((byte)ExtendedMessageCommand.DisplayActionCompleted);
+                    _firmata.SendSysex((byte)ExtendedMessageCommand.ActionCompleted, new[] { message[1], message[2] });
                     break;
                 default:
                     break;
@@ -345,7 +347,7 @@ namespace BrainPadFirmataApp
                 _noteTimer.Dispose();
                 _noteTimer = null;
                 BrainPad.Buzzer.Stop();
-                _firmata.SendSysex((byte)ExtendedMessageCommand.ToneCompleted);
+                _firmata.SendSysex((byte)ExtendedMessageCommand.ActionCompleted, new[] { _toneWaitId0, _toneWaitId1 });
             }
 
             if (tone < _notes.Length)
@@ -367,7 +369,7 @@ namespace BrainPadFirmataApp
             _noteTimer.Dispose();
             _noteTimer = null;
             BrainPad.Buzzer.Stop();
-            _firmata.SendSysex((byte)ExtendedMessageCommand.ToneCompleted);
+            _firmata.SendSysex((byte)ExtendedMessageCommand.ActionCompleted, new[] { _toneWaitId0, _toneWaitId1 });
         }
 
         private DateTime _lastAnnouncement = DateTime.MinValue;

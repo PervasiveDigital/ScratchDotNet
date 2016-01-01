@@ -79,7 +79,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Server
         {
             var reservations = UrlReservationMgr.GetAll();
 
-            var thisUser = string.Format(@"{0}\{1}", Environment.UserDomainName, Environment.UserName);
+            var thisUser = string.Format(@"{0}\{1}", "NT AUTHORITY", "Authenticated Users");
 
             foreach (var reservation in reservations)
             {
@@ -102,21 +102,24 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Server
             try
             {
                 var acct = new NTAccount(thisUser);
-                SecurityIdentifier sid = (SecurityIdentifier)acct.Translate(typeof(SecurityIdentifier));
+                SecurityIdentifier sid = (SecurityIdentifier) acct.Translate(typeof (SecurityIdentifier));
 
-                var url = new UrlReservation("http://+:31076/", new List<SecurityIdentifier>() { sid });
+                var url = new UrlReservation("http://+:31076/", new List<SecurityIdentifier>() {sid});
                 url.Create();
             }
             catch (Win32Exception ex)
             {
-                if ((uint)ex.HResult==(uint)0x80004005)
+                if ((uint) ex.HResult == (uint) 0x80004005)
                 {
-                    var result = MessageBox.Show("The Scratch Gateway program needs to reserve an http address on your machine. Scratch connects to this address to talk to your board. Adding this reservation requires administrator priveleges. You will now be asked to allow admin access.", "Elevation Required", MessageBoxButton.OKCancel);
+                    var result =
+                        MessageBox.Show(
+                            "The Scratch Gateway program needs to reserve an http address on your machine. Scratch connects to this address to talk to your board. Adding this reservation requires administrator priveleges. You will now be asked to allow admin access.",
+                            "Elevation Required", MessageBoxButton.OKCancel);
                     if (result == MessageBoxResult.Cancel)
                         throw;
 
                     // Requires elevation, and apparently, we're not so we will shell out to netsh
-                    AddAddress("http://+:31076/", Environment.UserDomainName, Environment.UserName);
+                    AddAddress("http://+:31076/", "NT AUTHORITY", "Authenticated Users");
                 }
                 else
                     throw;
@@ -125,7 +128,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Server
 
         public static void AddAddress(string address, string domain, string user)
         {
-            string args = string.Format(@"http add urlacl url={0} user={1}\{2}", address, domain, user);
+            string args = string.Format("http add urlacl url={0} user=\"{1}\\{2}\"", address, domain, user);
 
             var psi = new ProcessStartInfo("netsh", args);
             psi.Verb = "runas";

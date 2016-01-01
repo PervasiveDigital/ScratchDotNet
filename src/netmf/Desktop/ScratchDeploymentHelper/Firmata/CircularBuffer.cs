@@ -69,17 +69,20 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
             get { return _capacity; }
             set
             {
-                if (value == _capacity)
-                    return;
+                lock (_syncRoot)
+                {
+                    if (value == _capacity)
+                        return;
 
-                if (value < _size)
-                    throw new ArgumentOutOfRangeException("value", "New capacity is smaller than current size");
+                    if (value < _size)
+                        throw new ArgumentOutOfRangeException("value", "New capacity is smaller than current size");
 
-                var dest = new T[value];
-                if (_size > 0)
-                    CopyTo(dest, 0);
-                _buffer = dest;
-                _capacity = value;
+                    var dest = new T[value];
+                    if (_size > 0)
+                        CopyTo(dest, 0);
+                    _buffer = dest;
+                    _capacity = value;
+                }
             }
         }
 
@@ -90,22 +93,27 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
 
         public void Clear()
         {
-            _head = _tail = _size = 0;
+            lock (_syncRoot)
+            {
+                _head = _tail = _size = 0;
+            }
         }
 
         public bool Contains(T item)
         {
-            int idx = _head;
-            for (int i = 0; i < _size; i++, idx++)
+            lock (_syncRoot)
             {
-                if (idx == _capacity)
-                    idx = 0;
+                int idx = _head;
+                for (int i = 0; i < _size; i++, idx++)
+                {
+                    if (idx == _capacity)
+                        idx = 0;
 
-                if (_buffer[idx].CompareTo(item)==0)
-                    return true;
+                    if (_buffer[idx].CompareTo(item) == 0)
+                        return true;
+                }
+                return false;
             }
-
-            return false;
         }
 
         /// <summary>
@@ -115,17 +123,20 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
         /// <returns>The offset of the found value, or -1 if not found</returns>
         public int IndexOf(T item)
         {
-            int idx = _head;
-            for (int i = 0; i < _size; i++, idx++)
+            lock (_syncRoot)
             {
-                if (idx == _capacity)
-                    idx = 0;
+                int idx = _head;
+                for (int i = 0; i < _size; i++, idx++)
+                {
+                    if (idx == _capacity)
+                        idx = 0;
 
-                if (_buffer[idx].CompareTo(item)==0)
-                    return i;
+                    if (_buffer[idx].CompareTo(item) == 0)
+                        return i;
+                }
+
+                return -1;
             }
-
-            return -1;
         }
 
         /// <summary>
@@ -136,54 +147,57 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
         /// <returns>Offset of the first match, or -1 if not found</returns>
         public int IndexOf(T[] seq)
         {
-            // can't have a match, so don't bother searching
-            if (_size < seq.Length)
-                return -1;
-
-            int iOffsetFirst = -1;  // offset of first matched char
-            int idxFirst = -1; // index of first matched char
-
-            var idxSeq = 0;
-            var lenSeq = seq.Length;
-            int idx = _head;
-
-            int iOffset = 0;
-            while (iOffset < _size)
+            lock (_syncRoot)
             {
-                if (idx == _capacity)
-                    idx = 0;
+                // can't have a match, so don't bother searching
+                if (_size < seq.Length)
+                    return -1;
 
-                if (_buffer[idx].CompareTo(seq[idxSeq])==0)
+                int iOffsetFirst = -1; // offset of first matched char
+                int idxFirst = -1; // index of first matched char
+
+                var idxSeq = 0;
+                var lenSeq = seq.Length;
+                int idx = _head;
+
+                int iOffset = 0;
+                while (iOffset < _size)
                 {
-                    // Mark where we found the first character so that we can restart the search there if the match fails,
-                    //  or so that we can return the offset of the first matched char.
-                    if (idxSeq == 0)
+                    if (idx == _capacity)
+                        idx = 0;
+
+                    if (_buffer[idx].CompareTo(seq[idxSeq]) == 0)
                     {
-                        iOffsetFirst = iOffset;
-                        idxFirst = idx;
+                        // Mark where we found the first character so that we can restart the search there if the match fails,
+                        //  or so that we can return the offset of the first matched char.
+                        if (idxSeq == 0)
+                        {
+                            iOffsetFirst = iOffset;
+                            idxFirst = idx;
+                        }
+                        // did we reach the end of the matching sequence?  If so, return the offset of the first char we matched.
+                        if (++idxSeq >= lenSeq)
+                            return iOffsetFirst;
                     }
-                    // did we reach the end of the matching sequence?  If so, return the offset of the first char we matched.
-                    if (++idxSeq >= lenSeq)
-                        return iOffsetFirst;
-                }
-                else
-                {
-                    // mismatch - reset the search so that we pick up at the first char after the start of the current failed match
-                    idxSeq = 0;
-                    // if we had begun a match, pick up the search again on the first char after the start of the broken match candidate
-                    if (idxFirst != -1)
+                    else
                     {
-                        iOffset = iOffsetFirst;
-                        idx = idxFirst;
-                        idxFirst = -1;
-                        iOffsetFirst = -1;
+                        // mismatch - reset the search so that we pick up at the first char after the start of the current failed match
+                        idxSeq = 0;
+                        // if we had begun a match, pick up the search again on the first char after the start of the broken match candidate
+                        if (idxFirst != -1)
+                        {
+                            iOffset = iOffsetFirst;
+                            idx = idxFirst;
+                            idxFirst = -1;
+                            iOffsetFirst = -1;
+                        }
                     }
+                    ++iOffset;
+                    ++idx;
                 }
-                ++iOffset;
-                ++idx;
+
+                return -1;
             }
-
-            return -1;
         }
 
         public int Put(T[] src)
@@ -193,48 +207,54 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
 
         public int Put(T[] src, int offset, int count)
         {
-            if (count > _capacity - _size)
+            lock (_syncRoot)
             {
-                Grow(_size + count);
-            }
+                if (count > _capacity - _size)
+                {
+                    Grow(_size + count);
+                }
 
-            int srcIndex = offset;
-            int segmentLength = count;
-            if ((_capacity - _tail) < segmentLength)
-                segmentLength = _capacity - _tail;
+                int srcIndex = offset;
+                int segmentLength = count;
+                if ((_capacity - _tail) < segmentLength)
+                    segmentLength = _capacity - _tail;
 
-            // First segment
-            Array.Copy(src, srcIndex, _buffer, _tail, segmentLength);
-            _tail += segmentLength;
-            if (_tail >= _capacity)
-                _tail -= _capacity;
-
-            // Optionally, a second segment
-            srcIndex += segmentLength;
-            segmentLength = count - segmentLength;
-            if (segmentLength > 0)
-            {
+                // First segment
                 Array.Copy(src, srcIndex, _buffer, _tail, segmentLength);
                 _tail += segmentLength;
                 if (_tail >= _capacity)
                     _tail -= _capacity;
-            }
 
-            _size = _size + count;
-            return count;
+                // Optionally, a second segment
+                srcIndex += segmentLength;
+                segmentLength = count - segmentLength;
+                if (segmentLength > 0)
+                {
+                    Array.Copy(src, srcIndex, _buffer, _tail, segmentLength);
+                    _tail += segmentLength;
+                    if (_tail >= _capacity)
+                        _tail -= _capacity;
+                }
+
+                _size = _size + count;
+                return count;
+            }
         }
 
         public void Put(T b)
         {
-            if (1 > _capacity - _size)
+            lock (_syncRoot)
             {
-                Grow(_size + 1);
-            }
+                if (1 > _capacity - _size)
+                {
+                    Grow(_size + 1);
+                }
 
-            if (_tail == _capacity)
-                _tail = 0;
-            _buffer[_tail++] = b;
-            _size = _size + 1;
+                if (_tail == _capacity)
+                    _tail = 0;
+                _buffer[_tail++] = b;
+                _size = _size + 1;
+            }
         }
 
         private void Grow(int target)
@@ -249,21 +269,27 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
 
         public void Skip(int count)
         {
-            if (count > _size)
-                throw new ArgumentOutOfRangeException("count", "Skip count:" + count + " Size:" + _size);
+            lock (_syncRoot)
+            {
+                if (count > _size)
+                    throw new ArgumentOutOfRangeException("count", "Skip count:" + count + " Size:" + _size);
 
-            _head += count;
-            _size -= count;
+                _head += count;
+                _size -= count;
 
-            if (_head >= _capacity)
-                _head -= _capacity;
+                if (_head >= _capacity)
+                    _head -= _capacity;
+            }
         }
 
         public T[] Get(int count)
         {
-            var dest = new T[count];
-            Get(dest);
-            return dest;
+            lock (_syncRoot)
+            {
+                var dest = new T[count];
+                Get(dest);
+                return dest;
+            }
         }
 
         public int Get(T[] dst)
@@ -273,30 +299,37 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
 
         public int Get(T[] dest, int offset, int count)
         {
-            if (count > _size)
-                throw new ArgumentOutOfRangeException("count","Requested items =" + count + " Available items=" + _size);
-            int actualCount = System.Math.Min(count, _size);
-            int dstIndex = offset;
-            for (int i = 0; i < actualCount; i++, _head++, dstIndex++)
+            lock (_syncRoot)
             {
-                if (_head == _capacity)
-                    _head = 0;
-                dest[dstIndex] = _buffer[_head];
+                if (count > _size)
+                    throw new ArgumentOutOfRangeException("count",
+                        "Requested items =" + count + " Available items=" + _size);
+                int actualCount = System.Math.Min(count, _size);
+                int dstIndex = offset;
+                for (int i = 0; i < actualCount; i++, _head++, dstIndex++)
+                {
+                    if (_head == _capacity)
+                        _head = 0;
+                    dest[dstIndex] = _buffer[_head];
+                }
+                _size -= actualCount;
+                return actualCount;
             }
-            _size -= actualCount;
-            return actualCount;
         }
 
         public T Get()
         {
-            if (_size == 0)
-                throw new InvalidOperationException("Empty");
+            lock (_syncRoot)
+            {
+                if (_size == 0)
+                    throw new InvalidOperationException("Empty");
 
-            var item = _buffer[_head];
-            if (++_head == _capacity)
-                _head = 0;
-            _size--;
-            return item;
+                var item = _buffer[_head];
+                if (++_head == _capacity)
+                    _head = 0;
+                _size--;
+                return item;
+            }
         }
 
         object ICollection.SyncRoot
@@ -316,17 +349,21 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
 
         public void CopyTo(int index, T[] array, int arrayIndex, int count)
         {
-            if (count > _size)
-                throw new ArgumentOutOfRangeException("count", "Count too large");
-
-            int bufferIndex = _head;
-            for (int i = 0; i < count; i++, bufferIndex++, arrayIndex++)
+            lock (_syncRoot)
             {
-                if (bufferIndex == _capacity)
-                    bufferIndex = 0;
-                array[arrayIndex] = _buffer[bufferIndex];
+                if (count > _size)
+                    throw new ArgumentOutOfRangeException("count", "Count too large");
+
+                int bufferIndex = _head;
+                for (int i = 0; i < count; i++, bufferIndex++, arrayIndex++)
+                {
+                    if (bufferIndex == _capacity)
+                        bufferIndex = 0;
+                    array[arrayIndex] = _buffer[bufferIndex];
+                }
             }
         }
+
         int ICollection.Count
         {
             get { return _size; }
@@ -334,7 +371,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Firmata
 
         bool ICollection.IsSynchronized
         {
-            get { return false; }
+            get { return true; }
         }
 
         public IEnumerator GetEnumerator()
