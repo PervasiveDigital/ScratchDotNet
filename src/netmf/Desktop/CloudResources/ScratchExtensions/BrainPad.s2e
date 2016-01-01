@@ -14,7 +14,7 @@
     [ "w", "rest for %m.beats beats", "playRest", "quarter" ],
     [ "w", "play %m.notes for %m.beats beats", "playTone", "C5", "quarter" ],
     [ "w", "clear display", "cleardisplay" ],
-    [ " ", "Move cursor to x=%n and y=%n", "setCursor", 0, 0 ],
+    [ " ", "Move pen to x=%n and y=%n", "setCursor", 0, 0 ],
     [ " ", "Set pen color to %m.bulbcolor", "setPenColor", "green" ],
     [ "w", "Print %s using %m.bigsmall letters", "print", "hello", "small" ],
     [ "w", "Draw a circle with radius %n", "drawCircle", 10 ],
