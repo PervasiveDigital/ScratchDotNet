@@ -50,19 +50,32 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
 
         public bool UseOnlineUpdates
         {
-            get { return Settings.Default.OnlineDataUpdates; }
+            get
+            {
+#if CLASSROOM
+                return false;
+#else
+                return true;
+#endif
+                //return Settings.Default.OnlineDataUpdates;
+            }
             set 
             { 
-                Settings.Default.OnlineDataUpdates = value;
-                Settings.Default.Save();
-                OnPropertyChanged(); 
+                //Settings.Default.OnlineDataUpdates = value;
+                //Settings.Default.Save();
+                //OnPropertyChanged(); 
             }
         }
 
         public bool CanChangeUpdateSetting
         {
             // Users cannot activate online updates if you are in classroom mode
-            get { return !Settings.Default.ClassroomMode; }
+            get
+            {
+                // hardcoded this for now because cloud version won't work without updates and classroom users want them always off
+                return false;
+                //return !Settings.Default.ClassroomMode;
+            }
         }
 
         public string ComPortText

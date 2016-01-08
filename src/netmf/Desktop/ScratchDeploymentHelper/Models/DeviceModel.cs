@@ -33,6 +33,7 @@ using System.IO.Ports;
 using System.Diagnostics;
 using System.Threading;
 using System.Timers;
+using System.Windows;
 using Microsoft.ApplicationInsights;
 using Ninject;
 using PervasiveDigital.Scratch.Common;
@@ -305,8 +306,9 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
             }
             catch
             {
-                App.ShowDeploymentLogWindow();
-                App.AppendToLogWindow("Failed to connect to device. You may need to reset your board or restart this program.");
+                MessageBox.Show(
+                    "Failed to connect to device. You may need to reset your board or restart this program.", "Error",
+                    MessageBoxButton.OK);
                 result = null;
             }
             return result;

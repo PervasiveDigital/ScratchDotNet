@@ -25,18 +25,6 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool OnlineDataUpdates {
-            get {
-                return ((bool)(this["OnlineDataUpdates"]));
-            }
-            set {
-                this["OnlineDataUpdates"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         public global::System.Collections.Specialized.StringCollection ScanCOMPorts {
             get {
                 return ((global::System.Collections.Specialized.StringCollection)(this["ScanCOMPorts"]));

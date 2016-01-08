@@ -31,8 +31,6 @@ namespace PervasiveDigital.Scratch.Common
     {
         private Guid _id;
         private List<Guid> _assemblyIds;
-        private Version _version;
-        private Version _targetFrameworkVersion;
 
         public Guid Id 
         { 
@@ -59,7 +57,8 @@ namespace PervasiveDigital.Scratch.Common
         public string DriverName { get; set; }
 
         public Version AppVersion { get; set; }
-        public Version TargetFrameworkVersion { get; set;}
+        public Version TargetFrameworkVersion { get; set; }
+        public Version SolutionBuildVersion { get; set; }
 
         public List<Guid> RequiredAssemblies
         {

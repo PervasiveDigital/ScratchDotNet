@@ -22,14 +22,14 @@
   "Images": [
     {
       "Id": "b335f011-7604-4984-9418-33c9ce00d3ae",
-      "Name": "BrainPad 4.3.7",
+      "Name": "BrainPad v4.3.7",
       "AppName": "BrainPadFirmataApp",
       "Description": "This firmware unlocks all of the features of the GHI Electronics BrainPad",
       "ImageCreatedBy": "Pervasive Digital LLC",
       "SupportUrl": "https://github.com/PervasiveDigital/ScratchDotNet/wiki/BrainPad-Firmware",
       "ConfigurationExtensionSource": null,
       "DriverSource": "BrainPadDriver-437.zip",
-      "DriverName": "BrainPad Driver",
+      "DriverName": "BrainPad v4.3.7 Driver",
       "ScratchExtension": "BrainPad-437.s2e",
       "AppVersion": {
         "Major": 1,
@@ -65,14 +65,14 @@
     },
     {
       "Id": "07e62d24-2722-40d2-b487-6b199524079c",
-      "Name": "BrainPad 4.3.8",
+      "Name": "BrainPad v4.3.8",
       "AppName": "BrainPadFirmataApp",
       "Description": "This firmware unlocks all of the features of the GHI Electronics BrainPad",
       "ImageCreatedBy": "Pervasive Digital LLC",
       "SupportUrl": "https://github.com/PervasiveDigital/ScratchDotNet/wiki/BrainPad-Firmware",
       "ConfigurationExtensionSource": null,
       "DriverSource": "BrainPadDriver-438.zip",
-      "DriverName": "BrainPad Driver",
+      "DriverName": "BrainPad v4.3.8 Driver",
       "ScratchExtension": "BrainPad-438.s2e",
       "AppVersion": {
         "Major": 2,

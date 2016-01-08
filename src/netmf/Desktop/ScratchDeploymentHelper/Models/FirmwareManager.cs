@@ -72,6 +72,8 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
 
         public FirmwareImage GetImage(Guid imageId)
         {
+            if (_firmwareDictionary == null)
+                return null;
             var image = _firmwareDictionary.Images.FirstOrDefault(x => x.Id == imageId);
             return image;        
         }
@@ -149,7 +151,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
             }
 
             // If we can't use dynamic content, then return here
-            if (!Settings.Default.OnlineDataUpdates)
+            if (Settings.Default.ClassroomMode)
             {
                 string sourcePath = null;
                 if (ApplicationDeployment.IsNetworkDeployed)
@@ -224,10 +226,10 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
 
         public Task UpdateFirmwareDictionary()
         {
-            if (Settings.Default.OnlineDataUpdates)
-                return UpdateFirmwareDictionaryFromInternet();
-            else
+            if (Settings.Default.ClassroomMode)
                 return UpdateFirmwareDictionaryFromInstallation();
+            else
+                return UpdateFirmwareDictionaryFromInternet();
         }
 
         private async Task UpdateFirmwareDictionaryFromInstallation()
@@ -235,6 +237,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
             var destPath = GetFirmwareDictionaryPath();
             string sourcePath;
 
+            sourcePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             if (ApplicationDeployment.IsNetworkDeployed)
                 sourcePath = ApplicationDeployment.CurrentDeployment.DataDirectory;
             else

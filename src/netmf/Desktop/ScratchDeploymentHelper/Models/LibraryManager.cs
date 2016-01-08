@@ -67,10 +67,10 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
 
         public string GetLibrary(Guid id, Action<string> mh)
         {
-            if (Settings.Default.OnlineDataUpdates)
-                return this.GetLibraryFromInternet(id, mh);
-            else
+            if (Settings.Default.ClassroomMode)
                 return this.GetLibraryFromInstallation(id, mh);
+            else
+                return this.GetLibraryFromInternet(id, mh);
         }
 
         private string GetLibraryFromInstallation(Guid id, Action<string> mh)

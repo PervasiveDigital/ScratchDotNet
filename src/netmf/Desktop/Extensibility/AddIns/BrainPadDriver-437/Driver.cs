@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
 {
-    [AddIn("BrainPad Driver", Version = "1.0.0.0")]
+    [AddIn("BrainPad v4.3.7 Driver", Version = "1.0.0.0")]
     public class Driver : IDriver
     {
         private const int NumberOfDigitalPorts = 8;

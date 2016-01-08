@@ -48,10 +48,10 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
 
         public async Task UpdateScratchContent(IEnumerable<string> fileNames)
         {
-            if (Settings.Default.OnlineDataUpdates)
-                await UpdateScratchContentFromInternet(fileNames);
-            else
+            if (Settings.Default.ClassroomMode)
                 UpdateScratchContentFromInstallation(fileNames);
+            else
+                await UpdateScratchContentFromInternet(fileNames);
         }
 
         private void UpdateScratchContentFromInstallation(IEnumerable<string> fileNames)

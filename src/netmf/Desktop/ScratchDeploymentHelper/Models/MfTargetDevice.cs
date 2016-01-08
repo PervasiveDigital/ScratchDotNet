@@ -291,6 +291,23 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
                 messageHandler(string.Format("Deploying {0} to {1}", image.Name, this.Name));
                 messageHandler("");
 
+                var imageSBV = image.SolutionBuildVersion;
+                if (imageSBV.Major != 0 || imageSBV.Minor != 0 || imageSBV.Build!=0)
+                {
+                    var deviceSBV = _deviceInfo.SolutionBuildVersion;
+                    if (deviceSBV.Major != imageSBV.Major ||
+                        deviceSBV.Minor != imageSBV.Minor ||
+                        deviceSBV.Build != imageSBV.Build
+                        )
+                    {
+                        messageHandler(
+                            $"ERROR : Cannot deploy the selected image to this board.");
+                        messageHandler(
+                            $"You must upgrade the board's firmware to manufacturer's SDK version {imageSBV.Major}.{imageSBV.Minor}.{imageSBV.Build}");
+                        return;
+                    }
+                }
+
                 var systemAssemblies = new Dictionary<string, Commands.Debugging_Resolve_Assembly.Version>();
 
                 var assms = engine.ResolveAllAssemblies();

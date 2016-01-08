@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
 {
-    [AddIn("BrainPad Driver", Version = "1.0.0.0")]
+    [AddIn("BrainPad v4.3.8 Driver", Version = "1.0.0.0")]
     public class Driver : IDriver
     {
         private const int NumberOfDigitalPorts = 8;
@@ -213,10 +213,20 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
                     Print(args[0], args[1], args[2]);
                     break;
                 case "drawcircle":
+                    DrawCircle(args[0], args[1], false);
+                    break;
                 case "fillcircle":
+                    DrawCircle(args[0], args[1], true);
+                    break;
                 case "drawrect":
+                    DrawRect(args[0], args[1], args[2], false);
+                    break;
                 case "fillrect":
+                    DrawRect(args[0], args[1], args[2], true);
+                    break;
                 case "drawline":
+                    DrawLine(args[0], args[1], args[2]);
+                    break;
                 default:
                     break;
             }
@@ -367,6 +377,46 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
                 LowByte(idVal),
                 HighByte(idVal),
                 iSize
+            });
+        }
+
+        private void DrawCircle(string id, string radius, bool fill)
+        {
+            var idVal = int.Parse(id);
+            _waitIds.Add(idVal, "display");
+            byte cmd = (byte)(fill ? ExtendedMessageCommand.FillCircle : ExtendedMessageCommand.DrawCircle);
+            _firmata.SendExtendedMessage(cmd, new[]
+            {
+                LowByte(idVal),
+                HighByte(idVal),
+                (byte)byte.Parse(radius)
+            });
+        }
+
+        private void DrawRect(string id, string w, string h, bool fill)
+        {
+            var idVal = int.Parse(id);
+            _waitIds.Add(idVal, "display");
+            byte cmd = (byte)(fill ? ExtendedMessageCommand.FillRect : ExtendedMessageCommand.DrawRect);
+            _firmata.SendExtendedMessage(cmd, new[]
+            {
+                LowByte(idVal),
+                HighByte(idVal),
+                (byte)byte.Parse(w),
+                (byte)byte.Parse(h)
+            });
+        }
+
+        private void DrawLine(string id, string x1, string y1)
+        {
+            var idVal = int.Parse(id);
+            _waitIds.Add(idVal, "display");
+            _firmata.SendExtendedMessage((byte)ExtendedMessageCommand.DrawLine, new[]
+            {
+                LowByte(idVal),
+                HighByte(idVal),
+                (byte)byte.Parse(x1),
+                (byte)byte.Parse(y1)
             });
         }
 

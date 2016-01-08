@@ -87,10 +87,10 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
                         files.Add(item.ConfigurationExtensionSource);
                     }
                 }
-                if (Settings.Default.OnlineDataUpdates)
-                    await this.UpdatePluginsFromInternet(files);
-                else
+                if (Settings.Default.ClassroomMode)
                     this.UpdatePluginsFromInstallation(files);
+                else
+                    await this.UpdatePluginsFromInternet(files);
                 UpdatePipeline();
             }
         }
