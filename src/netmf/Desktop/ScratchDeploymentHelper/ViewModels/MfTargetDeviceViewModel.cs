@@ -123,7 +123,12 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.ViewModels
             }
 
             if (originallySelected == Guid.Empty)
-                this.SelectedFirmware = _images.FirstOrDefault();
+            {
+                if (_images.Any(x => x.IsInstalled))
+                    this.SelectedFirmware = _images.FirstOrDefault(x => x.IsInstalled);
+                else
+                    this.SelectedFirmware = _images.FirstOrDefault();
+            }
             else
                 this.SelectedFirmware = _images.FirstOrDefault(x => x.Id == originallySelected);
         }

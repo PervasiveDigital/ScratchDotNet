@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Firmware", "Firmware", "{486FFAE6-69E5-48D6-A464-8105F3F75D07}"
 EndProject
@@ -35,6 +35,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dictionaries", "Dictionaries", "{4042A435-4DE7-471F-877F-7C6F2F3D9C5C}"
 	ProjectSection(SolutionItems) = preProject
 		Desktop\CloudResources\Dictionaries\firmware-1.0.json = Desktop\CloudResources\Dictionaries\firmware-1.0.json
+		Desktop\CloudResources\Dictionaries\firmware-2.0.json = Desktop\CloudResources\Dictionaries\firmware-2.0.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScratchGateway", "ScratchGateway", "{25057855-BB4B-4033-862D-1AC6DFD5547B}"
@@ -60,12 +61,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AddInView", "Desktop\Extens
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HostView", "Desktop\Extensibility\HostView\HostView.csproj", "{69A17B3D-872A-4CB1-8E09-4336571452E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrainPadDriver", "Desktop\Extensibility\AddIns\BrainPadDriver\BrainPadDriver.csproj", "{5B68944E-E1FC-450D-B6A4-11F7D784B788}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{911C0C33-CFF3-4257-93A3-455C8196AFF4}"
 	ProjectSection(SolutionItems) = preProject
 		Scripts\ExtensionPostBuild.ps1 = Scripts\ExtensionPostBuild.ps1
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrainPadDriver-437", "Desktop\Extensibility\AddIns\BrainPadDriver-437\BrainPadDriver-437.csproj", "{DEF55A01-7471-45B0-81D3-A77EEC732F61}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrainPadDriver-438", "Desktop\Extensibility\AddIns\BrainPadDriver-438\BrainPadDriver-438.csproj", "{41D4D8F1-594C-4123-AB11-834BA0617F5A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -197,16 +200,30 @@ Global
 		{69A17B3D-872A-4CB1-8E09-4336571452E0}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{69A17B3D-872A-4CB1-8E09-4336571452E0}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{69A17B3D-872A-4CB1-8E09-4336571452E0}.Release|x86.ActiveCfg = Release|Any CPU
-		{5B68944E-E1FC-450D-B6A4-11F7D784B788}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5B68944E-E1FC-450D-B6A4-11F7D784B788}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5B68944E-E1FC-450D-B6A4-11F7D784B788}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{5B68944E-E1FC-450D-B6A4-11F7D784B788}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{5B68944E-E1FC-450D-B6A4-11F7D784B788}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{5B68944E-E1FC-450D-B6A4-11F7D784B788}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5B68944E-E1FC-450D-B6A4-11F7D784B788}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5B68944E-E1FC-450D-B6A4-11F7D784B788}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{5B68944E-E1FC-450D-B6A4-11F7D784B788}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{5B68944E-E1FC-450D-B6A4-11F7D784B788}.Release|x86.ActiveCfg = Release|Any CPU
+		{DEF55A01-7471-45B0-81D3-A77EEC732F61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEF55A01-7471-45B0-81D3-A77EEC732F61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEF55A01-7471-45B0-81D3-A77EEC732F61}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{DEF55A01-7471-45B0-81D3-A77EEC732F61}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{DEF55A01-7471-45B0-81D3-A77EEC732F61}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DEF55A01-7471-45B0-81D3-A77EEC732F61}.Debug|x86.Build.0 = Debug|Any CPU
+		{DEF55A01-7471-45B0-81D3-A77EEC732F61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEF55A01-7471-45B0-81D3-A77EEC732F61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DEF55A01-7471-45B0-81D3-A77EEC732F61}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{DEF55A01-7471-45B0-81D3-A77EEC732F61}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{DEF55A01-7471-45B0-81D3-A77EEC732F61}.Release|x86.ActiveCfg = Release|Any CPU
+		{DEF55A01-7471-45B0-81D3-A77EEC732F61}.Release|x86.Build.0 = Release|Any CPU
+		{41D4D8F1-594C-4123-AB11-834BA0617F5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41D4D8F1-594C-4123-AB11-834BA0617F5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41D4D8F1-594C-4123-AB11-834BA0617F5A}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{41D4D8F1-594C-4123-AB11-834BA0617F5A}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{41D4D8F1-594C-4123-AB11-834BA0617F5A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{41D4D8F1-594C-4123-AB11-834BA0617F5A}.Debug|x86.Build.0 = Debug|Any CPU
+		{41D4D8F1-594C-4123-AB11-834BA0617F5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41D4D8F1-594C-4123-AB11-834BA0617F5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{41D4D8F1-594C-4123-AB11-834BA0617F5A}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{41D4D8F1-594C-4123-AB11-834BA0617F5A}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{41D4D8F1-594C-4123-AB11-834BA0617F5A}.Release|x86.ActiveCfg = Release|Any CPU
+		{41D4D8F1-594C-4123-AB11-834BA0617F5A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -228,7 +245,8 @@ Global
 		{650622E8-FAC8-4A78-94B5-474390159EF2} = {7D7E20EA-8A4B-4CA2-A88A-7CA9DCFA0A23}
 		{692BAA4C-2D0B-4315-A01F-5F9D9F2C7777} = {7D7E20EA-8A4B-4CA2-A88A-7CA9DCFA0A23}
 		{69A17B3D-872A-4CB1-8E09-4336571452E0} = {7D7E20EA-8A4B-4CA2-A88A-7CA9DCFA0A23}
-		{5B68944E-E1FC-450D-B6A4-11F7D784B788} = {C74AF6C4-2DF1-4364-85D6-F89D7BE72218}
 		{911C0C33-CFF3-4257-93A3-455C8196AFF4} = {F1ADC331-FEF4-4048-8210-F710E348C043}
+		{DEF55A01-7471-45B0-81D3-A77EEC732F61} = {C74AF6C4-2DF1-4364-85D6-F89D7BE72218}
+		{41D4D8F1-594C-4123-AB11-834BA0617F5A} = {C74AF6C4-2DF1-4364-85D6-F89D7BE72218}
 	EndGlobalSection
 EndGlobal

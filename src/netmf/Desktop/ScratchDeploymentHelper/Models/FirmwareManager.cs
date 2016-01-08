@@ -44,7 +44,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Models
     public class FirmwareManager
     {
         private const string FirmwareDictionaryFile = "firmware-{0}.{1}.json";
-        private static Version FirmwareVersion = new Version(1, 2);
+        private static Version FirmwareVersion = new Version(2, 0);
 
         private readonly TelemetryClient _tc;
         private readonly LibraryManager _libmgr;

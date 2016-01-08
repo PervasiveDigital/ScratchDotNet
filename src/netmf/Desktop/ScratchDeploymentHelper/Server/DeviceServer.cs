@@ -79,7 +79,8 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Server
         {
             var reservations = UrlReservationMgr.GetAll();
 
-            var thisUser = string.Format(@"{0}\{1}", "NT AUTHORITY", "Authenticated Users");
+            var thisUser = string.Format(@"{0}\{1}", Environment.UserDomainName, Environment.UserName);
+            var globalUser = string.Format(@"{0}\{1}", "NT AUTHORITY", "Authenticated Users");
 
             foreach (var reservation in reservations)
             {
@@ -89,6 +90,13 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Server
                     {
                         if (string.Equals(user, thisUser, StringComparison.InvariantCultureIgnoreCase))
                             return true;
+                        else if (string.Equals(user, globalUser, StringComparison.InvariantCultureIgnoreCase))
+                            return true;
+                        else
+                        {
+                            RemoveReservation("http://+:31076/");
+                            return false;
+                        }
                     }
                 }
             }
@@ -128,7 +136,20 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Server
 
         public static void AddAddress(string address, string domain, string user)
         {
-            string args = string.Format("http add urlacl url={0} user=\"{1}\\{2}\"", address, domain, user);
+            string args = $"http add urlacl url={address} user=\"{domain}\\{user}\"";
+
+            var psi = new ProcessStartInfo("netsh", args);
+            psi.Verb = "runas";
+            psi.CreateNoWindow = true;
+            psi.WindowStyle = ProcessWindowStyle.Hidden;
+            psi.UseShellExecute = true;
+
+            Process.Start(psi).WaitForExit();
+        }
+
+        public static void RemoveReservation(string address)
+        {
+            string args = $"http delete urlacl url={address}";
 
             var psi = new ProcessStartInfo("netsh", args);
             psi.Verb = "runas";

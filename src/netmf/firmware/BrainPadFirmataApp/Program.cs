@@ -28,6 +28,7 @@ using System.Threading;
 using PervasiveDigital.Firmata.Runtime;
 using PervasiveDigital.UsbHelper;
 using System.Text;
+using GHI.Processor;
 using GHI.Usb.Client;
 using Microsoft.SPOT.Hardware.UsbClient;
 
@@ -53,12 +54,14 @@ namespace BrainPadFirmataApp
             _firmata = new FirmataService("BrainPad", "b335f01176044984941833c9ce00d3ae", _appVersion.Major, _appVersion.Minor);
             _board = new BrainPadBoard(_firmata);
 
-            //bool fPreferenceIsSet = GHI.Processor.Configuration.GetEntrySize("S4DNDebug") > 0;
-
-            //if (fPreferenceIsSet)
-            //{
-            //    GHI.Processor.DebugInterface
-            //}
+            if (GHI.Processor.DebugInterface.Type == DebugInterface.InterfaceType.Usb)
+            {
+                GHI.Processor.DebugInterface.Type = DebugInterface.InterfaceType.Serial;
+                GHI.Processor.DebugInterface.ComPort = "COM1";
+                GHI.Processor.DebugInterface.UseInTinyBooter = true;
+                GHI.Processor.DebugInterface.Save();
+                PowerState.RebootDevice(false);
+            }
 
             try
             {

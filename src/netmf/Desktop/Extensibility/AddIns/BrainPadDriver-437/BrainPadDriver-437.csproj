@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{5B68944E-E1FC-450D-B6A4-11F7D784B788}</ProjectGuid>
+    <ProjectGuid>{DEF55A01-7471-45B0-81D3-A77EEC732F61}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PervasigeDigital.Scratch.AddIn.BrainPadDriver</RootNamespace>

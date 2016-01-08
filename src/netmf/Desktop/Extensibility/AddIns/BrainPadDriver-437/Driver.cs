@@ -1,6 +1,7 @@
 ﻿using System;
 using System.AddIn;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,7 +23,6 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
         private const int TrafficLightPort = 11;
         private const int BulbStatePort = 14;
         private const int BulbColorPort = 15;
-        private const int PenColorPort = 16;
 
         private IFirmataEngine _firmata;
         private byte[] _lastReportedValue = new byte[TotalNumberOfPorts];
@@ -40,16 +40,14 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
         private enum ExtendedMessageCommand : byte
         {
             PlayTone = 0x01,
-            ActionCompleted = 0x02,
+            ToneCompleted = 0x02,
 
             ClearDisplay = 0x10,
-            SetCursor = 0x11,
-            Print = 0x12,
-            DrawLine = 0x13,
-            DrawCircle = 0x14,
-            FillCircle = 0x15,
-            DrawRect = 0x16,
-            FillRect = 0x17,
+            WriteText = 0x11,
+            DrawLine = 0x12,
+            DrawCircle = 0x13,
+            DrawRectangle = 0x14,
+            DisplayActionCompleted = 0x1f
         }
 
         private Dictionary<string, int> _palette = new Dictionary<string, int>()
@@ -123,7 +121,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
             "d8"
         };
 
-        private Dictionary<int, string> _waitIds = new Dictionary<int, string>();
+        private Dictionary<string, string> _waitIds = new Dictionary<string, string>();
 
         private enum Buttons
         {
@@ -135,6 +133,8 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
 
         public void Start(IFirmataEngine firmataEngine)
         {
+            Debug.WriteLine("BrainPadDriver-437 started");
+
             _firmata = firmataEngine;
 
             var config = new byte[TotalNumberOfPorts];
@@ -146,7 +146,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
             config[PinToPort((int)Buttons.Right)] |= PinToBit((int)Buttons.Right);
 
             // touch pads (synthetic port, port=8)
-            //config[8] = 0x0f;
+            config[8] = 0x0f;
 
             // Register our interest in those pins
             for (var i = 0; i < TotalNumberOfPorts; ++i)
@@ -189,7 +189,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
                     }
                     break;
                 case "playtone":
-                    PlayTone(args[0], args[1], args[2]);
+                    PlayTone(id, args[0], args[1]);
                     break;
                 case "setservo":
                     SetServo(args[0]);
@@ -197,23 +197,6 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
                 case "setmotor":
                     SetMotor(args[0]);
                     break;
-                case "cleardisplay":
-                    ClearDisplay(args[0]);
-                    break;
-                case "setcursor":
-                    SetCursor(args[0], args[1]);
-                    break;
-                case "setpencolor":
-                    SetPenColor(args[0]);
-                    break;
-                case "print":
-                    Print(args[0], args[1], args[2]);
-                    break;
-                case "drawcircle":
-                case "fillcircle":
-                case "drawrect":
-                case "fillrect":
-                case "drawline":
                 default:
                     break;
             }
@@ -264,7 +247,7 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
             if (_firmata == null)
                 return;
 
-            if (_waitIds.ContainsValue("tone"))
+            if (_waitIds.ContainsKey("tone"))
                 return; // one tone at a time for now
 
             var noteValue = _notes.IndexOf(note.ToLowerInvariant());
@@ -294,77 +277,8 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
                     return;
             }
 
-            var idVal = int.Parse(id);
-            _waitIds.Add(idVal, "tone");
-            _firmata.SendExtendedMessage((byte)ExtendedMessageCommand.PlayTone, 
-                new byte[]
-                {
-                    LowByte(idVal),
-                    HighByte(idVal),
-                    (byte)noteValue, (byte)duration
-                });
-        }
-
-        private void ClearDisplay(string id)
-        {
-            if (_firmata == null)
-                return;
-
-            if (_waitIds.ContainsValue("display"))
-                return; // one tone at a time for now
-
-            var idVal = int.Parse(id);
-            _waitIds.Add(idVal, "display");
-            _firmata.SendExtendedMessage((byte)ExtendedMessageCommand.ClearDisplay, 
-                new byte[]
-                {
-                    LowByte(idVal), HighByte(idVal)
-                });
-        }
-
-        private void SetCursor(string xs, string ys)
-        {
-            byte x = (byte)int.Parse(xs);
-            byte y = (byte)int.Parse(ys);
-            _firmata.SendExtendedMessage((byte)ExtendedMessageCommand.SetCursor, new byte[] { x, y });
-        }
-
-        private void SetPenColor(string color)
-        {
-            if (_palette.ContainsKey(color.ToLowerInvariant()))
-            {
-                _firmata.SendDigitalMessage(PenColorPort, _palette[color.ToLowerInvariant()]);
-            }
-        }
-
-        private void Print(string id, string msg, string size)
-        {
-            if (_waitIds.ContainsValue("display"))
-                return; // one display action at a time for now
-
-            byte iSize = 0;
-            if (size.ToLowerInvariant() == "big")
-                iSize = 1;
-
-            var strdata = Encoding.UTF8.GetBytes(msg);
-            var buffer = new byte[strdata.Length * 2];
-
-            // send each byte of the name as two bytes
-            for (var i = 0; i < strdata.Length; ++i)
-            {
-                buffer[2 * i] = (byte)(strdata[i] & 0x7f);
-                buffer[2 * i + 1] = (byte)((strdata[i] >> 7) & 0x7f);
-            }
-
-            var idVal = int.Parse(id);
-            _waitIds.Add(idVal, "display");
-            _firmata.SendExtendedMessage((byte)0x71, buffer);
-            _firmata.SendExtendedMessage((byte)ExtendedMessageCommand.Print, new []
-            {
-                LowByte(idVal),
-                HighByte(idVal),
-                iSize
-            });
+            _waitIds.Add("tone", id);
+            _firmata.SendExtendedMessage((byte)ExtendedMessageCommand.PlayTone, new byte[] { (byte)noteValue, (byte)duration });
         }
 
         private void SetServo(string angle)
@@ -464,12 +378,9 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
             }
 
             // Report wait ids
-            foreach (var id in _waitIds.Keys)
+            foreach (var id in _waitIds.Values)
             {
-                result.Add("_busy", id.ToString());
-                break; //BUG: There can be more than one scratch code scrap with an active wait id, but because we are returning
-                       //     a dict, we can't return another '_busy'.  The return type needs to change, but that requires
-                       //     a change to the pipeline code, which is more than I want to do right now.
+                result.Add("_busy", id);
             }
 
             return result;
@@ -510,21 +421,10 @@ namespace PervasiveDigital.Scratch.DeploymentHelper.Extensibility
         {
             switch (command)
             {
-                case (byte)ExtendedMessageCommand.ActionCompleted:
-                    int id = data[1] << 7 | data[0];
-                    _waitIds.Remove(id);
+                case (byte)ExtendedMessageCommand.ToneCompleted:
+                    _waitIds.Remove("tone");
                     break;
             }
-        }
-
-        private byte LowByte(int value)
-        {
-            return (byte) (value & 0x7f);
-        }
-
-        private byte HighByte(int value)
-        {
-            return (byte) ((value >> 7) & 0x7f);
         }
     }
 }
