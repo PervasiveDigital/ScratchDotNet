@@ -1,7 +1,8 @@
-{	"extensionName": "BrainPad Extension",
-    "sort": 1,
-    "extensionPort": 31076,
-    "firmware": "1.1.103",
+{
+  "extensionName": "BrainPad Extension",
+  "sort": 1,
+  "extensionPort": 31076,
+  "firmware": "1.1.103",
   "blockSpecs": [
     [ "h", ".Net Program", "runDotNet" ],
 
@@ -9,7 +10,6 @@
     [ "b", "button %m.buttons pressed", "s4nButton", "left" ],
     [ " ", "turn %m.traffic traffic light %m.onoff", "setTraffic", "red", "on" ],
     [ " ", "set bulb to color %m.bulbcolor", "setBulbColor", "red" ],
-    [ " ", "turn %m.traffic traffic light %m.onoff", "setTraffic", "red", "on" ],
 
     [ "w", "rest for %m.beats beats", "playRest", "quarter" ],
     [ "w", "play %m.notes for %m.beats beats", "playTone", "C5", "quarter" ],
